@@ -114,7 +114,13 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
 * **`params.json`**
 
   ```ts
-  type Params = { sweetSpotRatio: number; renfortMax: number; enchantMax: number }
+  type Params = { 
+    sweetSpotRatio: number; 
+    renfortMax: number; 
+    enchantMax: number;
+    baseWear: number;      // usure de base (coup non pénétrant)
+    capWearPerHit: number; // limite max d'usure sur un coup
+    }
   ```
 
 
@@ -195,7 +201,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 ### 0.2.0 — Usure & Durabilité (10.3.8)
 
 * [x] `extraPen` par matériau
-* [ ] **cap par coup** (params)
+* [x] **cap par coup** (params)
 * [ ] Widget **Usure en combat** (d20 → PV/PA)
 * [ ] Réparation (coût/temps par matériau/qualité)
 * [ ] Matériaux de bouclier

@@ -1,5 +1,7 @@
 {
     "sweetSpotRatio": 2,
     "renfortMax": 3,
-    "enchantMax": 3
+    "enchantMax": 3,
+    "baseWear": 1,
+    "capWearPerHit": 4
 }

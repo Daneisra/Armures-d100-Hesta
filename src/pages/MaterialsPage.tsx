@@ -126,7 +126,7 @@ export default function MaterialsPage(){
 
 function Th({
   k, children, activeKey, dir, onToggle, align="left"
-}: {k: SortKey; children:React.ReactNode; activeKey:SortKey; dir:"asc"|"desc"; onToggle:(k:SortKey)=>void; align?:"left"|"right" }){
+  }: {k: SortKey; children:React.ReactNode; activeKey:SortKey; dir:"asc"|"desc"; onToggle:(k:SortKey)=>void; align?:"left"|"right" }){
   const active = activeKey === k;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(k); }

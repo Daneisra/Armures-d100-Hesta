@@ -38,7 +38,16 @@ export type Material = {
 
 export type Quality = { name: string; bonusPA: number; malusMod: number };
 export type Shield  = { name: string; pa: number; malus: number; poids?: number };
-export type Params  = { sweetSpotRatio: number; renfortMax: number; enchantMax: number };
+export type Params = {
+  sweetSpotRatio: number;
+  renfortMax: number;
+  enchantMax: number;
+  /** Usure de base sur un coup non pénétrant */
+  baseWear: number;          // ex: 1
+  /** Limite maximale d'usure appliquée sur un coup (après extraPen) */
+  capWearPerHit: number;     // ex: 4
+};
+
 
 export type BuildInput = {
   chassis: string;
@@ -56,3 +65,4 @@ export type BuildResult = {
   sweet: boolean;
   notes: string[];
 };
+

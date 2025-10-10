@@ -6,6 +6,7 @@ import InputRow from "./InputRow";
 import RatioPill from "./RatioPill";
 import { validateChassis, validateCategories, validateMaterials } from "../lib/validate";
 import CompatBadge from "./CompatBadge";
+import WearWidget from "./WearWidget";
 
 // Validations runtime (une seule fois)
 validateChassis(chassis);
@@ -160,6 +161,7 @@ export default function Calculator(){
                 </ul>
               </div>
             )}
+              <WearWidget paFinal={res.paFinal} material={matCurrent} params={params} />
           </div>
         </div>
       </div>
