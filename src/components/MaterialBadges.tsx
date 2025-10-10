@@ -11,6 +11,7 @@ export default function MaterialBadges({ mat }: { mat: Material }) {
   if (mat.effects && mat.effects !== "—") chips.push(<Chip key="eff" className="bg-slate-200 text-slate-900">{mat.effects}</Chip>);
   if (mat.halfMalus) chips.push(<Chip key="half" className="bg-emerald-200 text-emerald-900">Malus ×0,5</Chip>);
   if (mat.penIgnore && mat.penIgnore > 0) chips.push(<Chip key="pen" className="bg-amber-200 text-amber-900">Ignore {mat.penIgnore} pénétration</Chip>);
+  
 
   if (res.feu)    chips.push(<Chip key="feu"    className="bg-red-200 text-red-900">Feu +{res.feu}</Chip>);
   if (res.froid)  chips.push(<Chip key="froid"  className="bg-blue-200 text-blue-900">Froid +{res.froid}</Chip>);

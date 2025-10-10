@@ -30,6 +30,7 @@ export function computeBuild(
 function buildNotes(material: Material): string[] {
   const out: string[] = [];
   if (material.penIgnore && material.penIgnore > 0) out.push(`Ignore ${material.penIgnore} pénétration`);
+  if (material.extraPen && material.extraPen > 0)   out.push(`Usure pénétration +${material.extraPen}`);
   const r = material.res || {};
   const rnotes = [
     r.feu   ? `Feu +${r.feu}` : null,

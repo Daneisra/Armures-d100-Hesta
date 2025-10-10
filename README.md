@@ -94,6 +94,7 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
     effects?: string;
     halfMalus?: boolean;   // ex. mithril : malus x0,5
     penIgnore?: number;    // ex. adamantium : ignore X pénétration
+    extraPen?: number; // usure additionnelle quand la pénétration dépasse les PA restants
     res?: { feu?:number; froid?:number; foudre?:number; tr?:number; per?:number; con?:number; magie?:number };
   }
   ```
@@ -193,30 +194,35 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 
 ### 0.2.0 — Usure & Durabilité (10.3.8)
 
-* [ ] `extraPen` par matériau + **cap par coup** (params)
+* [x] `extraPen` par matériau
+* [ ] **cap par coup** (params)
 * [ ] Widget **Usure en combat** (d20 → PV/PA)
 * [ ] Réparation (coût/temps par matériau/qualité)
 * [ ] Matériaux de bouclier
+* [ ] Polish UI
 
 ### 0.3.0 — Catalogue & Impression
 
 * [ ] **Catalogue** de builds (LocalStorage + export JSON)
 * [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
+* [ ] Polish UI
 
 ### 0.4.0 — Éditeur & Import
 
 * [ ] Mini **CRUD** (châssis / matériaux / qualités / boucliers / params)
 * [ ] Import CSV (depuis Excel) + **validation** (doublons, clés invalides)
+* [ ] Polish UI
 
 ### 0.5.0 — Sandbox & Équilibrage
 
 * [ ] Sandbox d’équilibrage (sliders, profils types)
 * [ ] Graphique réussite vs malus (d100 inversé)
+* [ ] Polish UI
 
 ### 0.6.0 — PWA & Qualité
 
 * [ ] PWA (offline) • tests unitaires sur `calc.ts` • CI (build/test/deploy)
-
+* [ ] Polish UI
 
 
 ## 🔧 Contribution

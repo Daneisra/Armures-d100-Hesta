@@ -6,7 +6,7 @@ import CategoryBadge from "../components/CategoryBadge";
 
 const COMPATS = ["Gambison","Cuir","Métal"] as const;
 type Compat = typeof COMPATS[number];
-type SortKey = "name" | "_catLabel" | "_compat" | "modPA" | "malusMod";
+type SortKey = "name" | "_compat" | "modPA" | "malusMod" | "extraPen";
 
 export default function MaterialsPage(){
   const [compat, setCompat] = useState<Compat | "Toutes">("Toutes");
@@ -93,10 +93,10 @@ export default function MaterialsPage(){
           <thead className="bg-slate-50">
             <tr>
               <Th k="name"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Matériau</Th>
-              <Th k="_catLabel" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Catégorie</Th>
-              <Th k="_compat"   activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Compat.</Th>
-              <Th k="modPA"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Mod&nbsp;PA</Th>
-              <Th k="malusMod"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Malus&nbsp;Mod</Th>
+              <Th k="_compat"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Compat.</Th>
+              <Th k="modPA"    activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Mod&nbsp;PA</Th>
+              <Th k="malusMod" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Malus&nbsp;Mod</Th>
+              <Th k="extraPen" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Usure&nbsp;Pénétration</Th>
               <th className="px-3 py-2 text-left">Effets / Résistances</th>
             </tr>
           </thead>
@@ -109,16 +109,14 @@ export default function MaterialsPage(){
                     <span className="font-medium">{m.name}</span>
                   </div>
                 </td>
-                <td className="px-3 py-2">{m._catLabel}</td>
+                {/* colonne Catégorie supprimée */}
                 <td className="px-3 py-2">{m._compat}</td>
                 <td className="px-3 py-2 text-right tabular">{m.modPA}</td>
                 <td className="px-3 py-2 text-right tabular">{m.malusMod}</td>
+                <td className="px-3 py-2 text-right tabular">{m.extraPen ?? 0}</td>
                 <td className="px-3 py-2"><MaterialBadges mat={m} /></td>
               </tr>
             ))}
-            {items.length === 0 && (
-              <tr><td className="px-3 py-6 text-center text-slate-500" colSpan={6}>Aucun matériau</td></tr>
-            )}
           </tbody>
         </table>
       </div>

@@ -32,6 +32,7 @@ export type Material = {
   effects?: string;
   halfMalus?: boolean;
   penIgnore?: number;
+  extraPen?: number;
   res?: Partial<Resist>;
 };
 
