@@ -1,0 +1,15 @@
+/* Tailwind v4 */
+@import "tailwindcss";
+/* Indique où résoudre les utilitaires quand on utilise @apply */
+@reference "tailwindcss";
+
+/* Tes raccourcis réutilisables */
+.input{
+  @apply w-full border rounded-md px-2 py-1 bg-white
+         focus:outline-none focus:ring-2 focus:ring-slate-400;
+}
+.btn{
+  @apply inline-flex items-center gap-2 border rounded-md px-3 py-1.5 bg-white
+         hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400;
+}
+.tabular{ @apply tabular-nums; }

@@ -1,0 +1,7 @@
+[
+    { "name": "Aucun", "pa": 0, "malus": 0, "poids": 0 },
+    { "name": "Targe", "pa": 1, "malus": 1, "poids": 1 },
+    { "name": "Rondache", "pa": 2, "malus": 2, "poids": 2 },
+    { "name": "Ecu", "pa": 3, "malus": 3, "poids": 3 },
+    { "name": "Pavois", "pa": 4, "malus": 4, "poids": 4 }
+]

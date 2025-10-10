@@ -1,0 +1,13 @@
+[
+  { "key": "Textile",         "label": "Textile rembourré",          "sort": 0, "compat": "Gambison", "description": "Gambisons, vêtements matelassés et textiles renforcés." },
+  { "key": "Cuir",            "label": "Cuir & peaux",                "sort": 1, "compat": "Cuir",     "description": "Cuir simple, clouté, renforcé, peaux exotiques." },
+
+  { "key": "MetalFerreux",    "label": "Métal — ferreux",             "sort": 2, "compat": "Métal",    "description": "Fer, aciers (renforcé, damassé, noir…)." },
+  { "key": "MetalNonFerreux", "label": "Métal — non ferreux",         "sort": 3, "compat": "Métal",    "description": "Cuivre, bronze, alliages légers." },
+  { "key": "MetalMythique",   "label": "Métal — mythique",            "sort": 4, "compat": "Métal",    "description": "Orichalque, mithril, adamantium… matières légendaires." },
+
+  { "key": "OrganiqueRigide", "label": "Organique rigide",            "sort": 5, "compat": "Métal",    "description": "Chitine, écailles, os travaillés…" },
+  { "key": "Bois",            "label": "Bois dur / bois de fer",      "sort": 6, "compat": "Métal",    "description": "Essences denses et traitées pour la protection." },
+  { "key": "MineralVerre",    "label": "Minéral / Verre",             "sort": 7, "compat": "Métal",    "description": "Verre trempé, céramiques, minéraux." },
+  { "key": "ResineDure",      "label": "Résine dure",                 "sort": 8, "compat": "Métal",    "description": "Ébonite et polymères/matériaux composites durs." }
+]

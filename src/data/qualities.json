@@ -1,0 +1,7 @@
+[
+    { "name": "Médiocre", "bonusPA": 0, "malusMod": 2 },
+    { "name": "Standard", "bonusPA": 0, "malusMod": 0 },
+    { "name": "Bonne", "bonusPA": 1, "malusMod": -1 },
+    { "name": "Excellente", "bonusPA": 2, "malusMod": -2 },
+    { "name": "Légendaire", "bonusPA": 3, "malusMod": -3 }
+]
