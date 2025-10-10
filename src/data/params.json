@@ -3,5 +3,9 @@
     "renfortMax": 3,
     "enchantMax": 3,
     "baseWear": 1,
-    "capWearPerHit": 4
+    "capWearPerHit": 8,
+    "repair": {
+        "costPerPA": { "Gambison": 1, "Cuir": 2, "Métal": 4 },
+        "timePerPA": { "Gambison": 0.5, "Cuir": 1, "Métal": 2 }
+  }
 }

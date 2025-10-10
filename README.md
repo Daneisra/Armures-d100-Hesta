@@ -202,8 +202,9 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 
 * [x] `extraPen` par matériau
 * [x] **cap par coup** (params)
-* [ ] Widget **Usure en combat** (d20 → PV/PA)
-* [ ] Réparation (coût/temps par matériau/qualité)
+* [x] Widget **Usure en combat** (d20 → PV/PA)
+* [x] Réparation (coût/temps par matériau/qualité)
+* [ ] Rétablir enchantement et ajouter possiblités d'effet
 * [ ] Matériaux de bouclier
 * [ ] Polish UI
 

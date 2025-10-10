@@ -7,6 +7,7 @@ import RatioPill from "./RatioPill";
 import { validateChassis, validateCategories, validateMaterials } from "../lib/validate";
 import CompatBadge from "./CompatBadge";
 import WearWidget from "./WearWidget";
+import RepairWidget from "./RepairWidget";
 
 // Validations runtime (une seule fois)
 validateChassis(chassis);
@@ -77,6 +78,7 @@ export default function Calculator(){
   // objets sélectionnés (pour le badge)
   const chCurrent  = useMemo(() => chassis.find(c => c.name === inp.chassis), [inp.chassis]);
   const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [inp.material]);
+  const qCurrent = useMemo(()=> qualities.find(q => q.name === inp.quality), [inp.quality]);
 
 
   const onNum = (k: keyof Pick<BuildInput, "renfort" | "enchant">) =>
@@ -162,6 +164,7 @@ export default function Calculator(){
               </div>
             )}
               <WearWidget paFinal={res.paFinal} material={matCurrent} params={params} />
+              <RepairWidget paMax={res.paFinal} material={matCurrent} quality={qCurrent} params={params} />
           </div>
         </div>
       </div>

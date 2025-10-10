@@ -23,9 +23,7 @@ export type Resist = {
 
 export type Material = {
   name: string;
-  /** Catégorie d’affinage (Textile, MetalFerreux, Bois, etc.) */
   category: string;
-  /** Groupe de compatibilité pour le châssis */
   compat: "Gambison" | "Cuir" | "Métal";
   modPA: number;
   malusMod: number;
@@ -34,20 +32,39 @@ export type Material = {
   penIgnore?: number;
   extraPen?: number;
   res?: Partial<Resist>;
+
+  /** 🔧 Réparation — multiplicateurs spécifiques au matériau */
+  repairCostMult?: number; // défaut 1
+  repairTimeMult?: number; // défaut 1
 };
 
-export type Quality = { name: string; bonusPA: number; malusMod: number };
 export type Shield  = { name: string; pa: number; malus: number; poids?: number };
+
 export type Params = {
   sweetSpotRatio: number;
   renfortMax: number;
   enchantMax: number;
-  /** Usure de base sur un coup non pénétrant */
-  baseWear: number;          // ex: 1
-  /** Limite maximale d'usure appliquée sur un coup (après extraPen) */
-  capWearPerHit: number;     // ex: 4
+  
+  /** Usure (déjà en 0.2.0) */
+  baseWear: number;          
+  capWearPerHit: number;
+
+  /** ⚙️ Réparation — bases par compat (coût en po, temps en h) */
+  repair: {
+    costPerPA: { Gambison: number; Cuir: number; Métal: number };
+    timePerPA: { Gambison: number; Cuir: number; Métal: number };
+  };
 };
 
+export type Quality = {
+  name: string;
+  bonusPA: number;
+  malusMod: number;
+
+  /** 🔧 Réparation — multiplicateurs de qualité */
+  repairCostMult?: number; // défaut 1
+  repairTimeMult?: number; // défaut 1
+};
 
 export type BuildInput = {
   chassis: string;
