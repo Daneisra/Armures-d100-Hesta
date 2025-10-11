@@ -102,7 +102,7 @@ export default function Calculator(){
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-2">Calculateur d'armure (v10.3.7)</h1>
+      <h1 className="text-2xl font-bold mb-2">Calculateur d'armure </h1>
       <p className="text-sm opacity-80 mb-4">
         D100 inversé — objectif : ratio PA/Malus ≥ {params.sweetSpotRatio}
       </p>
@@ -181,7 +181,7 @@ export default function Calculator(){
             <div className="flex items-center justify-between">
               <span>Efficacité</span>
               <div className="flex items-center gap-2">
-                <RatioPill ratio={res.effic} ok={res.sweet} />
+                <RatioPill ratio={res.effic} />
                 <span className={`text-xs px-2 py-1 rounded ${res.sweet ? "bg-green-200 text-green-900" : "bg-red-200 text-red-900"}`}>
                   {res.sweet ? "Bon équilibre" : "—"}
                 </span>

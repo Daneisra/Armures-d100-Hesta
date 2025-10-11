@@ -1,15 +1,74 @@
-/* Tailwind v4 */
 @import "tailwindcss";
-/* Indique où résoudre les utilitaires quand on utilise @apply */
 @reference "tailwindcss";
 
-/* Tes raccourcis réutilisables */
+/* === Tokens (light/dark) === */
+:root{
+  --bg: white;
+  --fg: #0f172a;             /* slate-900 */
+  --muted: #475569;          /* slate-600 */
+  --panel: #ffffff;
+  --border: #e2e8f0;         /* slate-200 */
+  --badge: #f1f5f9;          /* slate-100 */
+  --ring: #94a3b8;           /* slate-400 */
+
+  /* Category accents */
+  --acc-textile: #0ea5e9;    /* sky-500 */
+  --acc-cuir:    #f59e0b;    /* amber-500 */
+  --acc-metal:   #64748b;    /* slate-500 */
+  --acc-bois:    #16a34a;    /* green-600 */
+  --acc-org:     #84cc16;    /* lime-500 */
+  --acc-min:     #06b6d4;    /* cyan-500 */
+  --acc-resine:  #f59e0b;    /* amber-500 */
+  --acc-myth:    #8b5cf6;    /* violet-500 */
+}
+
+:root.dark{
+  --bg: #0b1220;             /* slate-950 */
+  --fg: #e2e8f0;             /* slate-200 */
+  --muted: #94a3b8;          /* slate-400 */
+  --panel: #0f172a;          /* slate-900 */
+  --border: #1f2937;         /* slate-800 */
+  --badge: #111827;          /* slate-900 */
+  --ring: #7c8596;
+}
+
+html, body, #root { background: var(--bg); color: var(--fg); }
+
+/* Utilitaires projet */
 .input{
-  @apply w-full border rounded-md px-2 py-1 bg-white
-         focus:outline-none focus:ring-2 focus:ring-slate-400;
+  @apply w-full rounded-md border px-2 py-1 bg-[var(--panel)]
+         border-[var(--border)] focus:outline-none
+         focus:ring-2 focus:ring-[var(--ring)];
+}
+.select{
+  @apply w-full rounded-md border px-2 py-1 pr-8
+         bg-[var(--panel)] border-[var(--border)]
+         focus:outline-none focus:ring-2 focus:ring-[var(--ring)];
 }
 .btn{
-  @apply inline-flex items-center gap-2 border rounded-md px-3 py-1.5 bg-white
-         hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400;
+  @apply inline-flex items-center gap-2 rounded-md border px-3 py-1.5
+         bg-[var(--panel)] border-[var(--border)]
+         hover:bg-slate-50/50 dark:hover:bg-white/5
+         focus:outline-none focus:ring-2 focus:ring-[var(--ring)];
+}
+.btn-primary{
+  @apply bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900
+         hover:opacity-90 border-transparent;
 }
 .tabular{ @apply tabular-nums; }
+.table{
+  @apply w-full border rounded-xl overflow-hidden border-[var(--border)];
+}
+.th{
+  @apply bg-slate-50 dark:bg-slate-900 text-sm font-medium sticky top-0 z-10
+         border-b border-[var(--border)];
+}
+.td{ @apply border-t border-[var(--border)] px-3 py-2; }
+.badge{ @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs
+                 bg-[var(--badge)]; }
+
+/* Impression : résumé uniquement propre */
+@media print{
+  nav, .no-print { display:none !important; }
+  .print-card { box-shadow:none; border-color:#ccc; }
+}

@@ -12,6 +12,8 @@ export default function MaterialsPage(){
   const [compat, setCompat] = useState<Compat | "Toutes">("Toutes");
   const [cat, setCat] = useState<string>("Toutes");
   const [q, setQ] = useState("");
+  const [dense, setDense] = useState(false);
+  const resetFilters = () => { setCompat("Toutes"); setCat("Toutes"); setQ(""); };
 
   const catByKey = useMemo(()=> {
     const m = new Map<string, Category>();
@@ -56,15 +58,16 @@ export default function MaterialsPage(){
     return withLabels;
   }, [compat, cat, q, sort, catByKey]);
 
-  function toggleSort(k: SortKey){ setSort(s => s.key === k ? { key:k, dir: s.dir==="asc"?"desc":"asc" } : { key:k, dir:"asc" }); }
-  const ariaSort = (k:SortKey) => sort.key!==k ? "none" : (sort.dir==="asc"?"ascending":"descending");
+  function toggleSort(k: SortKey){
+    setSort(s => s.key === k ? { key:k, dir: s.dir==="asc"?"desc":"asc" } : { key:k, dir:"asc" });
+  }
 
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Matériaux</h2>
 
       {/* Filtres */}
-      <div className="grid md:grid-cols-4 gap-3 text-sm">
+      <div className="grid md:grid-cols-5 gap-3 text-sm">
         <div>
           <label className="opacity-70 mb-1 block">Compatibilité (châssis)</label>
           <select className="input" value={compat} onChange={e=>setCompat(e.target.value as any)}>
@@ -85,12 +88,19 @@ export default function MaterialsPage(){
           <label className="opacity-70 mb-1 block">Recherche</label>
           <input className="input" placeholder="Rechercher un matériau…" value={q} onChange={e=>setQ(e.target.value)} />
         </div>
+        <div className="flex items-end gap-2">
+          <button className="btn" onClick={resetFilters}>Réinitialiser</button>
+          <label className="inline-flex items-center gap-2">
+            <input type="checkbox" checked={dense} onChange={e=>setDense(e.target.checked)} />
+            Densité compacte
+          </label>
+        </div>
       </div>
 
       {/* Tableau */}
       <div className="rounded-xl border overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50">
+          <thead className="bg-slate-50 sticky top-0 z-10">
             <tr>
               <Th k="name"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Matériau</Th>
               <Th k="_compat"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Compat.</Th>
@@ -103,18 +113,17 @@ export default function MaterialsPage(){
           <tbody>
             {items.map((m:any)=>(
               <tr key={m.name} className="border-t hover:bg-slate-50 focus-within:bg-slate-50">
-                <td className="px-3 py-2">
+                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}>
                   <div className="flex items-center gap-2">
                     <CategoryBadge keyName={m._catKey} label={m._catLabel} />
                     <span className="font-medium">{m.name}</span>
                   </div>
                 </td>
-                {/* colonne Catégorie supprimée */}
-                <td className="px-3 py-2">{m._compat}</td>
-                <td className="px-3 py-2 text-right tabular">{m.modPA}</td>
-                <td className="px-3 py-2 text-right tabular">{m.malusMod}</td>
-                <td className="px-3 py-2 text-right tabular">{m.extraPen ?? 0}</td>
-                <td className="px-3 py-2"><MaterialBadges mat={m} /></td>
+                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}>{m._compat}</td>
+                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.modPA}</td>
+                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.malusMod}</td>
+                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.extraPen ?? 0}</td>
+                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}><MaterialBadges mat={m} /></td>
               </tr>
             ))}
           </tbody>
@@ -126,17 +135,18 @@ export default function MaterialsPage(){
 
 function Th({
   k, children, activeKey, dir, onToggle, align="left"
-  }: {k: SortKey; children:React.ReactNode; activeKey:SortKey; dir:"asc"|"desc"; onToggle:(k:SortKey)=>void; align?:"left"|"right" }){
+}: {k: SortKey; children:React.ReactNode; activeKey:SortKey; dir:"asc"|"desc"; onToggle:(k:SortKey)=>void; align?:"left"|"right" }){
   const active = activeKey === k;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(k); }
   };
+  const textAlign = align === "right" ? "text-right" : "text-left";
   return (
     <th
       role="button"
       tabIndex={0}
       aria-sort={active ? (dir==="asc"?"ascending":"descending") : "none"}
-      className={`px-3 py-2 cursor-pointer select-none text-${align} ${active?"text-slate-900":"text-slate-600"} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400`}
+      className={`px-3 py-2 cursor-pointer select-none ${textAlign} ${active?"text-slate-900":"text-slate-600"} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400`}
       onClick={()=>onToggle(k)}
       onKeyDown={onKeyDown}
       title="Trier"

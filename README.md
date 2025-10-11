@@ -240,7 +240,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Réparation (coût/temps par matériau/qualité)
 * [x] Rétablir enchantement et ajouter possiblités d'effet
 * [x] Matériaux de bouclier
-* [ ] Polish UI
+* [x] Polish UI
 
 ### 0.3.0 — Catalogue & Impression
 
