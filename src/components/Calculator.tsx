@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { chassis, materials, qualities, shields, params, categories, enchants } from "../data";
+import { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } from "../data";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
@@ -27,7 +27,8 @@ export default function Calculator(){
       renfort:  0,
       enchant:  0,
       enchantId: "protection",
-      shield:   shields[0].name
+      shield:   shields[0].name,
+      shieldMaterial: shieldMaterials[0]?.name ?? "",
     };
     if (!base.enchantId) base.enchantId = "protection";
     if (typeof base.enchant !== "number") base.enchant = 0;
@@ -76,7 +77,7 @@ export default function Calculator(){
   }, [mats, inp.material]);
 
   const res = useMemo(
-    () => computeBuild(inp, { chassis, materials, qualities, shields, params, enchants }),
+    () => computeBuild(inp, { chassis, materials, qualities, shields, params, enchants, shieldMaterials }),
     [inp]
   );
 
@@ -152,10 +153,20 @@ export default function Calculator(){
           </InputRow>
 
           <InputRow label="Bouclier">
-            <select className="input" value={inp.shield} onChange={e => setInp({ ...inp, shield: e.target.value })}>
-              {shields.map(s => <option key={s.name} value={s.name}>{s.name}</option>)}
+            <select className="input" value={inp.shield}
+              onChange={e => setInp({ ...inp, shield: e.target.value })}>
+              {shields.map(s => <option key={s.name}>{s.name}</option>)}
             </select>
           </InputRow>
+
+          {inp.shield !== "Aucun" && (
+            <InputRow label="Matériau de bouclier">
+              <select className="input" value={inp.shieldMaterial ?? ""}
+                onChange={e => setInp({ ...inp, shieldMaterial: e.target.value })}>
+                {shieldMaterials.map(sm => <option key={sm.name} value={sm.name}>{sm.name}</option>)}
+              </select>
+            </InputRow>
+          )}
         </div>
 
         <div className="rounded-xl border p-4">

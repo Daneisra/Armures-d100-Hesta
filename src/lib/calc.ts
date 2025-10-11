@@ -1,4 +1,4 @@
-import type { Chassis, Material, Quality, Shield, BuildInput, BuildResult, Params, Enchant } from "../types";
+import type { Chassis, Material, Quality, Shield, BuildInput, BuildResult, Params, Enchant, ShieldMaterial } from "../types";
 
 export function computeBuild(
   inp: BuildInput,
@@ -8,13 +8,15 @@ export function computeBuild(
     qualities: Quality[];
     shields: Shield[];
     params: Params;
-    enchants?: Enchant[];     // ⬅️ nouveau (optionnel pour compat ascendante)
+    enchants?: Enchant[];
+    shieldMaterials?: ShieldMaterial[];
   }
 ): BuildResult {
   const ch       = tables.chassis.find(c => c.name === inp.chassis)!;
   const material = tables.materials.find(m => m.name === inp.material)!;
   const quality  = tables.qualities.find(q => q.name === inp.quality)!;
   const shield   = tables.shields.find(s => s.name === inp.shield)!;
+  const shMat    = tables.shieldMaterials?.find(sm => sm.name === inp.shieldMaterial);
 
   const renfort  = clamp(inp.renfort, 0, tables.params.renfortMax);
   const level    = clamp(inp.enchant ?? 0, 0, tables.params.enchantMax ?? 3);
@@ -22,8 +24,18 @@ export function computeBuild(
   const ench = tables.enchants?.find(e => e.id === (inp.enchantId || "protection")); // défaut Protection
 
   // Base PA/Malus
-  let pa    = ch.basePA + material.modPA + quality.bonusPA + renfort + shield.pa;
-  let malus = ch.baseMalus + material.malusMod + quality.malusMod + shield.malus;
+  let pa    = ch.basePA + material.modPA + quality.bonusPA + renfort;
+  let malus = ch.baseMalus + material.malusMod + quality.malusMod;
+
+  // Bouclier (base + matériau éventuel)
+  let shieldPa    = shield.pa;
+  let shieldMalus = shield.malus;
+  if (shMat) {
+    shieldPa    += shMat.paMod;
+    shieldMalus += shMat.malusMod;
+  }
+  pa    += shieldPa;
+  malus += shieldMalus;
 
   // Enchant — application générique
   if (ench && level > 0){
@@ -57,7 +69,13 @@ export function computeBuild(
   const effic = pa > 0 ? pa / Math.max(1, malus) : 0;
   const sweet = malus > 0 ? (pa / malus) >= tables.params.sweetSpotRatio : pa >= tables.params.sweetSpotRatio;
 
+  // notes (ajoute un résumé bouclier)
   const notes = buildNotes(material, ench, level);
+  if (inp.shield !== "Aucun") {
+    const part = `Bouclier: +${shieldPa} PA, +${shieldMalus} malus` + (shMat ? ` (${shMat.name})` : "");
+    notes.unshift(part);
+  }
+  
   return { paFinal: pa, malusFinal: malus, effic, sweet, notes };
 }
 

@@ -238,8 +238,8 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] **cap par coup** (params)
 * [x] Widget **Usure en combat** (d20 → PV/PA)
 * [x] Réparation (coût/temps par matériau/qualité)
-* [ ] Rétablir enchantement et ajouter possiblités d'effet
-* [ ] Matériaux de bouclier
+* [x] Rétablir enchantement et ajouter possiblités d'effet
+* [x] Matériaux de bouclier
 * [ ] Polish UI
 
 ### 0.3.0 — Catalogue & Impression

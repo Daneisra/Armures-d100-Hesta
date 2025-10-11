@@ -40,6 +40,14 @@ export type Material = {
 
 export type Shield  = { name: string; pa: number; malus: number; poids?: number };
 
+export type ShieldMaterial = {
+  name: string;
+  compat: "Bois" | "Métal" | "Cuir" | "Mixte";
+  paMod: number;       // +PA appliqué au bouclier
+  malusMod: number;    // +Malus appliqué au bouclier
+  effects?: string;
+};
+
 export type Params = {
   sweetSpotRatio: number;
   renfortMax: number;
@@ -74,6 +82,7 @@ export type BuildInput = {
   enchant: number;
   enchantId?: string;
   shield: string;
+  shieldMaterial?: string;
 };
 
 export type BuildResult = {
