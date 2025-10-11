@@ -72,6 +72,7 @@ export type BuildInput = {
   quality: string;
   renfort: number;
   enchant: number;
+  enchantId?: string;
   shield: string;
 };
 
@@ -83,3 +84,20 @@ export type BuildResult = {
   notes: string[];
 };
 
+export type Enchant = {
+  id: string;                      // "protection", "alleger", ...
+  name: string;                    // "Protection", "Allègement", ...
+  kind:
+    | "pa_flat"                    // +PA linéaire
+    | "malus_flat"                 // malus +/- linéaire (valeur négative pour réduire)
+    | "res_add"                    // +résistances
+    | "pen_ignore_add"             // +pénétration ignorée
+    | "extraPen_delta"             // delta sur usure pénétration (négatif = meilleure tenue)
+    | "pa_pct"                     // +PA en pourcentage (optionnel)
+    | "malus_mult";                // x malus (peu utilisé)
+  target?: "global" | "feu" | "froid" | "foudre" | "magie" | "tr" | "per" | "con";
+  perLevel?: number;               // incrément par niveau (pour pa_flat, malus_flat, res_add, pen_ignore_add)
+  factor?: number;                 // multiplicateur par niveau (pour malus_mult, pa_pct)
+  minLevel?: number;               // défaut 0
+  maxLevel?: number;               // défaut params.enchantMax
+};

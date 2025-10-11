@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { chassis, materials, qualities, shields, params, categories } from "../data";
+import { chassis, materials, qualities, shields, params, categories, enchants } from "../data";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
@@ -20,15 +20,20 @@ export default function Calculator(){
   // Compat attendue par le châssis (Gambison | Cuir | Métal)
   const [inp, setInp] = useState<BuildInput>(() => {
     const last = localStorage.getItem("lastBuild");
-    return last ? JSON.parse(last) : {
+    const base = last ? JSON.parse(last) : {
       chassis: chassis[0].name,
       material: materials[0].name,
-      quality:  qualities[1].name, // Standard
+      quality:  qualities[1].name,
       renfort:  0,
       enchant:  0,
+      enchantId: "protection",
       shield:   shields[0].name
     };
+    if (!base.enchantId) base.enchantId = "protection";
+    if (typeof base.enchant !== "number") base.enchant = 0;
+    return base;
   });
+
   useEffect(() => localStorage.setItem("lastBuild", JSON.stringify(inp)), [inp]);
 
   const expectedCompat = useMemo(
@@ -71,7 +76,7 @@ export default function Calculator(){
   }, [mats, inp.material]);
 
   const res = useMemo(
-    () => computeBuild(inp, { chassis, materials, qualities, shields, params }),
+    () => computeBuild(inp, { chassis, materials, qualities, shields, params, enchants }),
     [inp]
   );
 
@@ -79,11 +84,20 @@ export default function Calculator(){
   const chCurrent  = useMemo(() => chassis.find(c => c.name === inp.chassis), [inp.chassis]);
   const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [inp.material]);
   const qCurrent = useMemo(()=> qualities.find(q => q.name === inp.quality), [inp.quality]);
-
+  const enchCurrent = useMemo(() => enchants.find(e => e.id === (inp.enchantId ?? "protection")), [inp.enchantId]);
 
   const onNum = (k: keyof Pick<BuildInput, "renfort" | "enchant">) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
       setInp(s => ({ ...s, [k]: Math.max(0, parseInt(e.target.value || "0", 10) || 0) }));
+
+  // Matériau “effectif” côté usure (prend en compte extraPen_delta)
+  const materialForWear = useMemo(() => {
+    if (!matCurrent || !enchCurrent || (inp.enchant ?? 0) <= 0) return matCurrent;
+    if (enchCurrent.kind !== "extraPen_delta") return matCurrent;
+    const delta = (enchCurrent.perLevel ?? 0) * (inp.enchant ?? 0);
+    const next = Math.max(0, (matCurrent.extraPen ?? 0) + delta);
+    return { ...matCurrent, extraPen: next };
+  }, [matCurrent, enchCurrent, inp.enchant]);
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -126,8 +140,15 @@ export default function Calculator(){
             <input className="input" type="number" min={0} max={3} value={inp.renfort} onChange={onNum("renfort")} />
           </InputRow>
 
-          <InputRow label="Enchant">
-            <input className="input" type="number" min={0} max={3} value={inp.enchant} onChange={onNum("enchant")} />
+          <InputRow label="Enchantement">
+            <select className="input" value={inp.enchantId ?? "protection"} onChange={e => setInp({ ...inp, enchantId: e.target.value })}>
+              {enchants.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+            </select>
+          </InputRow>
+
+          <InputRow label="Niveau d'enchant">
+            <input className="input" type="number" min={0} max={params.enchantMax} value={inp.enchant}
+                  onChange={e => setInp(s => ({ ...s, enchant: Math.max(0, Math.min(params.enchantMax, parseInt(e.target.value||"0",10)||0)) }))} />
           </InputRow>
 
           <InputRow label="Bouclier">
@@ -163,7 +184,7 @@ export default function Calculator(){
                 </ul>
               </div>
             )}
-              <WearWidget paFinal={res.paFinal} material={matCurrent} params={params} />
+              <WearWidget paFinal={res.paFinal} material={materialForWear} params={params} />
               <RepairWidget paMax={res.paFinal} material={matCurrent} quality={qCurrent} params={params} />
           </div>
         </div>

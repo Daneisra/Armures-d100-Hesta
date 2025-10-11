@@ -95,6 +95,8 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
     halfMalus?: boolean;   // ex. mithril : malus x0,5
     penIgnore?: number;    // ex. adamantium : ignore X pénétration
     extraPen?: number; // usure additionnelle quand la pénétration dépasse les PA restants
+    repairCostMult?: number;  // multiplicateur de coût de réparation (défaut 1)
+    repairTimeMult?: number;  // multiplicateur de temps de réparation (défaut 1)
     res?: { feu?:number; froid?:number; foudre?:number; tr?:number; per?:number; con?:number; magie?:number };
   }
   ```
@@ -102,7 +104,13 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
 * **`qualities.json`**
 
   ```ts
-  type Quality = { name: string; bonusPA: number; malusMod: number } // malus descendant : meilleure qualité → malus plus faible
+  type Quality = { 
+    name: string; 
+    bonusPA: number; 
+    malusMod: number;  // malus descendant : meilleure qualité → malus plus faible
+    repairCostMult?: number;  // défaut 1 (ex: Rare 1.25, Épique 1.5, Légendaire 2)
+    repairTimeMult?: number;  // défaut 1 (ex: Rare 1.10, Épique 1.2, Légendaire 1.3)
+  } 
   ```
 
 * **`shields.json`**
@@ -120,9 +128,32 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
     enchantMax: number;
     baseWear: number;      // usure de base (coup non pénétrant)
     capWearPerHit: number; // limite max d'usure sur un coup
-    }
+    repair: {
+      costPerPA: { Gambison: number; Cuir: number; Métal: number }; // po par PA
+      timePerPA: { Gambison: number; Cuir: number; Métal: number }; // heures par PA
+    };
+  }
   ```
 
+### Usure & Durabilité
+- Coup **non pénétrant** → usure = `baseWear`.
+- Coup **pénétrant** → usure = `baseWear + extraPen(matériau)`.
+- **Cap par coup** : `usure = min(usure, capWearPerHit)`.
+- Les **PA** diminuent de l’**usure** (pas des dégâts). Les **PV** subis = `max(0, dégâts - PA_avant)`.
+
+➡️ Le **widget “Usure en combat”** (dans le Calculateur) simule un jet de d20 : saisissez les dégâts → affiche PV subis, usure appliquée (avec badge *cap* / *pénétration*), et PA après coup.
+
+### Réparation (coût & temps)
+Le coût/temps pour **récupérer X PA** dépend :
+- d’une **base** par compat (`params.repair.costPerPA/timePerPA`),
+- multipliée par les **modificateurs** du **matériau** (`repairCostMult/repairTimeMult`) et de la **qualité**.
+
+Formules :
+
+coût_total = X * costPerPA[compat] * material.repairCostMult * quality.repairCostMult
+temps_total = X * timePerPA[compat] * material.repairTimeMult * quality.repairTimeMult
+
+Le **widget “Réparation”** (dans le Calculateur) permet d’indiquer vos **PA max / PA actuel** et calcule automatiquement **po** et **heures** (avec format jours/heures).
 
 
 ## 🧮 Règles de calcul (10.3.7)
@@ -150,6 +181,9 @@ Tout le contenu est éditable dans `src/data/*.json` (facile à versionner et re
   * **Matériaux filtrés** selon compat + catégorie
   * Résumé : **PA/Malus/Efficacité** + badge **Compatibilité (✅/❌)** + effets
   * Persistance locale du dernier build
+  * Widget **Usure en combat** (d20 → PV/PA), avec cap par coup configurable
+  * **Réparation** : coût & temps par compat (params), modifiés par matériau & qualité
+
 
 * **Page “Matériaux”**
 
@@ -210,8 +244,11 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 
 ### 0.3.0 — Catalogue & Impression
 
+* [ ] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
 * [ ] **Catalogue** de builds (LocalStorage + export JSON)
 * [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
+* [ ] Etendre liste chassis
+* [ ] Etendre liste enchantements
 * [ ] Polish UI
 
 ### 0.4.0 — Éditeur & Import
