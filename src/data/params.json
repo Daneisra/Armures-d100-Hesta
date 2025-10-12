@@ -1,11 +1,21 @@
 {
-    "sweetSpotRatio": 2,
-    "renfortMax": 3,
-    "enchantMax": 3,
-    "baseWear": 1,
-    "capWearPerHit": 8,
-    "repair": {
-        "costPerPA": { "Gambison": 1, "Cuir": 2, "Métal": 4 },
-        "timePerPA": { "Gambison": 0.5, "Cuir": 1, "Métal": 2 }
-  }
+  "sweetSpotRatio": 2,
+  "renfortMax": 3,
+  "enchantMax": 3,
+  "baseWear": 1,
+  "capWearPerHit": 8,
+  "repair": {
+    "costPerPA": { "Gambison": 1, "Cuir": 2, "Métal": 4 },
+    "timePerPA": { "Gambison": 0.5, "Cuir": 1, "Métal": 2 }
+  },
+  "pv": {
+    "mode": "linear",           
+    "slope": 0.625,             
+    "offset": 0,                
+    "round": "nearest",         
+    "minCon": 0,
+    "maxCon": 100,
+    "perLevel": 0,              
+    "cap": 999                  
+ }
 }

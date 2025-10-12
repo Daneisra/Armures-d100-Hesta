@@ -48,21 +48,38 @@ export type ShieldMaterial = {
   effects?: string;
 };
 
+export type PVParams =
+  | {
+      mode: "linear";
+      slope: number;
+      offset?: number;
+      round?: "nearest" | "floor" | "ceil";
+      minCon?: number;
+      maxCon?: number;
+      perLevel?: number;
+      cap?: number;
+    }
+  | {
+      mode: "table";
+      points: [number, number][];
+      round?: "nearest" | "floor" | "ceil";
+      perLevel?: number;
+      cap?: number;
+    };
+
 export type Params = {
   sweetSpotRatio: number;
   renfortMax: number;
   enchantMax: number;
-  
-  /** Usure (déjà en 0.2.0) */
-  baseWear: number;          
+  baseWear: number;
   capWearPerHit: number;
-
-  /** ⚙️ Réparation — bases par compat (coût en po, temps en h) */
   repair: {
     costPerPA: { Gambison: number; Cuir: number; Métal: number };
     timePerPA: { Gambison: number; Cuir: number; Métal: number };
   };
+  pv: PVParams;
 };
+
 
 export type Quality = {
   name: string;

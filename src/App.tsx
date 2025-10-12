@@ -2,6 +2,7 @@ import { Routes, Route, Link, NavLink } from "react-router-dom";
 import Calculator from "./components/Calculator";
 import MaterialsPage from "./pages/MaterialsPage";
 import ThemeToggle from "./components/ThemeToggle";
+import PVPage from "./pages/PVPage";
 
 export default function App() {
   const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -19,11 +20,14 @@ export default function App() {
           <NavLink className={navClass} to="/materials">Matériaux</NavLink>
           <ThemeToggle />
         </nav>
+
+        <NavLink className={navClass} to="/pv">PV / Constitution</NavLink>
       </header>
 
       <Routes>
         <Route path="/" element={<Calculator />} />
         <Route path="/materials" element={<MaterialsPage />} />
+        <Route path="/pv" element={<PVPage />} />
       </Routes>
     </div>
   );

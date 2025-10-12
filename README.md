@@ -172,7 +172,6 @@ Le **widget “Réparation”** (dans le Calculateur) permet d’indiquer vos **
   Bon équilibre si `Efficacité ≥ params.sweetSpotRatio` (valeur par défaut : **2**).
 
 
-
 ## 🖥️ Fonctionnalités actuelles
 
 * **Calculateur**
@@ -242,10 +241,10 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Matériaux de bouclier
 * [x] Polish UI
 
-### 0.3.0 — Catalogue & Règles
+### 0.3.0 — Catalogue & Références
 
 * [x] Versioned localStorage + migrate legacy + reset button
-* [ ] Ajout pages informative PV/Constitution
+* [x] Ajout pages informative PV/Constitution
 * [ ] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
 * [ ] Etendre liste chassis
 * [ ] Etendre liste enchantements
