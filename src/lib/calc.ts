@@ -1,5 +1,8 @@
 import type { Chassis, Material, Quality, Shield, BuildInput, BuildResult, Params, Enchant, ShieldMaterial } from "../types";
 
+const orFirst = <T,>(arr: T[], pred: (x:T)=>boolean) =>
+  arr.find(pred) ?? arr[0];
+
 export function computeBuild(
   inp: BuildInput,
   tables: {
@@ -12,16 +15,18 @@ export function computeBuild(
     shieldMaterials?: ShieldMaterial[];
   }
 ): BuildResult {
-  const ch       = tables.chassis.find(c => c.name === inp.chassis)!;
-  const material = tables.materials.find(m => m.name === inp.material)!;
-  const quality  = tables.qualities.find(q => q.name === inp.quality)!;
-  const shield   = tables.shields.find(s => s.name === inp.shield)!;
+  const ch       = orFirst(tables.chassis, c => c.name === inp.chassis);
+  const material = orFirst(tables.materials, m => m.name === inp.material);
+  const quality  = orFirst(tables.qualities, q => q.name === inp.quality);
+  const shield   = orFirst(tables.shields, s => s.name === inp.shield);
+
   const shMat    = tables.shieldMaterials?.find(sm => sm.name === inp.shieldMaterial);
+  const ench     = tables.enchants?.find(e => e.id === (inp.enchantId || "protection")); // défaut Protection
+
 
   const renfort  = clamp(inp.renfort, 0, tables.params.renfortMax);
   const level    = clamp(inp.enchant ?? 0, 0, tables.params.enchantMax ?? 3);
 
-  const ench = tables.enchants?.find(e => e.id === (inp.enchantId || "protection")); // défaut Protection
 
   // Base PA/Malus
   let pa    = ch.basePA + material.modPA + quality.bonusPA + renfort;
@@ -64,10 +69,13 @@ export function computeBuild(
     }
   }
 
+  malus = Math.max(0, malus);
+
   if (material.halfMalus) malus = Math.ceil(malus / 2);
 
-  const effic = pa > 0 ? pa / Math.max(1, malus) : 0;
-  const sweet = malus > 0 ? (pa / malus) >= tables.params.sweetSpotRatio : pa >= tables.params.sweetSpotRatio;
+  const ratio = malus <= 0 ? Infinity : pa / malus;
+  const effic = malus <= 0 ? pa : ratio;
+  const sweet = ratio >= tables.params.sweetSpotRatio;
 
   // notes (ajoute un résumé bouclier)
   const notes = buildNotes(material, ench, level);
@@ -86,12 +94,16 @@ function buildNotes(material: Material, ench?: Enchant, level?: number): string[
 
   const r = material.res || {};
   const rnotes = [
+    r.tr    ? `Tr +${r.tr}`       : null,
+    r.per   ? `Per +${r.per}`     : null,
+    r.con   ? `Con +${r.con}`     : null,
     r.feu   ? `Feu +${r.feu}`     : null,
     r.froid ? `Froid +${r.froid}` : null,
     r.foudre? `Foudre +${r.foudre}` : null,
-    r.magie ? `Magie +${r.magie}` : null
+    r.magie ? `Magie +${r.magie}` : null,
   ].filter(Boolean) as string[];
   out.push(...rnotes);
+
 
   // Enchant notes
   if (ench && (level ?? 0) > 0){

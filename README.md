@@ -242,19 +242,21 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Matériaux de bouclier
 * [x] Polish UI
 
-### 0.3.0 — Catalogue & Impression
+### 0.3.0 — Catalogue & Règles
 
+* [x] Versioned localStorage + migrate legacy + reset button
+* [ ] Ajout pages informative PV/Constitution
 * [ ] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
-* [ ] **Catalogue** de builds (LocalStorage + export JSON)
-* [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
 * [ ] Etendre liste chassis
 * [ ] Etendre liste enchantements
 * [ ] Polish UI
 
-### 0.4.0 — Éditeur & Import
+### 0.4.0 — Éditeur & Import/Export
 
 * [ ] Mini **CRUD** (châssis / matériaux / qualités / boucliers / params)
 * [ ] Import CSV (depuis Excel) + **validation** (doublons, clés invalides)
+* [ ] **Catalogue** de builds (LocalStorage + export JSON)
+* [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
 * [ ] Polish UI
 
 ### 0.5.0 — Sandbox & Équilibrage
