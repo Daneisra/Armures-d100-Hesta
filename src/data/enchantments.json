@@ -1,8 +1,16 @@
 [
-  { "id": "protection", "name": "Protection", "kind": "pa_flat", "perLevel": 1 },
-  { "id": "alleger",    "name": "Allègement", "kind": "malus_flat", "perLevel": -1 },
-  { "id": "res_feu",    "name": "Résistance Feu", "kind": "res_add", "target": "feu", "perLevel": 1 },
-  { "id": "res_magie",  "name": "Résistance Magie", "kind": "res_add", "target": "magie", "perLevel": 1 },
-  { "id": "anti_perc",  "name": "Anti-perforation", "kind": "pen_ignore_add", "perLevel": 1, "maxLevel": 2 },
-  { "id": "endurci",    "name": "Endurci", "kind": "extraPen_delta", "perLevel": -1, "maxLevel": 2 }
+  { "id": "protection",     "name": "Protection",              "kind": "pa_flat",                     "perLevel": 1 },
+  { "id": "alleger",        "name": "Allègement",              "kind": "malus_flat",                  "perLevel": -1 },
+  { "id": "res_feu",        "name": "Résistance Feu",          "kind": "res_add", "target": "feu",    "perLevel": 1 },
+  { "id": "res_magie",      "name": "Résistance Magie",        "kind": "res_add", "target": "magie",  "perLevel": 1 },
+  { "id": "anti_perc",      "name": "Anti-perforation",        "kind": "pen_ignore_add",              "perLevel": 1, "maxLevel": 2 },
+  { "id": "endurci",        "name": "Endurci",                 "kind": "extraPen_delta",              "perLevel": -1, "maxLevel": 2 },
+  { "id": "res_froid",      "name": "Résistance Froid",        "kind": "res_add", "target": "froid",  "perLevel": 1, "maxLevel": 3 },
+  { "id": "res_foudre",     "name": "Résistance Foudre",       "kind": "res_add", "target": "foudre", "perLevel": 1, "maxLevel": 3 },
+  { "id": "res_tr",         "name": "Résistance Tranchant",    "kind": "res_add", "target": "tr",     "perLevel": 1, "maxLevel": 3 },
+  { "id": "res_per",        "name": "Résistance Perforant",    "kind": "res_add", "target": "per",    "perLevel": 1, "maxLevel": 3 },
+  { "id": "res_con",        "name": "Résistance Contondant",   "kind": "res_add", "target": "con",    "perLevel": 1, "maxLevel": 3 },
+  { "id": "protection_maj", "name": "Protection majeure",      "kind": "pa_flat",                     "perLevel": 2,  "maxLevel": 2 },
+  { "id": "alleger_maj",    "name": "Allègement majeur",       "kind": "malus_flat",                  "perLevel": -2, "maxLevel": 2 }
+
 ]

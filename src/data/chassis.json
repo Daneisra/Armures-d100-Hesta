@@ -1,10 +1,17 @@
 [
-  { "name": "Vêtement matelassé (gambison)", "basePA": 2,  "baseMalus": 0,  "group": "Légère",        "category": "Gambison" },
+  { "name": "Vêtement matelassé (gambison)",  "basePA": 2,  "baseMalus": 0,  "group": "Légère",        "category": "Gambison" },
+  { "name": "Gambison renforcé",              "basePA": 3,  "baseMalus": 0,  "group": "Légère",        "category": "Gambison" },
   { "name": "Cuir",                           "basePA": 3,  "baseMalus": 0,  "group": "Légère",        "category": "Cuir" },
+  { "name": "Cuir bouilli",                   "basePA": 4,  "baseMalus": 1,  "group": "Légère",        "category": "Cuir" },
   { "name": "Cuir clouté",                    "basePA": 5,  "baseMalus": 2,  "group": "Légère",        "category": "Cuir" },
+  { "name": "Cuir renforcé",                  "basePA": 6,  "baseMalus": 3,  "group": "Légère",        "category": "Cuir" },
   { "name": "Brigandine",                     "basePA": 7,  "baseMalus": 3,  "group": "Intermédiaire", "category": "Métal" },
+  { "name": "Haubergeon",                     "basePA": 8,  "baseMalus": 4,  "group": "Intermédiaire", "category": "Métal" },
   { "name": "Cotte de mailles",               "basePA": 9,  "baseMalus": 5,  "group": "Intermédiaire", "category": "Métal" },
   { "name": "Lamellaire / Écailles",          "basePA": 10, "baseMalus": 6,  "group": "Intermédiaire", "category": "Métal" },
+  { "name": "Demi-plate",                     "basePA": 12, "baseMalus": 7,  "group": "Intermédiaire", "category": "Métal" },
   { "name": "Plaque partielle",               "basePA": 13, "baseMalus": 8,  "group": "Lourde",        "category": "Métal" },
-  { "name": "Plaque complète",                "basePA": 16, "baseMalus": 10, "group": "Lourde",        "category": "Métal" }
+  { "name": "Plaque segmentée",               "basePA": 15, "baseMalus": 9,  "group": "Lourde",        "category": "Métal" },
+  { "name": "Plaque complète",                "basePA": 16, "baseMalus": 10, "group": "Lourde",        "category": "Métal" },
+  { "name": "Harnois renforcé",               "basePA": 17, "baseMalus": 11, "group": "Lourde",        "category": "Métal" }
 ]
