@@ -245,7 +245,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 
 * [x] Versioned localStorage + migrate legacy + reset button
 * [x] Ajout pages informative PV/Constitution
-* [ ] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
+* [x] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
 * [ ] Etendre liste chassis
 * [ ] Etendre liste enchantements
 * [ ] Polish UI

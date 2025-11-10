@@ -1,19 +1,30 @@
 import chassisJson           from "./chassis.json";
 import materialsJson         from "./materials.json";
-import qualities             from "./qualities.json";
-import shields               from "./shields.json";
+import qualitiesJson         from "./qualities.json";
+import shieldsJson           from "./shields.json";
 import rawParams             from "./params.json";
 import categoriesJson        from "./categories.json";
-import enchantments          from "./enchantments.json";
+import enchantmentsJson      from "./enchantments.json";
 import shieldMaterialsJson   from "./shieldMaterials.json";
 
+import repairMaterial        from "./repairMaterial.json";
+import repairQuality         from "./repairQuality.json";
+
 import type {
-  Chassis, Category, Material, Enchant, ShieldMaterial, Params, PVParams
+  Chassis,
+  Category,
+  Material,
+  Quality,
+  Enchant,
+  ShieldMaterial,
+  Params,
+  PVParams,
 } from "../types";
 
-/** Convertit le JSON libre -> type PVParams (et resserre mode/round) */
+/* ---------- PV adapter: JSON libre -> PVParams strict ---------- */
 function toPVParams(pv: any): PVParams {
-  const round = pv?.round === "floor" || pv?.round === "ceil" ? pv.round : "nearest";
+  const round =
+    pv?.round === "floor" || pv?.round === "ceil" ? pv.round : "nearest";
 
   if (pv?.mode === "table") {
     const pts: [number, number][] = Array.isArray(pv.points)
@@ -28,7 +39,7 @@ function toPVParams(pv: any): PVParams {
     };
   }
 
-  // défaut: linear
+  // défaut: linear (PV = slope * CON + offset)
   return {
     mode: "linear",
     slope: Number(pv?.slope ?? 0.625),
@@ -41,18 +52,52 @@ function toPVParams(pv: any): PVParams {
   };
 }
 
-// ✅ Exports typés (on force les JSON vers les types attendus)
+/* ---------- Overrides réparation (matériau / qualité) ---------- */
+// maps "nom" -> overrides (costMul, timeMul, note?)
+const matOv = new Map((repairMaterial as any[]).map(o => [String(o.name), o]));
+const quaOv = new Map((repairQuality  as any[]).map(o => [String(o.name), o]));
+
+/* ---------- Exports typés et normalisés ---------- */
 export const chassis: Chassis[]             = chassisJson         as unknown as Chassis[];
 export const categories: Category[]         = categoriesJson      as unknown as Category[];
-export const materials: Material[]          = materialsJson       as unknown as Material[];
-export const enchants: Enchant[]            = enchantments        as unknown as Enchant[];
+export const enchants: Enchant[]            = enchantmentsJson    as unknown as Enchant[];
 export const shieldMaterials: ShieldMaterial[] = shieldMaterialsJson as unknown as ShieldMaterial[];
 
-// ✅ params typé: on adapte le JSON pour que pv.mode soit "linear" | "table"
+/** matériaux + injection des multiplicateurs de réparation (défaut 1 si non listé) */
+export const materials: Material[] =
+  (materialsJson as any[]).map((m: any) => {
+    const ov = matOv.get(m.name);
+    return {
+      ...m,
+      repair: {
+        costMul: ov?.costMul ?? 1,
+        timeMul: ov?.timeMul ?? 1,
+        note: ov?.note
+      }
+    } as Material;
+  });
+
+/** qualités + injection des multiplicateurs de réparation (défaut 1 si non listé) */
+export const qualities: Quality[] =
+  (qualitiesJson as any[]).map((q: any) => {
+    const ov = quaOv.get(q.name);
+    return {
+      ...q,
+      repair: {
+        costMul: ov?.costMul ?? 1,
+        timeMul: ov?.timeMul ?? 1,
+        note: ov?.note
+      }
+    } as Quality;
+  });
+
+/** params avec pv typé (mode "linear"|"table") */
 export const params: Params = {
   ...(rawParams as any),
   pv: toPVParams((rawParams as any).pv),
 };
 
-// on peut garder ces exports “simples”
-export { qualities, shields };
+// Shields (si tu veux le typage strict, dé-commente la ligne suivante)
+// import type { Shield } from "../types";
+// export const shields: Shield[] = shieldsJson as unknown as Shield[];
+export { shieldsJson as shields };

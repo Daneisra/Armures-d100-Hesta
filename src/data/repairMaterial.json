@@ -1,0 +1,39 @@
+[
+  { "name": "Tissu matelassé",        "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Tissu renforcé",         "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Soie d’araignée géante", "CostMult": 1.0, "TimeMul": 1.0 },
+
+  { "name": "Cuir",                   "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Cuir clouté",            "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Cuir renforcé",          "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Cuir de wyverne",        "CostMult": 1.7, "TimeMul": 1.3 },
+  { "name": "Cuir de dragon",         "CostMult": 2.5, "TimeMul": 1.6 },
+
+  { "name": "Fer",                    "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Fer noir",               "CostMult": 1.5, "TimeMul": 1.2 },
+  { "name": "Acier",                  "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Acier renforcé",         "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Acier damassé",          "CostMult": 1.6, "TimeMul": 1.3 },
+  { "name": "Acier noir",             "CostMult": 1.8, "TimeMul": 1.4 },
+
+  { "name": "Cuivre",                 "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Bronze",                 "CostMult": 1.0, "TimeMul": 1.0 },
+
+  { "name": "Orichalque",             "CostMult": 2.2, "TimeMul": 1.6 },
+  { "name": "Mithril",                "CostMult": 3.0, "TimeMul": 2.0 },
+  { "name": "Adamantium",             "CostMult": 4.0, "TimeMul": 2.5 },
+
+  { "name": "Chitine géante",         "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Écaille de wyverne",     "CostMult": 1.7, "TimeMul": 1.3 },
+  { "name": "Écaille de dragon",      "CostMult": 2.5, "TimeMul": 1.6 },
+  { "name": "Os",                     "CostMult": 2.0, "TimeMul": 1.5 },
+  { "name": "Os biomencien",          "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Osselet runique",        "CostMult": 2.0, "TimeMul": 1.5 },
+
+  
+  { "name": "Bois de fer",            "CostMult": 1.0, "TimeMul": 1.0 },
+  { "name": "Bois dur",               "CostMult": 1.0, "TimeMul": 1.0 },
+
+  { "name": "Verre trempé",           "CostMult": 1.8, "TimeMul": 1.6 },
+  { "name": "Ébonite",                "CostMult": 1.6, "TimeMul": 1.4 }
+]

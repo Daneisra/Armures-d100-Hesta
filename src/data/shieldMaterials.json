@@ -1,5 +1,5 @@
 [
-  { "name": "Bois", "compat": "Bois",  "paMod": 0, "malusMod": 0 },
+  { "name": "Bois",            "compat": "Bois",  "paMod": 0, "malusMod": 0 },
   { "name": "Bois dur",        "compat": "Bois",  "paMod": 0, "malusMod": 0 },
   { "name": "Bois de fer",     "compat": "Bois",  "paMod": 1, "malusMod": 0, "effects": "Structure dense" },
 

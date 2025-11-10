@@ -1,0 +1,7 @@
+[
+    { "name": "Médiocre",   "CostMul": 1.00, "TimeMul": 1.00 },
+    { "name": "Standard",   "CostMul": 1.00, "TimeMul": 1.00 },
+    { "name": "Bonne",      "CostMul": 1.25, "TimeMul": 1.10 },
+    { "name": "Excellente", "CostMul": 1.50, "TimeMul": 1.20 },
+    { "name": "Légendaire", "CostMul": 2.00, "TimeMul": 1.30 }
+]

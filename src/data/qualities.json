@@ -1,7 +1,7 @@
 [
-    { "name": "Médiocre", "bonusPA": 0, "malusMod": 2, "repairCostMult": 1.00, "repairTimeMult": 1.00},
-    { "name": "Standard", "bonusPA": 0, "malusMod": 0, "repairCostMult": 1.00, "repairTimeMult": 1.00},
-    { "name": "Bonne", "bonusPA": 1, "malusMod": -1, "repairCostMult": 1.25, "repairTimeMult": 1.10},
-    { "name": "Excellente", "bonusPA": 2, "malusMod": -2, "repairCostMult": 1.50, "repairTimeMult": 1.20},
-    { "name": "Légendaire", "bonusPA": 3, "malusMod": -3, "repairCostMult": 2.00, "repairTimeMult": 1.30}
+    { "name": "Médiocre",   "bonusPA": 0, "malusMod": 2 },
+    { "name": "Standard",   "bonusPA": 0, "malusMod": 0 },
+    { "name": "Bonne",      "bonusPA": 1, "malusMod": -1 },
+    { "name": "Excellente", "bonusPA": 2, "malusMod": -2 },
+    { "name": "Légendaire", "bonusPA": 3, "malusMod": -3 }
 ]

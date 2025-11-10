@@ -32,10 +32,11 @@ export type Material = {
   penIgnore?: number;
   extraPen?: number;
   res?: Partial<Resist>;
-
-  /** 🔧 Réparation — multiplicateurs spécifiques au matériau */
-  repairCostMult?: number; // défaut 1
-  repairTimeMult?: number; // défaut 1
+  repair?: {
+    costMul?: number; // multiplicateur coût (par PA manquant)
+    timeMul?: number; // multiplicateur temps (par PA manquant)
+    note?: string;    // (facultatif) info utile à afficher
+  };
 };
 
 export type Shield  = { name: string; pa: number; malus: number; poids?: number };
@@ -85,10 +86,11 @@ export type Quality = {
   name: string;
   bonusPA: number;
   malusMod: number;
-
-  /** 🔧 Réparation — multiplicateurs de qualité */
-  repairCostMult?: number; // défaut 1
-  repairTimeMult?: number; // défaut 1
+  repair?: {
+    costMul?: number; // défaut 1
+    timeMul?: number; // défaut 1
+    note?: string;
+  };
 };
 
 export type BuildInput = {
