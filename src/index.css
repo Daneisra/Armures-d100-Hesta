@@ -1,5 +1,32 @@
 @import "tailwindcss";
 @reference "tailwindcss";
+@plugin "tailwindcss-animate";
+
+/* ---------- Thème Tailwind v4 : couleurs nommées ---------- */
+@theme {
+  /* Couleurs claires (light) */
+  --color-background: oklch(99% 0 0);        /* pour bg-background */
+  --color-foreground: oklch(20% 0 0);        /* pour text-foreground */
+  --color-card:       oklch(100% 0 0);       /* pour bg-card */
+  --color-muted:      oklch(96% 0 0);        /* pour bg-muted */
+  --color-border:     oklch(89% 0 0);        /* pour border */
+  --color-primary:    oklch(70% 0.13 245);   /* pour bg-primary / text-primary */
+  --color-primary-foreground: oklch(100% 0 0);
+
+  /* Radius commun si tu l’utilises */
+  --radius: 0.75rem;
+}
+
+/* ---------- Mode sombre : on réécrit les mêmes variables ---------- */
+:root[data-theme="dark"] {
+  --color-background: oklch(16% 0 0);
+  --color-foreground: oklch(96% 0 0);
+  --color-card:       oklch(19% 0 0);
+  --color-muted:      oklch(24% 0 0);
+  --color-border:     oklch(30% 0 0);
+  --color-primary:    oklch(72% 0.13 245);
+  --color-primary-foreground: oklch(14% 0 0);
+}
 
 /* === Tokens (light/dark) === */
 :root{
@@ -9,7 +36,10 @@
   --panel: #ffffff;
   --border: #e2e8f0;         /* slate-200 */
   --badge: #f1f5f9;          /* slate-100 */
-  --ring: #94a3b8;           /* slate-400 */
+  --radius: 0.75rem;            /* md rounded */
+  --ring-color: #94a3b8;
+  --ring-size: 2px;
+
 
   /* Category accents */
   --acc-textile: #0ea5e9;    /* sky-500 */
@@ -33,42 +63,65 @@
 }
 
 html, body, #root { background: var(--bg); color: var(--fg); }
+body {
+  @apply transition-colors duration-300;
+}
 
-/* Utilitaires projet */
-.input{
-  @apply w-full rounded-md border px-2 py-1 bg-[var(--panel)]
-         border-[var(--border)] focus:outline-none
-         focus:ring-2 focus:ring-[var(--ring)];
+/* Primitives */
+.input {
+  @apply w-full rounded-md border bg-background px-3 py-2 text-sm shadow-sm outline-none
+         focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary transition;
 }
-.select{
-  @apply w-full rounded-md border px-2 py-1 pr-8
-         bg-[var(--panel)] border-[var(--border)]
-         focus:outline-none focus:ring-2 focus:ring-[var(--ring)];
+
+/* NE PAS faire @apply input ... */
+.select {
+  @apply w-full rounded-md border bg-background px-3 py-2 text-sm shadow-sm outline-none
+         focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:border-primary transition
+         appearance-none pr-8 bg-[right_0.6rem_center] bg-no-repeat;
 }
-.btn{
-  @apply inline-flex items-center gap-2 rounded-md border px-3 py-1.5
-         bg-[var(--panel)] border-[var(--border)]
-         hover:bg-slate-50/50 dark:hover:bg-white/5
-         focus:outline-none focus:ring-2 focus:ring-[var(--ring)];
+
+.btn {
+  @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm
+         outline-none transition focus-visible:ring-2 focus-visible:ring-primary/50;
 }
-.btn-primary{
-  @apply bg-slate-900 text-white dark:bg-slate-200 dark:text-slate-900
-         hover:opacity-90 border-transparent;
+
+/* NE PAS faire @apply btn ... */
+.btn-primary {
+  @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm
+         outline-none transition focus-visible:ring-2 focus-visible:ring-primary/50
+         bg-primary text-primary-foreground hover:bg-primary/90;
 }
-.tabular{ @apply tabular-nums; }
-.table{
-  @apply w-full border rounded-xl overflow-hidden border-[var(--border)];
+
+.btn-ghost {
+  @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium shadow-sm
+         outline-none transition focus-visible:ring-2 focus-visible:ring-primary/50
+         bg-transparent hover:bg-muted;
 }
-.th{
-  @apply bg-slate-50 dark:bg-slate-900 text-sm font-medium sticky top-0 z-10
-         border-b border-[var(--border)];
-}
-.td{ @apply border-t border-[var(--border)] px-3 py-2; }
-.badge{ @apply inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs
-                 bg-[var(--badge)]; }
+
+.card  { @apply rounded-xl border bg-card p-4 shadow-sm; }
+.badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium border; }
+
+
+/* Tables */
+.tabular     { @apply tabular-nums; }
+.table       { @apply w-full border rounded-xl overflow-hidden border-[var(--border)];}
+.th          { @apply bg-slate-50 dark:bg-slate-900 text-sm font-medium sticky top-0 z-10 border-b border-[var(--border)];}
+.td          { @apply border-t border-[var(--border)] px-3 py-2; }
+.tr          { @apply border-b hover:bg-muted/40; }
 
 /* Impression : résumé uniquement propre */
 @media print{
   nav, .no-print { display:none !important; }
   .print-card { box-shadow:none; border-color:#ccc; }
+}
+
+/* A11y hidden but readable to SR */
+.visually-hidden { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted rounded-full;
 }

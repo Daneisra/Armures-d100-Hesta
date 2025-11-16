@@ -248,7 +248,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Données de réparation affinées par matériau (passage de valeurs par défaut → tuning)
 * [x] Etendre liste chassis
 * [x] Etendre liste enchantements
-* [ ] Polish UI
+* [x] Polish UI
 
 ### 0.4.0 — Éditeur & Import/Export
 

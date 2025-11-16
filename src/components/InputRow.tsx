@@ -1,9 +1,19 @@
 import { ReactNode } from "react";
 
-export default function InputRow({ label, children }: { label: string; children: ReactNode }) {
+export default function InputRow({
+  label,
+  id,
+  children,
+}: {
+  label: string;
+  id: string;
+  children: ReactNode;
+}) {
   return (
-    <div className="grid grid-cols-[180px_1fr] items-center gap-3 py-2">
-      <div className="text-sm opacity-80">{label}</div>
+    <div className="grid grid-cols-[180px_1fr] items-start gap-3 py-2">
+      <label className="text-sm font-medium text-muted-foreground" htmlFor={id}>
+        {label}
+      </label>
       <div>{children}</div>
     </div>
   );

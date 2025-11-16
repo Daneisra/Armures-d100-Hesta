@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } from "../data";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
@@ -8,6 +8,7 @@ import { validateChassis, validateCategories, validateMaterials } from "../lib/v
 import CompatBadge from "./CompatBadge";
 import WearWidget from "./WearWidget";
 import RepairWidget from "./RepairWidget";
+import { cls } from "../ui/styles";
 
 // --- validations runtime (1x) ---
 validateChassis(chassis);
@@ -53,7 +54,7 @@ function sanitize(b: BuildInput): BuildInput {
 }
 
 export default function Calculator(){
-  // --- état principal (avec migration + fallback sûr) ---
+  // --- Ã©tat principal (avec migration + fallback sÃ»r) ---
   const [inp, setInp] = useState<BuildInput>(() => {
     try {
       const rawNew = localStorage.getItem(STORAGE_KEY);
@@ -71,19 +72,20 @@ export default function Calculator(){
     }
   });
 
-  // sauvegarde versionnée
+  // sauvegarde versionnÃ©e
   useEffect(()=> {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(inp));
   }, [inp]);
 
   // reset local config (bouton)
   const resetLocal = () => {
+    if (!window.confirm("Effacer la configuration locale et recharger ?")) return;
     localStorage.removeItem(STORAGE_KEY);
     LEGACY_KEYS.forEach(k=>localStorage.removeItem(k));
     location.reload();
   };
 
-  // --- filtre catégorie piloté par châssis ---
+  // --- filtre catÃ©gorie pilotÃ© par chÃ¢ssis ---
   const [cat, setCat] = useState<string>("");
 
   const expectedCompat = useMemo(
@@ -106,7 +108,7 @@ export default function Calculator(){
     if (!cat || !categoriesForChassis.find(c => c.key === cat)) {
       setCat(categoriesForChassis[0].key);
     }
-  }, [categoriesForChassis]); // (pas "cat" pour éviter boucle)
+  }, [categoriesForChassis]); // (pas "cat" pour Ã©viter boucle)
 
   const mats = useMemo(() => {
     const byCompat = expectedCompat ? materials.filter(m => m.compat === expectedCompat) : materials;
@@ -124,11 +126,15 @@ export default function Calculator(){
     () => computeBuild(inp, { chassis, materials, qualities, shields, params, enchants, shieldMaterials }),
     [inp]
   );
+  const cardFx = "animate-in fade-in slide-in-from-bottom-2 duration-200";
+  const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
+  const ratioSpoken = Number.isFinite(ratioValue) ? ratioValue.toFixed(2) : "infini";
 
   const chCurrent  = useMemo(() => chassis.find(c => c.name === inp.chassis), [inp.chassis]);
   const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [inp.material]);
   const qCurrent   = useMemo(() => qualities.find(q => q.name === inp.quality), [inp.quality]);
   const enchCurrent= useMemo(() => enchants.find(e => e.id === (inp.enchantId ?? "protection")), [inp.enchantId]);
+  const compatOk = Boolean(chCurrent && matCurrent && matCurrent.compat === chCurrent.category);
 
   const onNum = (k: keyof Pick<BuildInput, "renfort" | "enchant">) =>
     (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -142,110 +148,207 @@ export default function Calculator(){
   }, [matCurrent, enchCurrent, inp.enchant]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="flex items-center justify-between mb-2">
+    <div className={`${cls.page} max-w-4xl space-y-6`}>
+      <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Calculateur d'armure <span className="text-sm opacity-60">v{__APP_VERSION__}</span></h1>
-        <button className="btn" onClick={resetLocal} title="Efface la configuration locale et recharge">
+        <button className={cls.btnGhost} onClick={resetLocal} title="Efface la configuration locale et recharge">
           Réinitialiser la config locale
         </button>
       </div>
-      <p className="text-sm opacity-80 mb-4">
-        D100 inversé — objectif : ratio PA/Malus ≥ {params.sweetSpotRatio}
+            <p className="text-sm opacity-80">
+        D100 inversé — objectif : ratio PA/Malus ˜ {params.sweetSpotRatio}
       </p>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold mb-3">Entrées</h2>
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-start">
+        <section className={`${cls.card} ${cardFx}`}>
+          <h2 className="text-base font-semibold mb-3">Entrées</h2>
 
-          <InputRow label="Châssis">
-            <select className="input" value={inp.chassis} onChange={e => setInp({ ...inp, chassis: e.target.value })}>
+          <InputRow label="Châssis" id="calc-chassis">
+            <select
+              id="calc-chassis"
+              className={cls.select}
+              value={inp.chassis}
+              onChange={e => setInp({ ...inp, chassis: e.target.value })}
+            >
               {chassis.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
             </select>
           </InputRow>
 
-          <InputRow label="Catégorie (affinage)">
-            <select className="input" value={cat} onChange={e => setCat(e.target.value)}>
+          <InputRow label="Catégorie (affinage)" id="calc-category">
+            <select id="calc-category" className={cls.select} value={cat} onChange={e => setCat(e.target.value)}>
               {categoriesForChassis.map(c => (
                 <option key={c.key} value={c.key}>{c.label}</option>
               ))}
             </select>
           </InputRow>
 
-          <InputRow label="Matériau">
-            <select className="input" value={inp.material} onChange={e => setInp({ ...inp, material: e.target.value })}>
+          <InputRow label="Matériau" id="calc-material">
+            <select
+              id="calc-material"
+              className={cls.select}
+              value={inp.material}
+              onChange={e => setInp({ ...inp, material: e.target.value })}
+            >
               {mats.map(m => <option key={m.name} value={m.name}>{m.name}</option>)}
             </select>
           </InputRow>
 
-          <InputRow label="Qualité">
-            <select className="input" value={inp.quality} onChange={e => setInp({ ...inp, quality: e.target.value })}>
+          <InputRow label="Qualité" id="calc-quality">
+            <select
+              id="calc-quality"
+              className={cls.select}
+              value={inp.quality}
+              onChange={e => setInp({ ...inp, quality: e.target.value })}
+            >
               {qualities.map(q => <option key={q.name} value={q.name}>{q.name}</option>)}
             </select>
           </InputRow>
 
-          <InputRow label="Renfort">
-            <input className="input" type="number" min={0} max={params.renfortMax} value={inp.renfort} onChange={onNum("renfort")} />
+          <InputRow label="Renfort" id="calc-renfort">
+            <div>
+              <input
+                id="calc-renfort"
+                className={cls.input}
+                type="number"
+                min={0}
+                max={params.renfortMax}
+                value={inp.renfort}
+                onChange={onNum("renfort")}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Chaque niveau ajoute +1 PA mais aussi +1 malus.
+              </p>
+            </div>
           </InputRow>
 
-          <InputRow label="Enchantement">
-            <select className="input" value={inp.enchantId ?? "protection"} onChange={e => setInp({ ...inp, enchantId: e.target.value })}>
-              {enchants.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select>
+          <InputRow label="Enchantement" id="calc-enchant">
+            <div>
+              <select
+                id="calc-enchant"
+                className={cls.select}
+                value={inp.enchantId ?? "protection"}
+                onChange={e => setInp({ ...inp, enchantId: e.target.value })}
+              >
+                {enchants.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+              </select>
+              <p className="text-xs text-muted-foreground mt-1">
+                Choisis l'effet appliqué avant de fixer son niveau.
+              </p>
+            </div>
           </InputRow>
 
-          <InputRow label="Niveau d'enchant">
-            <input className="input" type="number" min={0} max={params.enchantMax} value={inp.enchant}
-              onChange={e => setInp(s => ({ ...s, enchant: Math.max(0, Math.min(params.enchantMax, parseInt(e.target.value||"0",10)||0)) }))} />
+          <InputRow label="Niveau d'enchant" id="calc-enchant-level">
+            <div>
+              <input
+                id="calc-enchant-level"
+                className={cls.input}
+                type="number"
+                min={0}
+                max={params.enchantMax}
+                value={inp.enchant}
+                onChange={e => setInp(s => ({
+                  ...s,
+                  enchant: Math.max(0, Math.min(params.enchantMax, parseInt(e.target.value||"0",10)||0)),
+                }))}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Limité à {params.enchantMax} niveaux selon tes règles.
+              </p>
+            </div>
           </InputRow>
 
-          <InputRow label="Bouclier">
-            <select className="input" value={inp.shield} onChange={e => setInp({ ...inp, shield: e.target.value })}>
+          <InputRow label="Bouclier" id="calc-shield">
+            <select
+              id="calc-shield"
+              className={cls.select}
+              value={inp.shield}
+              onChange={e => setInp({ ...inp, shield: e.target.value })}
+            >
               {shields.map(s => <option key={s.name}>{s.name}</option>)}
             </select>
           </InputRow>
 
           {inp.shield !== "Aucun" && (
-            <InputRow label="Matériau de bouclier">
-              <select className="input" value={inp.shieldMaterial ?? ""} onChange={e => setInp({ ...inp, shieldMaterial: e.target.value })}>
+            <InputRow label="Matériau de bouclier" id="calc-shield-material">
+              <select
+                id="calc-shield-material"
+                className={cls.select}
+                value={inp.shieldMaterial ?? ""}
+                onChange={e => setInp({ ...inp, shieldMaterial: e.target.value })}
+              >
                 {shieldMaterials.map(sm => <option key={sm.name} value={sm.name}>{sm.name}</option>)}
               </select>
             </InputRow>
           )}
-        </div>
+        </section>
 
-        <div className="rounded-xl border p-4">
-          <h2 className="font-semibold mb-3">Résumé</h2>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center justify-between"><span>PA final</span><b className="tabular">{res.paFinal}</b></div>
-            <div className="flex items-center justify-between"><span>Malus final</span><b className="tabular">{res.malusFinal}</b></div>
-            <div className="flex items-center justify-between">
-              <span>Compatibilité</span>
-              <CompatBadge chassis={chCurrent} material={matCurrent} />
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Efficacité</span>
-              <div className="flex items-center gap-2">
-                <RatioPill ratio={res.effic} />
-                <span className={`text-xs px-2 py-1 rounded ${res.sweet ? "bg-green-200 text-green-900" : "bg-red-200 text-red-900"}`}>
-                  {res.sweet ? "Bon équilibre" : "—"}
-                </span>
+        <div className="space-y-4">
+          <section className={`${cls.card} ${cardFx}`}>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3">Résumé</h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center justify-between"><span>PA final</span><b className="tabular">{res.paFinal}</b></div>
+              <div className="flex items-center justify-between"><span>Malus final</span><b className="tabular">{res.malusFinal}</b></div>
+              <div className="flex items-center justify-between">
+                <span>Compatibilité</span>
+                <CompatBadge chassis={chCurrent} material={matCurrent} />
               </div>
-            </div>
-
-            {res.notes.length > 0 && (
-              <div className="pt-2 border-t mt-2">
-                <div className="opacity-70 mb-1">Effets</div>
-                <ul className="list-disc pl-5">
-                  {res.notes.map((n, i) => (<li key={i}>{n}</li>))}
-                </ul>
+              <div className="flex items-center justify-between">
+                <span>Efficacité</span>
+                <div className="flex items-center gap-2">
+                  <RatioPill ratio={res.effic} />
+                  <span className={res.sweet ? cls.badgeGood : cls.badgeBad}>
+                    {res.sweet ? "Bon équilibre" : "—"}
+                  </span>
+                </div>
               </div>
-            )}
 
-            <WearWidget paFinal={res.paFinal} material={materialForWear} params={params} />
-            <RepairWidget paMax={res.paFinal} material={matCurrent} quality={qCurrent} params={params} />
-          </div>
+              {res.notes.length > 0 && (
+                <div className="pt-2 border-t mt-2">
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">Effets</div>
+                  <ul className={cls.noteList}>
+                    {res.notes.map((n, i) => (<li key={i}>{n}</li>))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div aria-live="polite" className="sr-only">
+              {`PA ${res.paFinal}, malus ${res.malusFinal}, ratio ${ratioSpoken}, ${compatOk ? "châssis et matériau compatibles." : "châssis et matériau incompatibles."} ${res.sweet ? "Bon équilibre." : ""}`}
+            </div>
+          </section>
+          <section className={cls.card}>
+            <h2 className="text-sm font-semibold mb-2">Légende</h2>
+            <ul className={cls.noteList}>
+              <li className="flex items-center">
+                <span className={`${cls.badgeGood}`}>Compatible</span>
+                <span className="ml-2 text-sm text-muted-foreground">→ châssis et matériau alignés.</span>
+              </li>
+              <li className="flex items-center">
+                <span className={`${cls.badgeBad}`}>Incompatible</span>
+                <span className="ml-2 text-sm text-muted-foreground">→ combinaison à éviter.</span>
+              </li>
+              <li className="flex items-center">
+                <span className={`${cls.badgeWarn}`}>Sweet spot</span>
+                <span className="ml-2 text-sm text-muted-foreground">→ ratio PA/malus favorable.</span>
+              </li>
+            </ul>
+          </section>
+          <WearWidget
+            paFinal={res.paFinal}
+            material={materialForWear}
+            params={params}
+            className={`${cls.card} ${cardFx}`}
+          />
+          <RepairWidget
+            paMax={res.paFinal}
+            material={matCurrent}
+            quality={qCurrent}
+            params={params}
+            className={`${cls.card} ${cardFx}`}
+          />
         </div>
-      </div>
-    </div>
+      </div>    </div>
   );
 }
+
+
+

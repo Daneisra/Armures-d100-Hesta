@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { materials, categories } from "../data";
 import type { Category, Material } from "../types";
 import MaterialBadges from "../components/MaterialBadges";
 import CategoryBadge from "../components/CategoryBadge";
+import { cls } from "../ui/styles";
 
-const COMPATS = ["Gambison","Cuir","Métal"] as const;
+const COMPATS = ["Gambison","Cuir","M\u00E9tal"] as const;
 type Compat = typeof COMPATS[number];
 type SortKey = "name" | "_compat" | "modPA" | "malusMod" | "extraPen";
 
@@ -14,6 +15,11 @@ export default function MaterialsPage(){
   const [q, setQ] = useState("");
   const [dense, setDense] = useState(false);
   const resetFilters = () => { setCompat("Toutes"); setCat("Toutes"); setQ(""); };
+  const compatBadgeTone: Record<string, string> = {
+    [COMPATS[0]]: cls.badgeInfo,
+    [COMPATS[1]]: cls.badgeWarn,
+    [COMPATS[2]]: cls.badgeNeutral,
+  };
 
   const catByKey = useMemo(()=> {
     const m = new Map<string, Category>();
@@ -46,7 +52,10 @@ export default function MaterialsPage(){
 
     const dir = sort.dir === "asc" ? 1 : -1;
     const key = sort.key;
-    const orderCompat: Record<string, number> = { Gambison:0, Cuir:1, Métal:2 };
+    const orderCompat = COMPATS.reduce<Record<string, number>>((acc, label, idx) => {
+      acc[label] = idx;
+      return acc;
+    }, {});
 
     withLabels.sort((a:any,b:any)=>{
       const va = key === "_compat" ? orderCompat[a._compat] ?? 99 : a[key];
@@ -62,6 +71,8 @@ export default function MaterialsPage(){
     setSort(s => s.key === k ? { key:k, dir: s.dir==="asc"?"desc":"asc" } : { key:k, dir:"asc" });
   }
 
+  const cellPadding = dense ? "py-1 text-xs" : "py-2 text-sm";
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Matériaux</h2>
@@ -70,14 +81,14 @@ export default function MaterialsPage(){
       <div className="grid md:grid-cols-5 gap-3 text-sm">
         <div>
           <label className="opacity-70 mb-1 block">Compatibilité (châssis)</label>
-          <select className="input" value={compat} onChange={e=>setCompat(e.target.value as any)}>
+          <select className={cls.select} value={compat} onChange={e=>setCompat(e.target.value as any)}>
             <option>Toutes</option>
             {COMPATS.map(c=> <option key={c}>{c}</option>)}
           </select>
         </div>
         <div>
           <label className="opacity-70 mb-1 block">Catégorie (affinage)</label>
-          <select className="input" value={cat} onChange={e=>setCat(e.target.value)}>
+          <select className={cls.select} value={cat} onChange={e=>setCat(e.target.value)}>
             {catOptions.map(k => {
               const c = catByKey.get(k);
               return <option key={k} value={k}>{k==="Toutes" ? "Toutes" : (c?.label ?? k)}</option>
@@ -86,10 +97,10 @@ export default function MaterialsPage(){
         </div>
         <div className="md:col-span-2">
           <label className="opacity-70 mb-1 block">Recherche</label>
-          <input className="input" placeholder="Rechercher un matériau…" value={q} onChange={e=>setQ(e.target.value)} />
+          <input className={cls.input} placeholder="Rechercher un matériau" value={q} onChange={e=>setQ(e.target.value)} />
         </div>
         <div className="flex items-end gap-2">
-          <button className="btn" onClick={resetFilters}>Réinitialiser</button>
+          <button className={cls.btnGhost} onClick={resetFilters}>Réinitialiser</button>
           <label className="inline-flex items-center gap-2">
             <input type="checkbox" checked={dense} onChange={e=>setDense(e.target.checked)} />
             Densité compacte
@@ -99,54 +110,68 @@ export default function MaterialsPage(){
 
       {/* Tableau */}
       <div className="rounded-xl border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 sticky top-0 z-10">
+        <table className={`w-full ${dense ? "text-xs" : "text-sm"}`}>
+          <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <tr>
-              <Th k="name"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Matériau</Th>
-              <Th k="_compat"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort}>Compat.</Th>
-              <Th k="modPA"    activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Mod&nbsp;PA</Th>
-              <Th k="malusMod" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Malus&nbsp;Mod</Th>
-              <Th k="extraPen" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right">Usure&nbsp;Pénétration</Th>
-              <th className="px-3 py-2 text-left">Effets / Résistances</th>
+              <Th k="name"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} compact={dense}>Matériau</Th>
+              <Th k="_compat"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} compact={dense}>Compat.</Th>
+              <Th k="modPA"    activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right" compact={dense}>Mod&nbsp;PA</Th>
+              <Th k="malusMod" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right" compact={dense}>Malus&nbsp;Mod</Th>
+              <Th k="extraPen" activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} align="right" compact={dense}>Usure&nbsp;Pénétration</Th>
+              <th className={`px-3 ${dense ? "py-1 text-xs" : "py-2 text-sm"} text-left text-muted-foreground`}>Effets / Résistances</th>
             </tr>
           </thead>
           <tbody>
             {items.map((m:any)=>(
-              <tr key={m.name} className="border-t hover:bg-slate-50 focus-within:bg-slate-50">
-                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}>
+              <tr key={m.name} className="border-t hover:bg-muted/40 focus-within:bg-muted/40 transition-colors">
+                <td className={`px-3 ${cellPadding}`}>
                   <div className="flex items-center gap-2">
                     <CategoryBadge keyName={m._catKey} label={m._catLabel} />
                     <span className="font-medium">{m.name}</span>
                   </div>
                 </td>
-                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}>{m._compat}</td>
-                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.modPA}</td>
-                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.malusMod}</td>
-                <td className={`px-3 ${dense ? "py-1" : "py-2"} text-right tabular`}>{m.extraPen ?? 0}</td>
-                <td className={`px-3 ${dense ? "py-1" : "py-2"}`}><MaterialBadges mat={m} /></td>
+                <td className={`px-3 ${cellPadding}`}>
+                  <span className={`${compatBadgeTone[m._compat] ?? cls.badgeNeutral} uppercase tracking-wide`}>
+                    {m._compat}
+                  </span>
+                </td>
+                <td className={`px-3 ${cellPadding} text-right tabular`}>{m.modPA}</td>
+                <td className={`px-3 ${cellPadding} text-right tabular`}>{m.malusMod}</td>
+                <td className={`px-3 ${cellPadding} text-right tabular`}>{m.extraPen ?? 0}</td>
+                <td className={`px-3 ${cellPadding}`}><MaterialBadges mat={m} /></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 }
 
 function Th({
-  k, children, activeKey, dir, onToggle, align="left"
-}: {k: SortKey; children:React.ReactNode; activeKey:SortKey; dir:"asc"|"desc"; onToggle:(k:SortKey)=>void; align?:"left"|"right" }){
+  k, children, activeKey, dir, onToggle, align="left", compact=false
+}: {
+  k: SortKey;
+  children:React.ReactNode;
+  activeKey:SortKey;
+  dir:"asc"|"desc";
+  onToggle:(k:SortKey)=>void;
+  align?:"left"|"right";
+  compact?: boolean;
+}){
   const active = activeKey === k;
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle(k); }
   };
   const textAlign = align === "right" ? "text-right" : "text-left";
+  const sizing = compact ? "py-1 text-xs" : "py-2 text-sm";
   return (
     <th
       role="button"
       tabIndex={0}
       aria-sort={active ? (dir==="asc"?"ascending":"descending") : "none"}
-      className={`px-3 py-2 cursor-pointer select-none ${textAlign} ${active?"text-slate-900":"text-slate-600"} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400`}
+      className={`px-3 ${sizing} cursor-pointer select-none ${textAlign} ${active?"text-foreground":"text-muted-foreground"} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40`}
       onClick={()=>onToggle(k)}
       onKeyDown={onKeyDown}
       title="Trier"
@@ -158,3 +183,8 @@ function Th({
     </th>
   );
 }
+
+
+
+
+

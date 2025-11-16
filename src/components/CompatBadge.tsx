@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Chassis, Material } from "../types";
+import { cls } from "../ui/styles";
 
 export default function CompatBadge({
   chassis,
@@ -20,10 +21,7 @@ export default function CompatBadge({
   return (
     <span
       title={msg}
-      className={[
-        "inline-flex items-center gap-1 text-xs px-2 py-1 rounded",
-        ok ? "bg-green-200 text-green-900" : "bg-red-200 text-red-900",
-      ].join(" ")}
+      className={ok ? cls.badgeGood : cls.badgeBad}
       aria-label={msg}
     >
       <span role="img" aria-hidden>{ok ? "✅" : "❌"}</span>

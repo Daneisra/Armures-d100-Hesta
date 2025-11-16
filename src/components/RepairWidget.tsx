@@ -1,18 +1,23 @@
 import { useMemo, useState } from "react";
 import type { Material, Quality, Params } from "../types";
 import { computeRepair, formatHours } from "../lib/repair";
+import { cls } from "../ui/styles";
+
+type RepairWidgetProps = {
+  paMax: number;
+  material?: Material;
+  quality?: Quality;
+  params: Params;
+  className?: string;
+};
 
 export default function RepairWidget({
   paMax,
   material,
   quality,
-  params
-}: {
-  paMax: number;
-  material?: Material;
-  quality?: Quality;
-  params: Params;
-}) {
+  params,
+  className,
+}: RepairWidgetProps) {
   const [paCurrent, setPaCurrent] = useState<number>(paMax);
 
   const paMissing = Math.max(0, Math.min(paMax, paMax - paCurrent));
@@ -27,29 +32,29 @@ export default function RepairWidget({
   const baseTime = params.repair.timePerPA[compat] ?? 0.5;
 
   return (
-    <div className="rounded-xl border p-4 mt-4">
+    <div className={className ?? cls.card}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold">Réparation</h3>
-        <div className="text-xs opacity-70">
+        <h3 className="text-sm font-semibold text-muted-foreground">Réparation</h3>
+        <div className="text-xs text-muted-foreground">
           bases ({compat}) — {baseCost} po / {baseTime} h par PA
         </div>
       </div>
 
       <div className="grid gap-3 md:grid-cols-3 items-end text-sm">
         <label>
-          <div className="opacity-70 mb-1">PA max</div>
-          <input className="input" type="number" value={paMax} readOnly />
+          <div className="text-xs font-medium text-muted-foreground mb-1">PA max</div>
+          <input className={cls.input} type="number" value={paMax} readOnly />
         </label>
 
         <label>
-          <div className="opacity-70 mb-1">PA actuel</div>
+          <div className="text-xs font-medium text-muted-foreground mb-1">PA actuel</div>
           <input
-            className="input"
+            className={cls.input}
             type="number"
             min={0}
             max={paMax}
             value={paCurrent}
-            onChange={(e) =>
+            onChange={e =>
               setPaCurrent(
                 Math.max(0, Math.min(paMax, parseInt(e.target.value || "0", 10) || 0))
               )
@@ -58,34 +63,34 @@ export default function RepairWidget({
         </label>
 
         <div>
-          <div className="opacity-70 mb-1">PA manquants</div>
-          <div className="input">{paMissing}</div>
+          <div className="text-xs font-medium text-muted-foreground mb-1">PA manquants</div>
+          <div className={cls.input}>{paMissing}</div>
         </div>
       </div>
 
       {rep && (
         <div className="grid md:grid-cols-3 gap-3 mt-4 text-sm">
-          <div className="rounded-md border p-3">
-            <div className="opacity-70">Coût total</div>
+          <div className="rounded-lg border p-3 bg-muted/20">
+            <div className="text-xs font-medium text-muted-foreground">Coût total</div>
             <div className="text-lg font-semibold tabular">
               {rep.cost.toFixed(0)} po
             </div>
           </div>
 
-          <div className="rounded-md border p-3">
-            <div className="opacity-70">Temps total</div>
+          <div className="rounded-lg border p-3 bg-muted/20">
+            <div className="text-xs font-medium text-muted-foreground">Temps total</div>
             <div className="text-lg font-semibold">{formatHours(rep.hours)}</div>
-            <div className="text-xs opacity-60 tabular">
+            <div className="text-xs text-muted-foreground tabular">
               {rep.hours.toFixed(1)} h
             </div>
           </div>
 
-          <div className="rounded-md border p-3">
-            <div className="opacity-70 mb-1">Multiplicateurs</div>
-            <div className="text-xs leading-6">
-              Matériau: coût ×{rep.breakdown.mCost} • temps ×{rep.breakdown.mTime}
+          <div className="rounded-lg border p-3 bg-muted/20">
+            <div className="text-xs font-medium text-muted-foreground mb-1">Multiplicateurs</div>
+            <div className="text-xs leading-6 text-muted-foreground">
+              Matériau : coût ×{rep.breakdown.mCost} — temps ×{rep.breakdown.mTime}
               <br />
-              Qualité: coût ×{rep.breakdown.qCost} • temps ×{rep.breakdown.qTime}
+              Qualité : coût ×{rep.breakdown.qCost} — temps ×{rep.breakdown.qTime}
             </div>
             {rep.note && (
               <div className="text-[11px] mt-2 opacity-70 italic">{rep.note}</div>
