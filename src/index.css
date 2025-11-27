@@ -18,7 +18,9 @@
 }
 
 /* ---------- Mode sombre : on réécrit les mêmes variables ---------- */
-:root[data-theme="dark"] {
+:root[data-theme="dark"],
+:root.dark,
+.dark {
   --color-background: oklch(16% 0 0);
   --color-foreground: oklch(96% 0 0);
   --color-card:       oklch(19% 0 0);
