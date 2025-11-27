@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import { params } from "../data";
+import { useCatalogData } from "../catalogContext";
+import type { PVParams } from "../types";
 import { cls } from "../ui/styles";
 
 type RoundMode = "nearest" | "floor" | "ceil";
@@ -25,8 +26,7 @@ function interpTable(x: number, pts: [number, number][]) {
   return 0;
 }
 
-function computePV(con: number, level: number) {
-  const pv = params.pv as any;
+function computePV(con: number, level: number, pv: PVParams) {
   const roundMode: RoundMode = pv.round ?? "nearest";
   let raw = 0;
 
@@ -43,14 +43,15 @@ function computePV(con: number, level: number) {
 }
 
 export default function PVPage() {
-  const pv = params.pv as any;
+  const { params } = useCatalogData();
+  const pv = params.pv as PVParams;
   const minCon = pv.minCon ?? 0;
   const maxCon = pv.maxCon ?? 100;
 
   const [con, setCon] = useState(50);
   const [level, setLevel] = useState(0);
 
-  const value = useMemo(() => computePV(con, level), [con, level, pv]);
+  const value = useMemo(() => computePV(con, level, pv), [con, level, pv]);
   const sampleCons = [80, 75, 70, 65, 60, 55, 50, 45, 40, 35, 30, 25, 20, 15, 10, 5, 1, 0];
 
   return (
@@ -131,7 +132,7 @@ export default function PVPage() {
             <tbody className="divide-y divide-border text-foreground">
               {sampleCons.map(c => {
                 const exact = pv.mode === "linear" ? (pv.slope * c + (pv.offset ?? 0)) : interpTable(c, pv.points ?? []);
-                const rounded = computePV(c, 0);
+                const rounded = computePV(c, 0, pv);
                 return (
                   <tr key={c} className="text-sm">
                     <td className="px-2 py-1 tabular">{c}</td>

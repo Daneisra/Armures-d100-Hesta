@@ -1,67 +1,61 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } from "../data";
+import { useEffect, useMemo, useState } from "react";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
 import RatioPill from "./RatioPill";
-import { validateChassis, validateCategories, validateMaterials } from "../lib/validate";
 import CompatBadge from "./CompatBadge";
 import WearWidget from "./WearWidget";
 import RepairWidget from "./RepairWidget";
+import { useCatalogData } from "../catalogContext";
 import { cls } from "../ui/styles";
-
-// --- validations runtime (1x) ---
-validateChassis(chassis);
-validateCategories(categories);
-validateMaterials(materials);
 
 // --- localStorage versionning ---
 const SCHEMA = 2;
 const STORAGE_KEY = `lastBuild_v${SCHEMA}`;
 const LEGACY_KEYS = ["lastBuild"];
 
-// --- helpers ---
-const defaults: BuildInput = {
-  chassis: chassis[0].name,
-  material: materials[0].name,
-  quality:  qualities[1]?.name ?? qualities[0].name,
-  renfort:  0,
-  enchant:  0,
-  enchantId: "protection",
-  shield:   shields[0].name,
-  shieldMaterial: shieldMaterials?.[0]?.name ?? "",
-};
-
-function sanitize(b: BuildInput): BuildInput {
-  const safe = { ...b };
-  const has = (name: string, list: {name:string}[]) => list.some(x => x.name === name);
-
-  if (!has(safe.chassis,   chassis))   safe.chassis   = chassis[0].name;
-  if (!has(safe.material,  materials)) safe.material  = materials[0].name;
-  if (!qualities.some(q=>q.name===safe.quality)) safe.quality = qualities[0].name;
-  if (!has(safe.shield,    shields))   safe.shield    = shields[0].name;
-
-  if (safe.shield !== "Aucun") {
-    const okShieldMat = (shieldMaterials||[]).some(m => m.name === safe.shieldMaterial);
-    if (!okShieldMat) safe.shieldMaterial = shieldMaterials?.[0]?.name ?? "";
-  } else {
-    safe.shieldMaterial = "";
-  }
-
-  if (!safe.enchantId) safe.enchantId = "protection";
-  if (typeof safe.enchant !== "number") safe.enchant = 0;
-  return safe;
-}
-
 export default function Calculator(){
-  // --- Ã©tat principal (avec migration + fallback sÃ»r) ---
+  const { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } = useCatalogData();
+
+  const sanitize = (b: BuildInput): BuildInput => {
+    const safe = { ...b } as BuildInput;
+    const has = (name: string, list: {name:string}[]) => list.some(x => x.name === name);
+
+    if (!has(safe.chassis,   chassis))   safe.chassis   = chassis[0]?.name ?? "";
+    if (!has(safe.material,  materials)) safe.material  = materials[0]?.name ?? "";
+    if (!qualities.some(q=>q.name===safe.quality)) safe.quality = qualities[0]?.name ?? "";
+    if (!has(safe.shield,    shields))   safe.shield    = shields[0]?.name ?? "";
+
+    if (safe.shield !== "Aucun") {
+      const okShieldMat = (shieldMaterials||[]).some(m => m.name === safe.shieldMaterial);
+      if (!okShieldMat) safe.shieldMaterial = shieldMaterials?.[0]?.name ?? "";
+    } else {
+      safe.shieldMaterial = "";
+    }
+
+    if (!safe.enchantId) safe.enchantId = "protection";
+    if (typeof safe.enchant !== "number") safe.enchant = 0;
+    return safe;
+  };
+
+  const defaults = useMemo<BuildInput>(() => ({
+    chassis: chassis[0]?.name ?? "",
+    material: materials[0]?.name ?? "",
+    quality:  qualities[1]?.name ?? qualities[0]?.name ?? "",
+    renfort:  0,
+    enchant:  0,
+    enchantId: "protection",
+    shield:   shields[0]?.name ?? "",
+    shieldMaterial: shieldMaterials?.[0]?.name ?? "",
+  }), [chassis, materials, qualities, shields, shieldMaterials]);
+
+  // --- �tat principal (avec migration + fallback s�r) ---
   const [inp, setInp] = useState<BuildInput>(() => {
     try {
       const rawNew = localStorage.getItem(STORAGE_KEY);
       const rawLegacy = LEGACY_KEYS.map(k => localStorage.getItem(k)).find(Boolean) ?? null;
       const base = rawNew ?? rawLegacy;
       const init = base ? sanitize(JSON.parse(base)) : sanitize(defaults);
-      // migrate legacy -> new key
       if (!rawNew && rawLegacy) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(init));
         LEGACY_KEYS.forEach(k => localStorage.removeItem(k));
@@ -72,7 +66,7 @@ export default function Calculator(){
     }
   });
 
-  // sauvegarde versionnÃ©e
+  // sauvegarde versionn�e
   useEffect(()=> {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(inp));
   }, [inp]);
@@ -85,17 +79,17 @@ export default function Calculator(){
     location.reload();
   };
 
-  // --- filtre catÃ©gorie pilotÃ© par chÃ¢ssis ---
+  // --- filtre cat�gorie pilot�e par ch�ssis ---
   const [cat, setCat] = useState<string>("");
 
   const expectedCompat = useMemo(
     () => chassis.find(c => c.name === inp.chassis)?.category,
-    [inp.chassis]
+    [chassis, inp.chassis]
   );
 
   const categoriesSorted = useMemo(
     () => [...categories].sort((a: Category, b: Category) => a.sort - b.sort),
-    []
+    [categories]
   );
 
   const categoriesForChassis = useMemo(
@@ -108,13 +102,13 @@ export default function Calculator(){
     if (!cat || !categoriesForChassis.find(c => c.key === cat)) {
       setCat(categoriesForChassis[0].key);
     }
-  }, [categoriesForChassis]); // (pas "cat" pour Ã©viter boucle)
+  }, [categoriesForChassis]);
 
   const mats = useMemo(() => {
     const byCompat = expectedCompat ? materials.filter(m => m.compat === expectedCompat) : materials;
     const byCat    = cat ? byCompat.filter(m => m.category === cat) : byCompat;
     return byCat.sort((a, b) => a.name.localeCompare(b.name));
-  }, [expectedCompat, cat]);
+  }, [expectedCompat, cat, materials]);
 
   useEffect(() => {
     if (!mats.find(m => m.name === inp.material) && mats.length > 0) {
@@ -124,16 +118,14 @@ export default function Calculator(){
 
   const res = useMemo(
     () => computeBuild(inp, { chassis, materials, qualities, shields, params, enchants, shieldMaterials }),
-    [inp]
+    [inp, chassis, materials, qualities, shields, params, enchants, shieldMaterials]
   );
   const cardFx = "animate-in fade-in slide-in-from-bottom-2 duration-200";
-  const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
-  const ratioSpoken = Number.isFinite(ratioValue) ? ratioValue.toFixed(2) : "infini";
 
-  const chCurrent  = useMemo(() => chassis.find(c => c.name === inp.chassis), [inp.chassis]);
-  const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [inp.material]);
-  const qCurrent   = useMemo(() => qualities.find(q => q.name === inp.quality), [inp.quality]);
-  const enchCurrent= useMemo(() => enchants.find(e => e.id === (inp.enchantId ?? "protection")), [inp.enchantId]);
+  const chCurrent  = useMemo(() => chassis.find(c => c.name === inp.chassis), [chassis, inp.chassis]);
+  const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [materials, inp.material]);
+  const qCurrent   = useMemo(() => qualities.find(q => q.name === inp.quality), [qualities, inp.quality]);
+  const enchCurrent= useMemo(() => enchants.find(e => e.id === (inp.enchantId ?? "protection")), [enchants, inp.enchantId]);
   const compatOk = Boolean(chCurrent && matCurrent && matCurrent.compat === chCurrent.category);
 
   const onNum = (k: keyof Pick<BuildInput, "renfort" | "enchant">) =>
@@ -147,6 +139,9 @@ export default function Calculator(){
     return { ...matCurrent, extraPen: Math.max(0, (matCurrent.extraPen ?? 0) + delta) };
   }, [matCurrent, enchCurrent, inp.enchant]);
 
+  const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
+  const ratioSpoken = Number.isFinite(ratioValue) ? ratioValue.toFixed(2) : "infini";
+
   return (
     <div className={`${cls.page} max-w-4xl space-y-6`}>
       <div className="flex items-center justify-between">
@@ -155,8 +150,8 @@ export default function Calculator(){
           Réinitialiser la config locale
         </button>
       </div>
-            <p className="text-sm opacity-80">
-        D100 inversé — objectif : ratio PA/Malus ˜ {params.sweetSpotRatio}
+      <p className="text-sm opacity-80">
+        D100 inversé - objectif : ratio PA/Malus ˜ {params.sweetSpotRatio}
       </p>
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-start">
@@ -297,7 +292,7 @@ export default function Calculator(){
                 <div className="flex items-center gap-2">
                   <RatioPill ratio={res.effic} />
                   <span className={res.sweet ? cls.badgeGood : cls.badgeBad}>
-                    {res.sweet ? "Bon équilibre" : "—"}
+                    {res.sweet ? "Bon équilibre" : "-"}
                   </span>
                 </div>
               </div>
@@ -315,8 +310,9 @@ export default function Calculator(){
               {`PA ${res.paFinal}, malus ${res.malusFinal}, ratio ${ratioSpoken}, ${compatOk ? "châssis et matériau compatibles." : "châssis et matériau incompatibles."} ${res.sweet ? "Bon équilibre." : ""}`}
             </div>
           </section>
+
           <section className={cls.card}>
-            <h2 className="text-sm font-semibold mb-2">Légende</h2>
+            <h2 className="font-semibold mb-2">Légende</h2>
             <ul className={cls.noteList}>
               <li className="flex items-center">
                 <span className={`${cls.badgeGood}`}>Compatible</span>
@@ -332,6 +328,7 @@ export default function Calculator(){
               </li>
             </ul>
           </section>
+
           <WearWidget
             paFinal={res.paFinal}
             material={materialForWear}
@@ -346,9 +343,7 @@ export default function Calculator(){
             className={`${cls.card} ${cardFx}`}
           />
         </div>
-      </div>    </div>
+      </div>
+    </div>
   );
 }
-
-
-

@@ -1,8 +1,8 @@
 ﻿import { useMemo, useState } from "react";
-import { materials, categories } from "../data";
 import type { Category, Material } from "../types";
 import MaterialBadges from "../components/MaterialBadges";
 import CategoryBadge from "../components/CategoryBadge";
+import { useCatalogData } from "../catalogContext";
 import { cls } from "../ui/styles";
 
 const COMPATS = ["Gambison","Cuir","M\u00E9tal"] as const;
@@ -10,6 +10,7 @@ type Compat = typeof COMPATS[number];
 type SortKey = "name" | "_compat" | "modPA" | "malusMod" | "extraPen";
 
 export default function MaterialsPage(){
+  const { materials, categories } = useCatalogData();
   const [compat, setCompat] = useState<Compat | "Toutes">("Toutes");
   const [cat, setCat] = useState<string>("Toutes");
   const [q, setQ] = useState("");
@@ -183,7 +184,6 @@ function Th({
     </th>
   );
 }
-
 
 
 
