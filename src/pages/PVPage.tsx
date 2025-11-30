@@ -45,8 +45,8 @@ function computePV(con: number, level: number, pv: PVParams) {
 export default function PVPage() {
   const { params } = useCatalogData();
   const pv = params.pv as PVParams;
-  const minCon = pv.minCon ?? 0;
-  const maxCon = pv.maxCon ?? 100;
+  const minCon = pv.mode === "linear" ? (pv.minCon ?? 0) : 0;
+  const maxCon = pv.mode === "linear" ? (pv.maxCon ?? 100) : 100;
 
   const [con, setCon] = useState(50);
   const [level, setLevel] = useState(0);

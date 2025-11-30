@@ -253,7 +253,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 ### 0.4.0 — Éditeur & Import/Export
 
 * [x] Mini **CRUD** (châssis / matériaux / qualités / boucliers / params)
-* [ ] Usure en combat (v2) : ajouter PA actuelle (modifiable), appliquer l’usure coup par coup, et journaliser l’historique (dégâts, usure appliquée, PA avant/après). Le jet de dégâts doit accepter des valeurs > 20 (bonus/malus : d20 + X, d20 +10, etc.).
+* [x] Usure en combat : ajouter PA actuelle (modifiable), appliquer l’usure coup par coup, et journaliser l’historique (dégâts, usure appliquée, PA avant/après). Le jet de dégâts doit accepter des valeurs > 20 (bonus/malus : d20 + X, d20 +10, etc.).
 * [ ] **Catalogue** de builds (LocalStorage + export JSON)
 * [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
 * [ ] Polish UI
