@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 import type { BuildInput } from "../types";
 import { getBuilds, deleteBuild, resetBuilds, exportBuilds, importBuilds } from "../buildCatalog";
+import { useNavigate } from "react-router-dom";
 import { cls } from "../ui/styles";
 
 export default function BuildsPage() {
   const [builds, setBuilds] = useState(() => getBuilds());
   const [filter, setFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
@@ -46,7 +48,7 @@ export default function BuildsPage() {
   const applyBuild = (b: BuildInput, cat?: string) => {
     localStorage.setItem("lastBuild_v2", JSON.stringify(b));
     if (cat) localStorage.setItem("lastBuildCat_v2", cat);
-    window.location.assign("/");
+    navigate("/", { state: { build: b, cat } });
   };
 
   return (

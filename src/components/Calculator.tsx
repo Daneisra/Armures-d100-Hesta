@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
@@ -9,6 +9,7 @@ import RepairWidget from "./RepairWidget";
 import { addBuild } from "../buildCatalog";
 import { useCatalogData } from "../catalogContext";
 import { cls } from "../ui/styles";
+import { useLocation, useNavigate } from "react-router-dom";
 
 // --- localStorage versionning ---
 const SCHEMA = 2;
@@ -18,8 +19,10 @@ const CAT_KEY = "lastBuildCat_v2";
 
 export default function Calculator(){
   const { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } = useCatalogData();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  const sanitize = (b: BuildInput): BuildInput => {
+  const sanitize = useCallback((b: BuildInput): BuildInput => {
     const safe = { ...b } as BuildInput;
     const has = (name: string, list: {name:string}[]) => list.some(x => x.name === name);
 
@@ -38,7 +41,7 @@ export default function Calculator(){
     if (!safe.enchantId) safe.enchantId = "protection";
     if (typeof safe.enchant !== "number") safe.enchant = 0;
     return safe;
-  };
+  }, [chassis, materials, qualities, shields, shieldMaterials]);
 
   const defaults = useMemo<BuildInput>(() => ({
     chassis: chassis[0]?.name ?? "",
@@ -69,6 +72,19 @@ export default function Calculator(){
     }
   });
 
+  // Hydrate depuis un build appliqué via navigation state (sans reload)
+  useEffect(() => {
+    const state = location.state as { build?: BuildInput; cat?: string } | null;
+    if (state?.build) {
+      const next = sanitize(state.build);
+      setInp(next);
+      if (state.cat) setCat(state.cat);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      if (state.cat) localStorage.setItem(CAT_KEY, state.cat);
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, sanitize, navigate, location.pathname]);
+
   // sauvegarde versionn�e
   useEffect(()=> {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(inp));
@@ -80,7 +96,7 @@ export default function Calculator(){
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CAT_KEY);
     LEGACY_KEYS.forEach(k=>localStorage.removeItem(k));
-    location.reload();
+    window.location.reload();
   };
 
   // --- filtre catégorie pilotée par châssis ---

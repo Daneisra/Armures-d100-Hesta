@@ -255,18 +255,29 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Mini **CRUD** (châssis / matériaux / qualités / boucliers / params)
 * [x] Usure en combat : ajouter PA actuelle (modifiable), appliquer l’usure coup par coup, et journaliser l’historique (dégâts, usure appliquée, PA avant/après). Le jet de dégâts doit accepter des valeurs > 20 (bonus/malus : d20 + X, d20 +10, etc.).
 * [x] **Catalogue** de builds (LocalStorage + export JSON)
-* [ ] **Fiche imprimable** (compacte/détaillée) + impression PDF navigateur
+* [x] Appliquer un build sans rechargement (hydrate directement le calculateur).
+* [ ] Import/validation avec rapport détaillé (overrides/builds).
+* [ ] Vue “diff” overrides vs canon dans l’éditeur.
+* [ ] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
 * [ ] Polish UI
 
 ### 0.5.0 — Sandbox & Équilibrage
 
-* [ ] Sandbox d’équilibrage (sliders, profils types)
+* [ ] Sandbox d’équilibrage (sliders/profils, graphiques efficacité vs malus, usure cumulée).
+* [ ] Export CSV/Excel simple pour matériaux/châssis (import CSV en option).
+* [ ] Partage de builds (lien encodé ou fichier JSON minimal).
+* [ ] UX d’édition améliorée (corbeille/undo, autosave optionnel, tri/filtre catalogue).
+* [ ] Accessibilité renforcée (focus trap modales/drawers, annonces ARIA d’erreurs).
 * [ ] Graphique réussite vs malus (d100 inversé)
 * [ ] Polish UI
 
 ### 0.6.0 — PWA & Qualité
 
-* [ ] PWA (offline) • tests unitaires sur `calc.ts` • CI (build/test/deploy)
+* [ ] PWA/offline + cache des données (catalogue, builds, dernière session).
+* [ ] **Fiche imprimable** (compacte/détaillée) + export PDF navigateur.
+* [ ] Tests unitaires calc/wear/repair + CI (build/test/deploy).
+* [ ] Tables/fiches avancées (sticky headers améliorés, pagination Matériaux, vue détaillée d’un item).
+* [ ] Refonte navigation mobile (burger, onglets condensés, CTA tactiles).
 * [ ] Polish UI
 
 
