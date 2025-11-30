@@ -4,12 +4,14 @@ import MaterialsPage from "./pages/MaterialsPage";
 import ThemeToggle from "./components/ThemeToggle";
 import PVPage from "./pages/PVPage";
 import EditorPage from "./pages/EditorPage";
+import BuildsPage from "./pages/BuildsPage";
 import { cls } from "./ui/styles";
 
 const NAV_ITEMS = [
   { label: "Calculateur", to: "/", match: (path: string) => path === "/" },
   { label: "Matériaux", to: "/materials", match: (path: string) => path.startsWith("/materials") },
   { label: "PV / Constitution", to: "/pv", match: (path: string) => path.startsWith("/pv") },
+  { label: "Catalogue", to: "/builds", match: (path: string) => path.startsWith("/builds") },
   { label: "Éditeur", to: "/editeur", match: (path: string) => path.startsWith("/editeur") },
 ];
 
@@ -69,6 +71,7 @@ return (
             <Route path="/" element={<Calculator />} />
             <Route path="/materials" element={<MaterialsPage />} />
             <Route path="/pv" element={<PVPage />} />
+            <Route path="/builds" element={<BuildsPage />} />
             <Route path="/editeur" element={<EditorPage />} />
           </Routes>
         </main>

@@ -102,6 +102,7 @@ export type BuildInput = {
   enchantId?: string;
   shield: string;
   shieldMaterial?: string;
+  cat?: string;
 };
 
 export type BuildResult = {

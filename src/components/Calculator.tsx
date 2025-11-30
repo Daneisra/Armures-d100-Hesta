@@ -6,6 +6,7 @@ import RatioPill from "./RatioPill";
 import CompatBadge from "./CompatBadge";
 import WearWidget from "./WearWidget";
 import RepairWidget from "./RepairWidget";
+import { addBuild } from "../buildCatalog";
 import { useCatalogData } from "../catalogContext";
 import { cls } from "../ui/styles";
 
@@ -13,6 +14,7 @@ import { cls } from "../ui/styles";
 const SCHEMA = 2;
 const STORAGE_KEY = `lastBuild_v${SCHEMA}`;
 const LEGACY_KEYS = ["lastBuild"];
+const CAT_KEY = "lastBuildCat_v2";
 
 export default function Calculator(){
   const { chassis, materials, qualities, shields, params, categories, enchants, shieldMaterials } = useCatalogData();
@@ -47,6 +49,7 @@ export default function Calculator(){
     enchantId: "protection",
     shield:   shields[0]?.name ?? "",
     shieldMaterial: shieldMaterials?.[0]?.name ?? "",
+    cat: localStorage.getItem(CAT_KEY) ?? "",
   }), [chassis, materials, qualities, shields, shieldMaterials]);
 
   // --- �tat principal (avec migration + fallback s�r) ---
@@ -75,12 +78,13 @@ export default function Calculator(){
   const resetLocal = () => {
     if (!window.confirm("Effacer la configuration locale et recharger ?")) return;
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(CAT_KEY);
     LEGACY_KEYS.forEach(k=>localStorage.removeItem(k));
     location.reload();
   };
 
-  // --- filtre cat�gorie pilot�e par ch�ssis ---
-  const [cat, setCat] = useState<string>("");
+  // --- filtre catégorie pilotée par châssis ---
+  const [cat, setCat] = useState<string>(() => localStorage.getItem(CAT_KEY) ?? defaults.cat ?? "");
 
   const expectedCompat = useMemo(
     () => chassis.find(c => c.name === inp.chassis)?.category,
@@ -103,6 +107,10 @@ export default function Calculator(){
       setCat(categoriesForChassis[0].key);
     }
   }, [categoriesForChassis]);
+
+  useEffect(() => {
+    if (cat) localStorage.setItem(CAT_KEY, cat);
+  }, [cat]);
 
   const mats = useMemo(() => {
     const byCompat = expectedCompat ? materials.filter(m => m.compat === expectedCompat) : materials;
@@ -308,6 +316,29 @@ export default function Calculator(){
             </div>
             <div aria-live="polite" className="sr-only">
               {`PA ${res.paFinal}, malus ${res.malusFinal}, ratio ${ratioSpoken}, ${compatOk ? "châssis et matériau compatibles." : "châssis et matériau incompatibles."} ${res.sweet ? "Bon équilibre." : ""}`}
+            </div>
+            <div className="pt-3 border-t mt-3 flex gap-2">
+              <button
+                className={cls.btnPrimary}
+                onClick={() => {
+                  const name = prompt("Nom du build à sauvegarder ?")?.trim();
+                  if (!name) return;
+                  addBuild({ name, build: { ...inp, cat }, cat });
+                  alert("Build sauvegardé dans le catalogue local.");
+                }}
+              >
+                Enregistrer ce build
+              </button>
+              <button
+                className={cls.btnGhost}
+                onClick={() => {
+                  localStorage.setItem("lastBuild_v2", JSON.stringify({ ...inp, cat }));
+                  localStorage.setItem("lastBuildCat_v2", cat);
+                  alert("Build appliqué pour chargement rapide.");
+                }}
+              >
+                Charger ce build
+              </button>
             </div>
           </section>
 
