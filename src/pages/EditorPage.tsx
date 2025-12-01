@@ -14,7 +14,7 @@ const tabs: { key: TabKey; label: string }[] = [
 ];
 
 export default function EditorPage() {
-  const { catalog, updateDomain, resetDomain, resetAll, exportAll, importAll } = useCatalog();
+  const { catalog, overrides, defaults, updateDomain, resetDomain, resetAll, exportAll, importAll } = useCatalog();
   const [tab, setTab] = useState<TabKey>("chassis");
   const [importError, setImportError] = useState<string | null>(null);
 
@@ -73,6 +73,7 @@ export default function EditorPage() {
           </button>
         ))}
       </nav>
+      <DiffCard tab={tab} overrides={overrides} defaults={defaults} />
 
       {tab === "chassis" && (
         <ChassisEditor items={catalog.chassis} onChange={list => updateDomain("chassis", list)} onReset={()=>resetDomain("chassis")} />
@@ -90,6 +91,70 @@ export default function EditorPage() {
         <ParamsEditor value={catalog.params} onChange={p => updateDomain("params", p)} onReset={()=>resetDomain("params")} />
       )}
     </div>
+  );
+}
+
+function DiffCard({ tab, overrides, defaults }: { tab: TabKey; overrides: any; defaults: any; }) {
+  const ov = overrides[tab];
+  if (tab !== "params" && (!Array.isArray(ov) || ov.length === 0)) return null;
+  if (tab === "params" && !ov) return null;
+
+  const isArrayTab = tab !== "params";
+  const baseList = isArrayTab ? (defaults as any)[tab] ?? [] : [];
+
+  const rows = isArrayTab ? (ov as any[]).map(item => {
+    const base = baseList.find((b: any) => b.name === item.name);
+    const status = base ? "Override" : "Ajout";
+    const changedKeys = base
+      ? Object.keys(item).filter(k => JSON.stringify((base as any)[k]) !== JSON.stringify((item as any)[k]))
+      : [];
+    return { name: item.name ?? "(sans nom)", status, changedKeys, item };
+  }) : [];
+
+  const paramChanges = tab === "params" ? Object.entries(ov as Record<string, any>).map(([k,v]) => {
+    const baseVal = (defaults as any).params?.[k];
+    const changed = JSON.stringify(baseVal) !== JSON.stringify(v);
+    return changed ? { key:k, from: baseVal, to:v } : null;
+  }).filter(Boolean) as {key:string; from:any; to:any}[] : [];
+
+  return (
+    <section className={`${cls.card} space-y-2`}>
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold">Diff overrides vs canon ({tab})</h2>
+        <span className="text-xs text-muted-foreground">
+          {tab === "params" ? `${paramChanges.length} champ(s) modifié(s)` : `${rows.length} override(s)`}
+        </span>
+      </div>
+      {tab === "params" ? (
+        paramChanges.length === 0
+          ? <p className="text-sm text-muted-foreground">Aucun override sur les paramètres.</p>
+          : (
+            <ul className="text-sm space-y-1">
+              {paramChanges.map(ch => (
+                <li key={ch.key}>
+                  <span className="font-medium">{ch.key}</span> : <span className="text-muted-foreground">canon</span> ➜ <code>{JSON.stringify(ch.to)}</code>
+                </li>
+              ))}
+            </ul>
+          )
+      ) : (
+        <div className="space-y-1">
+          {rows.map(row => (
+            <div key={row.name} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded border px-3 py-2 text-sm">
+              <div>
+                <div className="font-semibold">{row.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {row.status}{row.changedKeys.length ? ` • champs: ${row.changedKeys.join(", ")}` : ""}
+                </div>
+              </div>
+              <code className="text-xs bg-muted px-2 py-1 rounded mt-1 sm:mt-0 whitespace-pre-wrap max-w-xl overflow-hidden text-ellipsis">
+                {JSON.stringify(row.item)}
+              </code>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 

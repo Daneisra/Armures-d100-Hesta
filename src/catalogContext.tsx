@@ -7,6 +7,7 @@ type DomainKey = keyof Catalog;
 type CatalogContextValue = {
   catalog: Catalog;
   overrides: CatalogOverrides;
+  defaults: Catalog;
   updateDomain: (key: DomainKey, value: any) => void;
   resetDomain: (key: DomainKey) => void;
   resetAll: () => void;
@@ -56,6 +57,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   const value: CatalogContextValue = {
     catalog,
     overrides,
+    defaults: defaultCatalog,
     updateDomain,
     resetDomain,
     resetAll,

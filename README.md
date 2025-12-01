@@ -257,7 +257,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] **Catalogue** de builds (LocalStorage + export JSON)
 * [x] Appliquer un build sans rechargement (hydrate directement le calculateur).
 * [x] Import/validation avec rapport détaillé (overrides/builds).
-* [ ] Vue “diff” overrides vs canon dans l’éditeur.
+* [x] Vue “diff” overrides vs canon dans l’éditeur.
 * [ ] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
 * [ ] Polish UI
 
