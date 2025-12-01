@@ -258,7 +258,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Appliquer un build sans rechargement (hydrate directement le calculateur).
 * [x] Import/validation avec rapport détaillé (overrides/builds).
 * [x] Vue “diff” overrides vs canon dans l’éditeur.
-* [ ] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
+* [x] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
 * [ ] Polish UI
 
 ### 0.5.0 — Sandbox & Équilibrage
