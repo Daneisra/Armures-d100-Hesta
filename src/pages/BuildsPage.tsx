@@ -10,6 +10,17 @@ export default function BuildsPage() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  const exportToFile = () => {
+    const data = exportBuilds();
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "builds.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     if (!q) return builds;
@@ -28,7 +39,7 @@ export default function BuildsPage() {
   };
 
   const onExport = () => {
-    navigator.clipboard.writeText(exportBuilds());
+    exportToFile();
   };
 
   const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {

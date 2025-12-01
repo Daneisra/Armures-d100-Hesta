@@ -18,6 +18,17 @@ export default function EditorPage() {
   const [tab, setTab] = useState<TabKey>("chassis");
   const [importError, setImportError] = useState<string | null>(null);
 
+  const exportToFile = () => {
+    const data = exportAll();
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "catalog-overrides.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const onImport = (ev: React.ChangeEvent<HTMLInputElement>) => {
     const file = ev.target.files?.[0];
     if (!file) return;
@@ -43,7 +54,7 @@ export default function EditorPage() {
             Import JSON
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
           </label>
-          <button className={cls.btnGhost} onClick={()=> navigator.clipboard.writeText(exportAll())}>Exporter (copie)</button>
+          <button className={cls.btnGhost} onClick={exportToFile}>Exporter (JSON)</button>
           <button className={cls.btnGhost} onClick={resetAll}>Reset global</button>
         </div>
       </header>

@@ -256,7 +256,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Usure en combat : ajouter PA actuelle (modifiable), appliquer l’usure coup par coup, et journaliser l’historique (dégâts, usure appliquée, PA avant/après). Le jet de dégâts doit accepter des valeurs > 20 (bonus/malus : d20 + X, d20 +10, etc.).
 * [x] **Catalogue** de builds (LocalStorage + export JSON)
 * [x] Appliquer un build sans rechargement (hydrate directement le calculateur).
-* [ ] Import/validation avec rapport détaillé (overrides/builds).
+* [x] Import/validation avec rapport détaillé (overrides/builds).
 * [ ] Vue “diff” overrides vs canon dans l’éditeur.
 * [ ] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
 * [ ] Polish UI

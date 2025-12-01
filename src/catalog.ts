@@ -97,11 +97,37 @@ export function exportCatalog(overrides: CatalogOverrides): string {
 }
 
 export function importCatalog(text: string): CatalogOverrides {
-  const parsed = JSON.parse(text);
-  if (parsed?.schemaVersion !== SCHEMA_VERSION || typeof parsed !== "object") {
-    throw new Error("Fichier incompatible ou schemaVersion manquante");
+  const errors: string[] = [];
+  let parsed: any;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e: any) {
+    throw new Error("JSON invalide : " + (e?.message ?? "parse error"));
   }
-  const ov = parsed.overrides ?? {};
+
+  if (parsed?.schemaVersion !== SCHEMA_VERSION) {
+    errors.push("schemaVersion manquante ou incompatible");
+  }
+  if (typeof parsed !== "object") {
+    errors.push("Le fichier doit contenir un objet JSON racine");
+  }
+  if (parsed.overrides && typeof parsed.overrides !== "object") {
+    errors.push("overrides doit être un objet");
+  }
+
+  const ov = (parsed?.overrides ?? {}) as CatalogOverrides;
+  const checkArray = (key: keyof CatalogOverrides) => {
+    const val = (ov as any)[key];
+    if (val !== undefined && !Array.isArray(val)) {
+      errors.push(`${String(key)} doit être un tableau`);
+    }
+  };
+  ["chassis","materials","qualities","shields","categories","enchants","shieldMaterials"].forEach(k => checkArray(k as keyof CatalogOverrides));
+  if (ov.params && typeof ov.params !== "object") errors.push("params doit être un objet");
+
+  if (errors.length) {
+    throw new Error("Import catalogue invalide :\n- " + errors.join("\n- "));
+  }
   return ov;
 }
 

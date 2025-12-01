@@ -52,8 +52,24 @@ export function exportBuilds(): string {
 }
 
 export function importBuilds(text: string, mode: "replace" | "merge" = "merge") {
-  const parsed = JSON.parse(text);
+  let parsed: any;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e: any) {
+    throw new Error("JSON invalide : " + (e?.message ?? "parse error"));
+  }
+  const errors: string[] = [];
   const incoming: SavedBuild[] = Array.isArray(parsed?.builds) ? parsed.builds : [];
+  if (!Array.isArray(parsed?.builds)) {
+    errors.push("`builds` doit être un tableau");
+  }
+  incoming.forEach((b, idx) => {
+    if (!b?.name) errors.push(`build #${idx+1} : name manquant`);
+    if (!b?.build) errors.push(`build #${idx+1} : champ build manquant`);
+  });
+  if (errors.length) {
+    throw new Error("Import builds invalide :\n- " + errors.join("\n- "));
+  }
   const current = mode === "replace" ? [] : load();
   const merged = [...incoming, ...current];
   persist(merged);
