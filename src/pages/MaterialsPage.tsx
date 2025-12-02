@@ -112,7 +112,7 @@ export default function MaterialsPage(){
       {/* Tableau */}
       <div className="rounded-xl border overflow-hidden">
         <table className={`w-full ${dense ? "text-xs" : "text-sm"}`}>
-          <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <thead className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-sm">
             <tr>
               <Th k="name"     activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} compact={dense}>Matériau</Th>
               <Th k="_compat"  activeKey={sort.key} dir={sort.dir} onToggle={toggleSort} compact={dense}>Compat.</Th>
@@ -124,7 +124,7 @@ export default function MaterialsPage(){
           </thead>
           <tbody>
             {items.map((m:any)=>(
-              <tr key={m.name} className="border-t hover:bg-muted/40 focus-within:bg-muted/40 transition-colors">
+              <tr key={m.name} className="border-t hover:bg-muted/40 focus-within:bg-muted/40 transition-colors odd:bg-muted/30">
                 <td className={`px-3 ${cellPadding}`}>
                   <div className="flex items-center gap-2">
                     <CategoryBadge keyName={m._catKey} label={m._catLabel} />
@@ -184,7 +184,6 @@ function Th({
     </th>
   );
 }
-
 
 
 

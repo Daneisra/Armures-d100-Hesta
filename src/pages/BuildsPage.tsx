@@ -8,6 +8,7 @@ export default function BuildsPage() {
   const [builds, setBuilds] = useState(() => getBuilds());
   const [filter, setFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const exportToFile = () => {
@@ -19,6 +20,7 @@ export default function BuildsPage() {
     a.download = "builds.json";
     a.click();
     URL.revokeObjectURL(url);
+    setFlash("Export JSON généré (builds.json)");
   };
 
   const filtered = useMemo(() => {
@@ -36,6 +38,7 @@ export default function BuildsPage() {
     if (!window.confirm("Supprimer tous les builds sauvegardés ?")) return;
     resetBuilds();
     setBuilds([]);
+    setFlash("Catalogue vidé");
   };
 
   const onExport = () => {
@@ -50,6 +53,7 @@ export default function BuildsPage() {
         importBuilds(text, "merge");
         setBuilds(getBuilds());
         setError(null);
+        setFlash("Import réussi");
       } catch (err: any) {
         setError(err?.message || "Import invalide");
       }
@@ -60,6 +64,7 @@ export default function BuildsPage() {
     localStorage.setItem("lastBuild_v2", JSON.stringify(b));
     if (cat) localStorage.setItem("lastBuildCat_v2", cat);
     navigate("/", { state: { build: b, cat } });
+    setFlash(`Build "${b.name ?? ""}" appliqué`);
   };
 
   return (
@@ -80,6 +85,7 @@ export default function BuildsPage() {
       </header>
 
       {error && <div className={`${cls.card} border-rose-500 text-rose-500 text-sm`}>{error}</div>}
+      <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 
       <div className="flex items-center gap-3">
         <input
@@ -97,14 +103,15 @@ export default function BuildsPage() {
         )}
         {filtered.map(b => (
           <div key={b.id} className={`${cls.card} flex flex-col gap-2`}>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <div>
                 <div className="font-semibold">{b.name}</div>
                 <div className="text-xs text-muted-foreground">Créé le {new Date(b.createdAt).toLocaleString()}</div>
+                {b.cat && <span className={cls.badgeNeutral}>Catégorie {b.cat}</span>}
               </div>
               <div className="flex gap-2">
-                <button className={cls.btnGhost} onClick={()=>applyBuild(b.build, b.cat)}>Appliquer</button>
-                <button className={cls.btnGhost} onClick={()=>onDelete(b.id)}>Supprimer</button>
+                <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat)}>Appliquer</button>
+                <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>onDelete(b.id)}>Supprimer</button>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-muted-foreground">

@@ -259,7 +259,7 @@ export default { plugins: { "@tailwindcss/postcss": {}, autoprefixer: {} } }
 * [x] Import/validation avec rapport détaillé (overrides/builds).
 * [x] Vue “diff” overrides vs canon dans l’éditeur.
 * [x] Dark mode polish (contrastes badges/formulaires) + option “auto” (prefers-color-scheme).
-* [ ] Polish UI
+* [x] Polish UI
 
 ### 0.5.0 — Sandbox & Équilibrage
 

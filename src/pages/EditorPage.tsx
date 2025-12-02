@@ -17,6 +17,7 @@ export default function EditorPage() {
   const { catalog, overrides, defaults, updateDomain, resetDomain, resetAll, exportAll, importAll } = useCatalog();
   const [tab, setTab] = useState<TabKey>("chassis");
   const [importError, setImportError] = useState<string | null>(null);
+  const [flash, setFlash] = useState<string | null>(null);
 
   const exportToFile = () => {
     const data = exportAll();
@@ -27,6 +28,7 @@ export default function EditorPage() {
     a.download = "catalog-overrides.json";
     a.click();
     URL.revokeObjectURL(url);
+    setFlash("Export JSON généré (catalog-overrides.json)");
   };
 
   const onImport = (ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +38,7 @@ export default function EditorPage() {
       try {
         importAll(text, "replace");
         setImportError(null);
+        setFlash("Import overrides appliqué");
       } catch (e: any) {
         setImportError(e?.message || "Import invalide");
       }
@@ -60,6 +63,7 @@ export default function EditorPage() {
       </header>
 
       {importError && <div className={`${cls.card} border-rose-500 text-rose-500`}>{importError}</div>}
+      <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 
       <nav className="flex flex-wrap gap-2">
         {tabs.map(t => (
@@ -132,19 +136,21 @@ function DiffCard({ tab, overrides, defaults }: { tab: TabKey; overrides: any; d
             <ul className="text-sm space-y-1">
               {paramChanges.map(ch => (
                 <li key={ch.key}>
-                  <span className="font-medium">{ch.key}</span> : <span className="text-muted-foreground">canon</span> ➜ <code>{JSON.stringify(ch.to)}</code>
+                  <span className="font-medium">{ch.key}</span> :{" "}
+                  <span className="text-muted-foreground">canon</span> <code>{JSON.stringify(ch.from)}</code>{" "}
+                  <span className="text-muted-foreground">→</span> <code>{JSON.stringify(ch.to)}</code>
                 </li>
               ))}
             </ul>
           )
       ) : (
-        <div className="space-y-1">
+        <div className="space-y-1 max-h-60 overflow-auto pr-1">
           {rows.map(row => (
             <div key={row.name} className="flex flex-col sm:flex-row sm:items-center sm:justify-between rounded border px-3 py-2 text-sm">
               <div>
                 <div className="font-semibold">{row.name}</div>
                 <div className="text-xs text-muted-foreground">
-                  {row.status}{row.changedKeys.length ? ` • champs: ${row.changedKeys.join(", ")}` : ""}
+                  {row.status}{row.changedKeys.length ? ` — champs modifiés: ${row.changedKeys.join(", ")}` : ""}
                 </div>
               </div>
               <code className="text-xs bg-muted px-2 py-1 rounded mt-1 sm:mt-0 whitespace-pre-wrap max-w-xl overflow-hidden text-ellipsis">
@@ -179,7 +185,7 @@ function ChassisEditor({ items, onChange, onReset }: { items: Chassis[]; onChang
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Châssis</h2>
         <div className="flex gap-2">
-          <button className={cls.btnGhost} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
       <div className="grid md:grid-cols-[1.2fr_1fr_1fr_1fr] text-sm font-semibold text-muted-foreground px-2">
@@ -257,7 +263,7 @@ function MaterialsEditor({ items, onChange, onReset }: { items: Material[]; onCh
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Matériaux</h2>
         <div className="flex gap-2">
-          <button className={cls.btnGhost} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
       <div className="space-y-1 max-h-[420px] overflow-auto pr-1">
@@ -346,7 +352,7 @@ function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onCha
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Qualités</h2>
         <div className="flex gap-2">
-          <button className={cls.btnGhost} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
       <div className="space-y-1">
@@ -382,11 +388,11 @@ function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onCha
           </div>
           <div className="grid grid-cols-2 gap-2">
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Repair coût x</div>
+              <div className="text-muted-foreground text-xs mb-1">Réparation coût x</div>
               <input className={cls.input} type="number" value={draft.repair?.costMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, costMul:Number(e.target.value)||1}})}/>
             </label>
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Repair temps x</div>
+              <div className="text-muted-foreground text-xs mb-1">Réparation temps x</div>
               <input className={cls.input} type="number" value={draft.repair?.timeMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, timeMul:Number(e.target.value)||1}})}/>
             </label>
           </div>
@@ -419,7 +425,7 @@ function ShieldsEditor({ items, onChange, onReset }: { items: Shield[]; onChange
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Boucliers</h2>
         <div className="flex gap-2">
-          <button className={cls.btnGhost} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
       <div className="space-y-1">
@@ -470,7 +476,7 @@ function ParamsEditor({ value, onChange, onReset }: { value: Params; onChange:(v
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Params</h2>
         <div className="flex gap-2">
-          <button className={cls.btnGhost} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset}>Reset onglet</button>
           <button className={cls.btnPrimary} onClick={save}>Sauvegarder</button>
         </div>
       </header>
