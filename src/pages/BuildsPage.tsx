@@ -60,11 +60,11 @@ export default function BuildsPage() {
     });
   };
 
-  const applyBuild = (b: BuildInput, cat?: string) => {
-    localStorage.setItem("lastBuild_v2", JSON.stringify(b));
+  const applyBuild = (build: BuildInput, cat?: string, label?: string) => {
+    localStorage.setItem("lastBuild_v2", JSON.stringify(build));
     if (cat) localStorage.setItem("lastBuildCat_v2", cat);
-    navigate("/", { state: { build: b, cat } });
-    setFlash(`Build "${b.name ?? ""}" appliqué`);
+    navigate("/", { state: { build, cat } });
+    setFlash(`Build "${label ?? ""}" appliqué`);
   };
 
   return (
@@ -110,7 +110,7 @@ export default function BuildsPage() {
                 {b.cat && <span className={cls.badgeNeutral}>Catégorie {b.cat}</span>}
               </div>
               <div className="flex gap-2">
-                <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat)}>Appliquer</button>
+                <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat, b.name)}>Appliquer</button>
                 <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>onDelete(b.id)}>Supprimer</button>
               </div>
             </div>

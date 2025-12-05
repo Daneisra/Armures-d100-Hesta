@@ -71,6 +71,7 @@ export default function Calculator(){
       return sanitize(defaults);
     }
   });
+  const [showLegend, setShowLegend] = useState(false);
 
   // Hydrate depuis un build appliqué via navigation state (sans reload)
   useEffect(() => {
@@ -165,6 +166,32 @@ export default function Calculator(){
 
   const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
   const ratioSpoken = Number.isFinite(ratioValue) ? ratioValue.toFixed(2) : "infini";
+
+  const efficiencyPoints = useMemo(() => {
+    const maxMalus = Math.max(12, res.malusFinal + 6);
+    const step = Math.max(1, Math.ceil(maxMalus / 10));
+    const base = [];
+    for (let m = step; m <= maxMalus; m += step) {
+      base.push({ x: m, y: res.paFinal / Math.max(1, m) });
+    }
+    if (!base.find(p => p.x === res.malusFinal) && res.malusFinal > 0) {
+      base.push({ x: res.malusFinal, y: ratioValue });
+    }
+    return base.sort((a, b) => a.x - b.x);
+  }, [res.paFinal, res.malusFinal, ratioValue]);
+
+  const wearPoints = useMemo(() => {
+    const perHit = Math.min(
+      params.baseWear + (materialForWear?.extraPen ?? 0),
+      params.capWearPerHit
+    );
+    const hits = 10;
+    const pts = [];
+    for (let i = 0; i <= hits; i += 1) {
+      pts.push({ x: i, y: Math.max(0, res.paFinal - perHit * i) });
+    }
+    return { pts, perHit };
+  }, [materialForWear?.extraPen, params.baseWear, params.capWearPerHit, res.paFinal]);
 
   return (
     <div className={`${cls.page} max-w-4xl space-y-6`}>
@@ -333,7 +360,7 @@ export default function Calculator(){
             <div aria-live="polite" className="sr-only">
               {`PA ${res.paFinal}, malus ${res.malusFinal}, ratio ${ratioSpoken}, ${compatOk ? "châssis et matériau compatibles." : "châssis et matériau incompatibles."} ${res.sweet ? "Bon équilibre." : ""}`}
             </div>
-            <div className="pt-3 border-t mt-3 flex gap-2">
+            <div className="pt-3 border-t mt-3 flex gap-2 flex-wrap">
               <button
                 className={cls.btnPrimary}
                 onClick={() => {
@@ -355,25 +382,55 @@ export default function Calculator(){
               >
                 Charger ce build
               </button>
+              <button
+                className={cls.btnGhost}
+                onClick={() => setShowLegend(v => !v)}
+                aria-expanded={showLegend}
+                aria-controls="calc-legend"
+              >
+                {showLegend ? "Masquer la légende" : "Afficher la légende"}
+              </button>
             </div>
+            {showLegend && (
+              <div id="calc-legend" className="mt-3 border-t pt-3">
+                <h4 className="font-semibold mb-2 text-sm">Légende</h4>
+                <ul className={`${cls.noteList} space-y-2`}>
+                  <li className="flex items-center">
+                    <span className={cls.badgeGood}>Compatible</span>
+                    <span className="ml-2 text-sm text-muted-foreground">→ châssis et matériau alignés.</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className={cls.badgeBad}>Incompatible</span>
+                    <span className="ml-2 text-sm text-muted-foreground">→ combinaison à éviter.</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className={cls.badgeWarn}>Sweet spot</span>
+                    <span className="ml-2 text-sm text-muted-foreground">→ ratio PA/malus favorable.</span>
+                  </li>
+                </ul>
+              </div>
+            )}
           </section>
 
-          <section className={cls.card}>
-            <h2 className="font-semibold mb-2">Légende</h2>
-            <ul className={cls.noteList}>
-              <li className="flex items-center">
-                <span className={`${cls.badgeGood}`}>Compatible</span>
-                <span className="ml-2 text-sm text-muted-foreground">→ châssis et matériau alignés.</span>
-              </li>
-              <li className="flex items-center">
-                <span className={`${cls.badgeBad}`}>Incompatible</span>
-                <span className="ml-2 text-sm text-muted-foreground">→ combinaison à éviter.</span>
-              </li>
-              <li className="flex items-center">
-                <span className={`${cls.badgeWarn}`}>Sweet spot</span>
-                <span className="ml-2 text-sm text-muted-foreground">→ ratio PA/malus favorable.</span>
-              </li>
-            </ul>
+          <section className={`${cls.card} ${cardFx}`}>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-3">Équilibrage (aperçu)</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <MiniLineChart
+                title="Efficacité selon le malus"
+                points={efficiencyPoints}
+                highlight={{ x: res.malusFinal, y: ratioValue }}
+                xLabel="Malus"
+                yLabel="PA/Malus"
+              />
+              <MiniLineChart
+                title="Usure cumulée (PA restante)"
+                points={wearPoints.pts}
+                highlight={{ x: 0, y: res.paFinal }}
+                xLabel="Coups"
+                yLabel="PA"
+                note={`Usure par coup ≈ ${wearPoints.perHit.toFixed(1)}`}
+              />
+            </div>
           </section>
 
           <WearWidget
@@ -390,6 +447,77 @@ export default function Calculator(){
             className={`${cls.card} ${cardFx}`}
           />
         </div>
+      </div>
+    </div>
+  );
+}
+
+type Point = { x: number; y: number };
+
+function MiniLineChart({
+  title,
+  points,
+  highlight,
+  xLabel,
+  yLabel,
+  note,
+}: {
+  title: string;
+  points: Point[];
+  highlight?: Point;
+  xLabel: string;
+  yLabel: string;
+  note?: string;
+}) {
+  const cleanPoints = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
+  const highlightFinite = highlight && Number.isFinite(highlight.x) && Number.isFinite(highlight.y) ? highlight : undefined;
+  if (!cleanPoints.length) return null;
+  const xs = cleanPoints.map(p => p.x).concat(highlightFinite ? [highlightFinite.x] : []);
+  const ys = cleanPoints.map(p => p.y).concat(highlightFinite ? [highlightFinite.y] : []);
+  const minX = Math.min(...xs);
+  const maxX = Math.max(...xs);
+  const minY = Math.min(...ys, 0);
+  const maxY = Math.max(...ys);
+  const pad = 12;
+  const w = 320;
+  const h = 180;
+  const scaleX = (x: number) => {
+    if (maxX === minX) return pad;
+    return pad + ((x - minX) / (maxX - minX)) * (w - pad * 2);
+  };
+  const scaleY = (y: number) => {
+    if (maxY === minY) return h - pad;
+    return h - pad - ((y - minY) / (maxY - minY)) * (h - pad * 2);
+  };
+  const poly = cleanPoints.map(p => `${scaleX(p.x)},${scaleY(p.y)}`).join(" ");
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h4 className="font-semibold text-sm">{title}</h4>
+        <span className="text-xs text-muted-foreground">{yLabel}</span>
+      </div>
+      <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={title} className="w-full h-auto text-primary">
+        <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="currentColor" strokeOpacity={0.25} />
+        <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="currentColor" strokeOpacity={0.25} />
+        <polyline fill="none" stroke="currentColor" strokeWidth={2} points={poly} />
+        {cleanPoints.map((p, idx) => (
+          <circle key={idx} cx={scaleX(p.x)} cy={scaleY(p.y)} r={3} fill="currentColor" fillOpacity={0.15} />
+        ))}
+        {highlightFinite && (
+          <circle
+            cx={scaleX(highlightFinite.x)}
+            cy={scaleY(highlightFinite.y)}
+            r={5}
+            fill="currentColor"
+            stroke="currentColor"
+            strokeWidth={1.5}
+          />
+        )}
+      </svg>
+      <div className="text-xs text-muted-foreground flex items-center justify-between">
+        <span>{xLabel}</span>
+        <span>{note}</span>
       </div>
     </div>
   );
