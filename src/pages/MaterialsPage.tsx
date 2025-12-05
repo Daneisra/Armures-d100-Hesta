@@ -10,7 +10,7 @@ type Compat = typeof COMPATS[number];
 type SortKey = "name" | "_compat" | "modPA" | "malusMod" | "extraPen";
 
 export default function MaterialsPage(){
-  const { materials, categories } = useCatalogData();
+  const { materials, categories, chassis } = useCatalogData();
   const [compat, setCompat] = useState<Compat | "Toutes">("Toutes");
   const [cat, setCat] = useState<string>("Toutes");
   const [q, setQ] = useState("");
@@ -74,6 +74,56 @@ export default function MaterialsPage(){
 
   const cellPadding = dense ? "py-1 text-xs" : "py-2 text-sm";
 
+  const toCSV = (rows: Record<string, any>[], headers: { key: string; label: string }[]) => {
+    const escape = (v: any) => {
+      const s = v === undefined || v === null ? "" : String(v);
+      if (s.includes('"') || s.includes(",") || s.includes("\n")) {
+        return `"${s.replace(/"/g, '""')}"`;
+      }
+      return s;
+    };
+    const headerLine = headers.map(h => escape(h.label)).join(",");
+    const lines = rows.map(r => headers.map(h => escape(r[h.key])).join(","));
+    return [headerLine, ...lines].join("\n");
+  };
+
+  const download = (content: string, filename: string) => {
+    const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportMaterialsCSV = () => {
+    const headers = [
+      { key: "name", label: "Nom" },
+      { key: "category", label: "Categorie" },
+      { key: "compat", label: "Compat" },
+      { key: "modPA", label: "ModPA" },
+      { key: "malusMod", label: "MalusMod" },
+      { key: "extraPen", label: "ExtraPen" },
+      { key: "penIgnore", label: "PenIgnore" },
+      { key: "effects", label: "Effets" },
+    ];
+    const csv = toCSV(materials, headers);
+    download(csv, "materiaux.csv");
+  };
+
+  const exportChassisCSV = () => {
+    const headers = [
+      { key: "name", label: "Nom" },
+      { key: "group", label: "Groupe" },
+      { key: "category", label: "Compat" },
+      { key: "basePA", label: "BasePA" },
+      { key: "baseMalus", label: "BaseMalus" },
+    ];
+    const csv = toCSV(chassis, headers);
+    download(csv, "chassis.csv");
+  };
+
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">Matériaux</h2>
@@ -100,12 +150,14 @@ export default function MaterialsPage(){
           <label className="opacity-70 mb-1 block">Recherche</label>
           <input className={cls.input} placeholder="Rechercher un matériau" value={q} onChange={e=>setQ(e.target.value)} />
         </div>
-        <div className="flex items-end gap-2">
+        <div className="flex items-end gap-2 flex-wrap">
           <button className={cls.btnGhost} onClick={resetFilters}>Réinitialiser</button>
           <label className="inline-flex items-center gap-2">
             <input type="checkbox" checked={dense} onChange={e=>setDense(e.target.checked)} />
             Densité compacte
           </label>
+          <button className={cls.btnGhost} onClick={exportMaterialsCSV} title="Export CSV des matériaux">Export matériaux (CSV)</button>
+          <button className={cls.btnGhost} onClick={exportChassisCSV} title="Export CSV des châssis">Export châssis (CSV)</button>
         </div>
       </div>
 
@@ -184,6 +236,5 @@ function Th({
     </th>
   );
 }
-
 
 

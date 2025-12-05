@@ -56,18 +56,20 @@ Types clés (extraits de `src/types.ts`) :
 ## Roadmap
 
 - **0.5.x – Sandbox & partage**
-  [x] Graphiques d’équilibrage (efficacité vs malus, usure cumulée). version simple avec SVG maison, paramètres fixes.
-  [ ] Partage de builds (lien encodé ou fichier JSON minimal), export CSV/Excel matériaux/châssis.
-  [ ] UX éditeur : undo/corbeille, autosave optionnelle, filtres/tri dans catalogue et éditeur.
-  [ ] A11y : focus trap modales/drawers, rapports d’erreurs ARIA.
+
+[x] Graphiques d’équilibrage (efficacité vs malus, usure cumulée). version simple avec SVG maison, paramètres fixes.
+[x] Partage de builds (lien encodé ou fichier JSON minimal), export CSV/Excel matériaux/châssis.
+[ ] UX éditeur : undo/corbeille, autosave optionnelle, filtres/tri dans catalogue et éditeur.
+[ ] A11y : focus trap modales/drawers, rapports d’erreurs ARIA.
 
 - **0.6.x – PWA & qualité**
-  [ ] Graphiques d’équilibrage, sliders interactifs, export image/CSV des séries, thème sombre soigné.
-  [ ] PWA/offline + cache données et dernière session.
-  [ ] Fiche imprimable / export PDF.
-  [ ] Tests unitaires calc/usure/réparation + CI (build/test/deploy).
-  [ ] Tables avancées (pagination Matériaux, vues détaillées, comparateur).
-  [ ] Navigation mobile repensée (burger, CTA tactiles).
+
+[ ] Graphiques d’équilibrage, sliders interactifs, export image/CSV des séries, thème sombre soigné.
+[ ] PWA/offline + cache données et dernière session.
+[ ] Fiche imprimable / export PDF.
+[ ] Tests unitaires calc/usure/réparation + CI (build/test/deploy).
+[ ] Tables avancées (pagination Matériaux, vues détaillées, comparateur).
+[ ] Navigation mobile repensée (burger, CTA tactiles).
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).

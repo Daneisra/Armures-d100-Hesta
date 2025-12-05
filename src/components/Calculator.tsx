@@ -73,6 +73,30 @@ export default function Calculator(){
   });
   const [showLegend, setShowLegend] = useState(false);
 
+  // Build partagé via URL (?build=...&cat=...)
+  useEffect(() => {
+    const paramsUrl = new URLSearchParams(location.search);
+    const encoded = paramsUrl.get("build");
+    if (!encoded) return;
+    try {
+      const decoded = decodeURIComponent(atob(encoded));
+      const parsed = JSON.parse(decoded) as BuildInput;
+      const next = sanitize(parsed);
+      const catParam = paramsUrl.get("cat") ?? undefined;
+      setInp(next);
+      if (catParam) setCat(catParam);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      if (catParam) localStorage.setItem(CAT_KEY, catParam);
+    } catch {
+      // ignore malformed share links
+    }
+    // nettoyer l'URL pour éviter la réapplication
+    const cleaned = new URLSearchParams(location.search);
+    cleaned.delete("build");
+    cleaned.delete("cat");
+    navigate({ pathname: location.pathname, search: cleaned.toString() ? `?${cleaned}` : "" }, { replace: true, state: null });
+  }, [location.search, sanitize, navigate, location.pathname]);
+
   // Hydrate depuis un build appliqué via navigation state (sans reload)
   useEffect(() => {
     const state = location.state as { build?: BuildInput; cat?: string } | null;

@@ -60,6 +60,48 @@ export default function BuildsPage() {
     });
   };
 
+  const encodeBuildParam = (build: BuildInput) => {
+    try {
+      return btoa(encodeURIComponent(JSON.stringify(build)));
+    } catch {
+      return "";
+    }
+  };
+
+  const shareLink = (b: BuildInput, cat?: string) => {
+    const encoded = encodeBuildParam(b);
+    if (!encoded) return "";
+    const url = new URL(window.location.href);
+    url.pathname = "/";
+    url.search = `?build=${encoded}${cat ? `&cat=${encodeURIComponent(cat)}` : ""}`;
+    return url.toString();
+  };
+
+  const onCopyLink = (b: BuildInput, cat?: string, label?: string) => {
+    const url = shareLink(b, cat);
+    if (!url) {
+      setError("Impossible de générer le lien de partage.");
+      return;
+    }
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(() => setFlash(`Lien copié pour "${label ?? ""}"`));
+    } else {
+      prompt("Copie le lien de partage :", url);
+    }
+  };
+
+  const exportSingleJSON = (b: BuildInput, cat?: string, label?: string) => {
+    const json = JSON.stringify({ build: b, cat }, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `build-${(label ?? "partage").replace(/\s+/g, "-").toLowerCase()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setFlash(`JSON exporté pour "${label ?? ""}"`);
+  };
+
   const applyBuild = (build: BuildInput, cat?: string, label?: string) => {
     localStorage.setItem("lastBuild_v2", JSON.stringify(build));
     if (cat) localStorage.setItem("lastBuildCat_v2", cat);
@@ -111,6 +153,8 @@ export default function BuildsPage() {
               </div>
               <div className="flex gap-2">
                 <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat, b.name)}>Appliquer</button>
+                <button className={cls.btnGhost} onClick={()=>onCopyLink(b.build, b.cat, b.name)}>Partager</button>
+                <button className={cls.btnGhost} onClick={()=>exportSingleJSON(b.build, b.cat, b.name)}>Exporter JSON</button>
                 <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>onDelete(b.id)}>Supprimer</button>
               </div>
             </div>
