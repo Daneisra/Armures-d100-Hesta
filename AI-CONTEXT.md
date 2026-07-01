@@ -182,7 +182,8 @@ temps = PA_manquants
 - Le temps final est arrondi à une décimale.
 - Les bases sont définies dans `params.json`.
 - Les multiplicateurs runtime attendus sont uniquement `repair.costMul` et `repair.timeMul` sur `Material` et `Quality`.
-- Ces propriétés sont censées être injectées depuis `repairMaterial.json` et `repairQuality.json` par `src/data/index.ts`.
+- Ces propriétés sont injectées depuis `repairMaterial.json` et `repairQuality.json` par `src/data/index.ts`.
+- Les deux fichiers dédiés utilisent exactement les clés `costMul` et `timeMul` en camelCase ; conserver cette convention.
 - Ne pas réintroduire ou mélanger les anciens champs plats `repairCostMult` / `repairTimeMult`.
 
 ### PV / Constitution
@@ -268,38 +269,32 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **Clés des multiplicateurs de réparation incohérentes**
-   - `src/data/index.ts` lit `costMul` et `timeMul`.
-   - `repairMaterial.json` fournit `CostMult` et `TimeMul`.
-   - `repairQuality.json` fournit `CostMul` et `TimeMul`.
-   - Conséquence probable : les multiplicateurs importés retombent actuellement à `1`. Ne pas corriger implicitement dans une autre feature ; traiter avec migration/normalisation dédiée.
-
-2. **Renfort : texte UI et calcul divergent**
+1. **Renfort : texte UI et calcul divergent**
    - L’aide du calculateur annonce `+1 PA` et `+1 malus` par niveau.
    - `computeBuild()` ajoute actuellement le renfort aux PA, mais pas au malus.
    - Faire confirmer la règle métier avant correction.
 
-3. **`penIgnore` n’est pas appliqué par `simulateWear()`**
+2. **`penIgnore` n’est pas appliqué par `simulateWear()`**
    - La valeur apparaît dans les notes, mais n’influence pas la détection de pénétration ni l’usure actuelle.
    - Clarifier l’effet attendu avant intégration.
 
-4. **Validation d’import encore partielle**
+3. **Validation d’import encore partielle**
    - Les imports vérifient surtout la structure racine et quelques champs obligatoires.
    - Les types numériques, doublons, bornes et références croisées ne sont pas tous validés strictement.
 
-5. **Exemple PV potentiellement obsolète**
+4. **Exemple PV potentiellement obsolète**
    - Le texte de `PVPage.tsx` cite `45 ⇒ 29`.
    - Avec `round(45 × 0.625)`, le résultat JavaScript actuel est `28`.
 
-6. **Encodage résiduel dans des commentaires**
+5. **Encodage résiduel dans des commentaires**
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-7. **Roadmap/documentation en décalage possible**
+6. **Roadmap/documentation en décalage possible**
    - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
    - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
 
-8. **Absence de tests automatisés et de lint**
+7. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification
