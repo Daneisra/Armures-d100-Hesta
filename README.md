@@ -28,7 +28,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.4.x)
+## Fonctionnalités actuelles (0.6.0)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -57,21 +57,26 @@ Types clés (extraits de `src/types.ts`) :
 
 ## Roadmap
 
-- **0.5.x – Sandbox & partage**
+### 0.6.x — Stabilisation & qualité
 
-* [x] Graphiques d’équilibrage (efficacité vs malus, usure cumulée). version simple avec SVG maison, paramètres fixes.
-* [x] Partage de builds (lien encodé ou fichier JSON minimal), export CSV/Excel matériaux/châssis.
-* [ ] UX éditeur : undo/corbeille, autosave optionnelle, filtres/tri dans catalogue et éditeur.
-* [ ] A11y : focus trap modales/drawers, rapports d’erreurs ARIA.
+- [ ] Ajouter les scripts `lint` et `test`.
+- [ ] Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
+- [ ] Nettoyer les artefacts d’encodage et commentaires résiduels.
+- [ ] Améliorer l’accessibilité des modales et drawers.
+- [ ] Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
-- **0.6.x – PWA & qualité**
+### 0.7.x — Expérience avancée
 
-* [ ] Graphiques d’équilibrage, sliders interactifs, export image/CSV des séries, thème sombre soigné.
-* [ ] PWA/offline + cache données et dernière session.
-* [ ] Fiche imprimable / export PDF.
-* [ ] Tests unitaires calc/usure/réparation + CI (build/test/deploy).
-* [ ] Tables avancées (pagination Matériaux, vues détaillées, comparateur).
-* [ ] Navigation mobile repensée (burger, CTA tactiles).
+- [ ] Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
+- [ ] Repenser la navigation mobile.
+- [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.
+- [ ] Rendre les graphiques interactifs et permettre l’export image/CSV.
+
+### 0.8.x — Impression & partage long terme
+
+- [ ] Ajouter une fiche imprimable.
+- [ ] Ajouter l’export PDF.
+- [ ] Proposer des templates de fiche compact et détaillé.
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).

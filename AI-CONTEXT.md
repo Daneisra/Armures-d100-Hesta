@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à l’état du projet analysé en version `0.5.1` (`package.json`). En cas de divergence, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent au jalon fonctionnel `0.6.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -265,16 +265,26 @@ Règles de compatibilité :
 
 ## 9. Roadmap actuelle
 
-Éléments connus et état observé dans le code :
+### 0.6.x — Stabilisation & qualité
 
-- Mini CRUD local-first pour châssis, matériaux, qualités, boucliers et paramètres : déjà présent dans `/editeur`, à consolider.
-- Import/export JSON du catalogue et des builds : présent avec validation stricte, blocage avant écriture et rapport d’erreurs copiable.
-- Usure en combat v2 avec PA actuelle, historique et dégâts supérieurs à 20 : déjà présente dans `WearWidget`.
-- Catalogue local de builds : déjà présent dans `/builds`, avec import/export, application et partage par lien.
-- Graphiques simples d’équilibrage : aperçu SVG déjà présent dans le calculateur.
-- Export CSV matériaux/châssis : déjà présent dans la page Matériaux.
-- Prochains axes visibles dans le README : amélioration UX de l’éditeur (undo/corbeille/autosave/filtres), accessibilité des modales/erreurs, graphiques interactifs, PWA/offline, tests/CI, tables avancées, navigation mobile.
-- Fiche imprimable et export PDF : objectif encore à réaliser.
+- Ajouter les scripts `lint` et `test`.
+- Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
+- Nettoyer les artefacts d’encodage et commentaires résiduels.
+- Améliorer l’accessibilité des modales et drawers.
+- Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
+
+### 0.7.x — Expérience avancée
+
+- Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
+- Repenser la navigation mobile.
+- Ajouter les tables avancées : pagination, vues détaillées et comparateur.
+- Rendre les graphiques interactifs et permettre l’export image/CSV.
+
+### 0.8.x — Impression & partage long terme
+
+- Ajouter une fiche imprimable.
+- Ajouter l’export PDF.
+- Proposer des templates de fiche compact et détaillé.
 
 ## 10. Points à vérifier avant de modifier le métier
 
@@ -282,11 +292,7 @@ Règles de compatibilité :
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-2. **Roadmap/documentation en décalage possible**
-   - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
-   - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
-
-3. **Absence de tests automatisés et de lint**
+2. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification
