@@ -30,7 +30,7 @@ export function computeBuild(
 
   // Base PA/Malus
   let pa    = ch.basePA + material.modPA + quality.bonusPA + renfort;
-  let malus = ch.baseMalus + material.malusMod + quality.malusMod;
+  let malus = ch.baseMalus + material.malusMod + quality.malusMod + renfort;
 
   // Bouclier (base + matériau éventuel)
   let shieldPa    = shield.pa;

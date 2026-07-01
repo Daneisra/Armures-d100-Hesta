@@ -128,12 +128,13 @@ PA = châssis.basePA
 Malus = châssis.baseMalus
       + matériau.malusMod
       + qualité.malusMod
+      + renfort
       + bouclier.malus
       + matériauBouclier.malusMod
       + effets d’enchantement sur le malus
 ```
 
-- `renfort` est borné entre `0` et `params.renfortMax` et ajoute actuellement `+1 PA` par niveau ; le JSX indique aussi `+1 malus`, mais `computeBuild()` n’ajoute actuellement le renfort qu’aux PA. Voir « Points à vérifier ».
+- `renfort` est borné entre `0` et `params.renfortMax` et ajoute `+1 PA` et `+1 malus` par niveau.
 - Le niveau d’enchantement est borné par `params.enchantMax`.
 - Le malus final est borné à `0` minimum.
 - Si `material.halfMalus` est vrai, le malus est divisé par deux avec arrondi supérieur.
@@ -269,32 +270,27 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **Renfort : texte UI et calcul divergent**
-   - L’aide du calculateur annonce `+1 PA` et `+1 malus` par niveau.
-   - `computeBuild()` ajoute actuellement le renfort aux PA, mais pas au malus.
-   - Faire confirmer la règle métier avant correction.
-
-2. **`penIgnore` n’est pas appliqué par `simulateWear()`**
+1. **`penIgnore` n’est pas appliqué par `simulateWear()`**
    - La valeur apparaît dans les notes, mais n’influence pas la détection de pénétration ni l’usure actuelle.
    - Clarifier l’effet attendu avant intégration.
 
-3. **Validation d’import encore partielle**
+2. **Validation d’import encore partielle**
    - Les imports vérifient surtout la structure racine et quelques champs obligatoires.
    - Les types numériques, doublons, bornes et références croisées ne sont pas tous validés strictement.
 
-4. **Exemple PV potentiellement obsolète**
+3. **Exemple PV potentiellement obsolète**
    - Le texte de `PVPage.tsx` cite `45 ⇒ 29`.
    - Avec `round(45 × 0.625)`, le résultat JavaScript actuel est `28`.
 
-5. **Encodage résiduel dans des commentaires**
+4. **Encodage résiduel dans des commentaires**
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-6. **Roadmap/documentation en décalage possible**
+5. **Roadmap/documentation en décalage possible**
    - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
    - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
 
-7. **Absence de tests automatisés et de lint**
+6. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification
