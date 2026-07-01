@@ -32,7 +32,7 @@ Types clés (extraits de `src/types.ts`) :
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
-  - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, cap par coup, historique).
+  - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, pénétration d’attaque, `penIgnore`, cap par coup, historique).
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
 - **PV / Constitution**

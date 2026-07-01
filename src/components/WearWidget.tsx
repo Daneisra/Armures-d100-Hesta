@@ -12,7 +12,10 @@ type WearWidgetProps = {
 
 type WearLog = {
   dmg: number;
+  attackPenetration: number;
+  effectivePenetration: number;
   paBefore: number;
+  paEffective: number;
   paAfter: number;
   pvLost: number;
   wearApplied: number;
@@ -28,6 +31,7 @@ export default function WearWidget({
 }: WearWidgetProps) {
   const [paCurrent, setPaCurrent] = useState<number>(paFinal);
   const [dmg, setDmg] = useState<number>(10); // autorise bonus/malus >20
+  const [attackPenetration, setAttackPenetration] = useState<number>(0);
   const [log, setLog] = useState<WearLog[]>([]);
 
   useEffect(() => {
@@ -37,17 +41,20 @@ export default function WearWidget({
 
   const preview = useMemo(() => {
     if (!material) return null;
-    return simulateWear(dmg, paCurrent, material, params);
-  }, [dmg, paCurrent, material, params]);
+    return simulateWear(dmg, attackPenetration, paCurrent, material, params);
+  }, [dmg, attackPenetration, paCurrent, material, params]);
 
   const applyHit = () => {
     if (!material) return;
-    const res = simulateWear(dmg, paCurrent, material, params);
+    const res = simulateWear(dmg, attackPenetration, paCurrent, material, params);
     setPaCurrent(res.paAfter);
     setLog(prev => [
       {
         dmg,
+        attackPenetration: res.attackPenetration,
+        effectivePenetration: res.effectivePenetration,
         paBefore: res.paBefore,
+        paEffective: res.paEffective,
         paAfter: res.paAfter,
         pvLost: res.pvLost,
         wearApplied: res.wearApplied,
@@ -67,7 +74,7 @@ export default function WearWidget({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3 items-end">
+      <div className="grid gap-3 md:grid-cols-4 items-end">
         <label className="text-sm">
           <div className="text-xs font-medium text-muted-foreground mb-1">PA actuelle</div>
           <input
@@ -88,6 +95,16 @@ export default function WearWidget({
             onChange={e => setDmg(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
           />
         </label>
+        <label className="text-sm">
+          <div className="text-xs font-medium text-muted-foreground mb-1">Pénétration de l’attaque</div>
+          <input
+            type="number"
+            min={0}
+            className={cls.input}
+            value={attackPenetration}
+            onChange={e => setAttackPenetration(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
+          />
+        </label>
         <button className={cls.btnPrimary} onClick={applyHit} disabled={!material}>
           Appliquer le coup
         </button>
@@ -96,6 +113,12 @@ export default function WearWidget({
       {preview && (
         <div className="text-sm grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
           <span className="text-muted-foreground">PA avant</span>      <b className="tabular">{preview.paBefore}</b>
+          <span className="text-muted-foreground">Pénétration effective</span>
+          <b className="tabular">
+            {preview.effectivePenetration}
+            {preview.penIgnore > 0 && <span className={`ml-2 ${cls.badgeGood}`}>ignore {preview.penIgnore}</span>}
+          </b>
+          <span className="text-muted-foreground">PA effective</span>  <b className="tabular">{preview.paEffective}</b>
           <span className="text-muted-foreground">PV subis</span>       <b className="tabular">{preview.pvLost}</b>
           <span className="text-muted-foreground">Usure appliquée</span>
           <b className="tabular">
@@ -112,11 +135,13 @@ export default function WearWidget({
           <div className="text-xs font-semibold text-muted-foreground mb-2">Historique des coups</div>
           <div className="space-y-1 max-h-52 overflow-auto pr-1 text-sm">
             {log.map((l, idx) => (
-              <div key={idx} className="grid grid-cols-4 gap-2 items-center rounded border px-2 py-1">
+              <div key={idx} className="grid gap-2 items-center rounded border px-2 py-1 md:grid-cols-5">
                 <span className="tabular">dégâts {l.dmg}</span>
+                <span className="tabular">pén. {l.attackPenetration} → {l.effectivePenetration}</span>
+                <span className="tabular">PA eff. {l.paEffective}</span>
                 <span className="tabular">PA {l.paBefore} → {l.paAfter}</span>
                 <span className="tabular">usure {l.wearApplied}</span>
-                <span className="tabular text-muted-foreground">{l.pvLost} PV</span>
+                <span className="tabular text-muted-foreground md:col-span-5">{l.pvLost} PV subis</span>
               </div>
             ))}
           </div>

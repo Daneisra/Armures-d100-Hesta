@@ -148,18 +148,23 @@ Malus = châssis.baseMalus
 Implémentation dans `src/lib/wear.ts` :
 
 ```text
-pénétration = dégâts > PA_avant
+pénétration_effective = max(0, pénétration_attaque - penIgnore_total)
+PA_effective = max(0, PA_avant - pénétration_effective)
+PV subis = max(0, dégâts - PA_effective)
+pénétration_du_coup = dégâts > PA_effective
 usure non pénétrante = params.baseWear
 usure pénétrante = params.baseWear + material.extraPen
 usure appliquée = min(usure, params.capWearPerHit)
 PA_après = max(0, PA_avant - usure appliquée)
-PV subis = max(0, dégâts - PA_avant)
 ```
 
+- `penIgnore` réduit uniquement la pénétration de l’attaque ; il ne réduit jamais directement les dégâts bruts.
+- `PA_effective` est temporaire pour la résolution du coup. Les PA permanentes ne diminuent ensuite que de l’usure appliquée.
 - Les PA diminuent de l’usure, pas des dégâts bruts.
-- `WearWidget` autorise les dégâts supérieurs à 20, permet de modifier les PA actuelles et conserve un historique local des coups tant que le composant reste monté.
+- `WearWidget` autorise les dégâts supérieurs à 20, accepte une pénétration d’attaque distincte, permet de modifier les PA actuelles et conserve un historique local des coups tant que le composant reste monté.
 - Un changement de `paFinal` réinitialise les PA actuelles et l’historique.
 - L’enchantement `extraPen_delta` est appliqué au matériau transmis au widget d’usure.
+- L’enchantement `pen_ignore_add` augmente le `penIgnore` total transmis au widget d’usure.
 
 ### Réparation
 
@@ -270,27 +275,23 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **`penIgnore` n’est pas appliqué par `simulateWear()`**
-   - La valeur apparaît dans les notes, mais n’influence pas la détection de pénétration ni l’usure actuelle.
-   - Clarifier l’effet attendu avant intégration.
-
-2. **Validation d’import encore partielle**
+1. **Validation d’import encore partielle**
    - Les imports vérifient surtout la structure racine et quelques champs obligatoires.
    - Les types numériques, doublons, bornes et références croisées ne sont pas tous validés strictement.
 
-3. **Exemple PV potentiellement obsolète**
+2. **Exemple PV potentiellement obsolète**
    - Le texte de `PVPage.tsx` cite `45 ⇒ 29`.
    - Avec `round(45 × 0.625)`, le résultat JavaScript actuel est `28`.
 
-4. **Encodage résiduel dans des commentaires**
+3. **Encodage résiduel dans des commentaires**
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-5. **Roadmap/documentation en décalage possible**
+4. **Roadmap/documentation en décalage possible**
    - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
    - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
 
-6. **Absence de tests automatisés et de lint**
+5. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification

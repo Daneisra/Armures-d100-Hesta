@@ -2,7 +2,11 @@ import type { Material, Params } from "../types";
 
 export type WearResult = {
   damage: number;
+  attackPenetration: number;
+  effectivePenetration: number;
+  penIgnore: number;
   paBefore: number;
+  paEffective: number;
   paAfter: number;
   pvLost: number;
   wearApplied: number;
@@ -11,14 +15,27 @@ export type WearResult = {
 
 /**
  * Simule l'usure sur un coup:
+ * - la pénétration effective réduit temporairement les PA pour ce coup
+ * - penIgnore réduit la pénétration, jamais les dégâts bruts
  * - coup non pénétrant: usure = baseWear
- * - coup pénétrant:     usure = baseWear + extraPen(material)
+ * - coup pénétrant: usure = baseWear + extraPen(material)
  * - cap par coup appliqué à la fin
  * - PA ne baisse que de l'usure (pas des dégâts)
- * - PV subis = max(0, damage - paBefore)
+ * - PV subis = max(0, damage - paEffective)
  */
-export function simulateWear(damage: number, paBefore: number, material: Material, params: Params): WearResult {
-  const penetrated = damage > paBefore;
+export function simulateWear(
+  damage: number,
+  attackPenetration: number,
+  paBefore: number,
+  material: Material,
+  params: Params
+): WearResult {
+  const safeDamage = Math.max(0, damage);
+  const safePenetration = Math.max(0, attackPenetration);
+  const penIgnore = Math.max(0, material.penIgnore ?? 0);
+  const effectivePenetration = Math.max(0, safePenetration - penIgnore);
+  const paEffective = Math.max(0, paBefore - effectivePenetration);
+  const penetrated = safeDamage > paEffective;
   const base = params.baseWear ?? 1;
   const extra = penetrated ? (material.extraPen ?? 0) : 0;
 
@@ -28,11 +45,15 @@ export function simulateWear(damage: number, paBefore: number, material: Materia
   if (capped) wear = cap;
 
   const paAfter = Math.max(0, paBefore - wear);
-  const pvLost  = Math.max(0, damage - paBefore);
+  const pvLost  = Math.max(0, safeDamage - paEffective);
 
   return {
-    damage,
+    damage: safeDamage,
+    attackPenetration: safePenetration,
+    effectivePenetration,
+    penIgnore,
     paBefore,
+    paEffective,
     paAfter,
     pvLost,
     wearApplied: wear,

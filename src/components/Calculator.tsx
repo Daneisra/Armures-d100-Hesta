@@ -183,9 +183,14 @@ export default function Calculator(){
 
   const materialForWear = useMemo(() => {
     if (!matCurrent || !enchCurrent || (inp.enchant ?? 0) <= 0) return matCurrent;
-    if (enchCurrent.kind !== "extraPen_delta") return matCurrent;
     const delta = (enchCurrent.perLevel ?? 0) * (inp.enchant ?? 0);
-    return { ...matCurrent, extraPen: Math.max(0, (matCurrent.extraPen ?? 0) + delta) };
+    if (enchCurrent.kind === "extraPen_delta") {
+      return { ...matCurrent, extraPen: Math.max(0, (matCurrent.extraPen ?? 0) + delta) };
+    }
+    if (enchCurrent.kind === "pen_ignore_add") {
+      return { ...matCurrent, penIgnore: Math.max(0, (matCurrent.penIgnore ?? 0) + delta) };
+    }
+    return matCurrent;
   }, [matCurrent, enchCurrent, inp.enchant]);
 
   const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
