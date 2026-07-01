@@ -55,7 +55,7 @@ export default function Calculator(){
     cat: localStorage.getItem(CAT_KEY) ?? "",
   }), [chassis, materials, qualities, shields, shieldMaterials]);
 
-  // --- �tat principal (avec migration + fallback s�r) ---
+  // --- État principal (avec migration + fallback sûr) ---
   const [inp, setInp] = useState<BuildInput>(() => {
     try {
       const rawNew = localStorage.getItem(STORAGE_KEY);
@@ -110,7 +110,7 @@ export default function Calculator(){
     }
   }, [location.state, sanitize, navigate, location.pathname]);
 
-  // sauvegarde versionn�e
+  // sauvegarde versionnée
   useEffect(()=> {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(inp));
   }, [inp]);

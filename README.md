@@ -61,12 +61,12 @@ Types clés (extraits de `src/types.ts`) :
 
 - [ ] Ajouter les scripts `lint` et `test`.
 - [ ] Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
-- [ ] Nettoyer les artefacts d’encodage et commentaires résiduels.
 - [ ] Améliorer l’accessibilité des modales et drawers.
 - [ ] Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée
 
+- [ ] Améliorer l’UX du widget Usure : renommer “Pénétration de l’attaque” en “Perce-armure (optionnel)”, le laisser à 0 par défaut, ajouter une aide claire, et éventuellement masquer ce champ dans une section avancée.
 - [ ] Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - [ ] Repenser la navigation mobile.
 - [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.

@@ -269,12 +269,12 @@ Règles de compatibilité :
 
 - Ajouter les scripts `lint` et `test`.
 - Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
-- Nettoyer les artefacts d’encodage et commentaires résiduels.
 - Améliorer l’accessibilité des modales et drawers.
 - Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée
 
+- Améliorer l’UX du widget Usure : renommer “Pénétration de l’attaque” en “Perce-armure (optionnel)”, laisser la valeur à 0 par défaut, ajouter une aide claire et éventuellement masquer ce champ dans une section avancée.
 - Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - Repenser la navigation mobile.
 - Ajouter les tables avancées : pagination, vues détaillées et comparateur.
@@ -288,11 +288,7 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **Encodage résiduel dans des commentaires**
-   - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
-   - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
-
-2. **Absence de tests automatisés et de lint**
+1. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification
