@@ -3,14 +3,6 @@ import { useCatalogData } from "../catalogContext";
 import type { PVParams } from "../types";
 import { cls } from "../ui/styles";
 
-type RoundMode = "nearest" | "floor" | "ceil";
-
-function roundBy(mode: RoundMode, v: number) {
-  if (mode === "floor") return Math.floor(v);
-  if (mode === "ceil") return Math.ceil(v);
-  return Math.round(v);
-}
-
 function interpTable(x: number, pts: [number, number][]) {
   if (pts.length === 0) return 0;
   const sorted = [...pts].sort((a, b) => a[0] - b[0]);
@@ -27,7 +19,6 @@ function interpTable(x: number, pts: [number, number][]) {
 }
 
 function computePV(con: number, level: number, pv: PVParams) {
-  const roundMode: RoundMode = pv.round ?? "nearest";
   let raw = 0;
 
   if (pv.mode === "linear") {
@@ -39,7 +30,7 @@ function computePV(con: number, level: number, pv: PVParams) {
   raw += (pv.perLevel ?? 0) * Math.max(0, level);
 
   const capped = Math.min(raw, pv.cap ?? raw);
-  return roundBy(roundMode, capped);
+  return Math.round(capped);
 }
 
 export default function PVPage() {
@@ -65,7 +56,7 @@ export default function PVPage() {
           {pv.mode === "linear"
             ? ` (PV = round(CON × ${pv.slope}${pv.offset ? ` + ${pv.offset}` : ""}))`
             : ""}
-          , arrondi <b>{pv.round ?? "nearest"}</b>.
+          , arrondi au plus proche.
         </p>
         <p className="text-sm text-muted-foreground mt-2">
           Les PV sont calculés à partir de la Constitution selon ta table Hesta (d100 inversé). Utilise le
@@ -144,9 +135,6 @@ export default function PVPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          La colonne “PV (arrondi)” reproduit exactement tes résultats (ex. 75 ⇒ 47, 45 ⇒ 29, 1 ⇒ 1).
-        </p>
       </section>
     </div>
   );

@@ -54,7 +54,7 @@ export type PVParams =
       mode: "linear";
       slope: number;
       offset?: number;
-      round?: "nearest" | "floor" | "ceil";
+      round?: "nearest";
       minCon?: number;
       maxCon?: number;
       perLevel?: number;
@@ -63,7 +63,7 @@ export type PVParams =
   | {
       mode: "table";
       points: [number, number][];
-      round?: "nearest" | "floor" | "ceil";
+      round?: "nearest";
       perLevel?: number;
       cap?: number;
     };

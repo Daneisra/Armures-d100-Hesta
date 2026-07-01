@@ -195,7 +195,7 @@ temps = PA_manquants
 ### PV / Constitution
 
 - Modèle actuel dans `params.json` : mode `linear`.
-- Formule actuelle : `PV = round(CON × 0.625)` avec offset `0` et arrondi `nearest`.
+- Formule actuelle : `PV = Math.round(CON × 0.625)` avec offset `0` et arrondi au plus proche.
 - Constitution bornée de `0` à `100` dans les paramètres actuels.
 - `perLevel` vaut actuellement `0` et `cap` vaut `999`.
 - `PVPage.tsx` sait aussi gérer un mode `table` avec interpolation linéaire entre les points.
@@ -279,19 +279,15 @@ Règles de compatibilité :
    - Les imports vérifient surtout la structure racine et quelques champs obligatoires.
    - Les types numériques, doublons, bornes et références croisées ne sont pas tous validés strictement.
 
-2. **Exemple PV potentiellement obsolète**
-   - Le texte de `PVPage.tsx` cite `45 ⇒ 29`.
-   - Avec `round(45 × 0.625)`, le résultat JavaScript actuel est `28`.
-
-3. **Encodage résiduel dans des commentaires**
+2. **Encodage résiduel dans des commentaires**
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-4. **Roadmap/documentation en décalage possible**
+3. **Roadmap/documentation en décalage possible**
    - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
    - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
 
-5. **Absence de tests automatisés et de lint**
+4. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification

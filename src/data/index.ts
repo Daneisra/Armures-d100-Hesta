@@ -23,8 +23,7 @@ import type {
 
 /* ---------- PV adapter: JSON libre -> PVParams strict ---------- */
 function toPVParams(pv: any): PVParams {
-  const round =
-    pv?.round === "floor" || pv?.round === "ceil" ? pv.round : "nearest";
+  const round = "nearest" as const;
 
   if (pv?.mode === "table") {
     const pts: [number, number][] = Array.isArray(pv.points)
