@@ -67,6 +67,7 @@ src/data/*.json
   - `calc.ts` : PA, malus, efficacité, sweet spot, enchantements, boucliers et notes.
   - `wear.ts` : simulation d’un coup, pénétration, perte de PV et usure des PA.
   - `repair.ts` : coût et durée de réparation.
+  - `importValidation.ts` : validation stricte et rapports structurés pour les imports catalogue/builds.
 
 - `src/components/`
   - Composants réutilisables et widgets métier.
@@ -229,6 +230,8 @@ Règles de compatibilité :
 - Ne pas modifier la structure des payloads sans migration.
 - Toute rupture de format doit entraîner un bump de schéma et une stratégie de migration/fallback.
 - Ne pas renommer un champ JSON ou une valeur servant de clé (`name`, `category`, `compat`, identifiants d’enchantement) sans analyser les sauvegardes existantes.
+- Tout import catalogue ou builds est validé avant écriture dans `localStorage` : structure, types, bornes, doublons et références croisées.
+- Une erreur d’import doit lever `ImportValidationError`, conserver les données locales existantes et produire un rapport avec un chemin précis par erreur.
 
 ## 7. Conventions de développement
 
@@ -265,7 +268,7 @@ Règles de compatibilité :
 Éléments connus et état observé dans le code :
 
 - Mini CRUD local-first pour châssis, matériaux, qualités, boucliers et paramètres : déjà présent dans `/editeur`, à consolider.
-- Import/export JSON du catalogue et des builds : déjà présent, validation stricte encore à renforcer.
+- Import/export JSON du catalogue et des builds : présent avec validation stricte, blocage avant écriture et rapport d’erreurs copiable.
 - Usure en combat v2 avec PA actuelle, historique et dégâts supérieurs à 20 : déjà présente dans `WearWidget`.
 - Catalogue local de builds : déjà présent dans `/builds`, avec import/export, application et partage par lien.
 - Graphiques simples d’équilibrage : aperçu SVG déjà présent dans le calculateur.
@@ -275,19 +278,15 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **Validation d’import encore partielle**
-   - Les imports vérifient surtout la structure racine et quelques champs obligatoires.
-   - Les types numériques, doublons, bornes et références croisées ne sont pas tous validés strictement.
-
-2. **Encodage résiduel dans des commentaires**
+1. **Encodage résiduel dans des commentaires**
    - Quelques commentaires de `Calculator.tsx` contiennent encore des caractères de remplacement (`�`).
    - Ne pas effectuer un nettoyage global d’encodage sans vérifier l’UTF-8 des fichiers et des données sauvegardées.
 
-3. **Roadmap/documentation en décalage possible**
+2. **Roadmap/documentation en décalage possible**
    - Plusieurs éléments présentés comme roadmap sont déjà implémentés.
    - Vérifier le code et `package.json` avant d’annoncer le statut d’une feature.
 
-4. **Absence de tests automatisés et de lint**
+3. **Absence de tests automatisés et de lint**
    - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
 
 ## 11. Checklist avant et après une modification

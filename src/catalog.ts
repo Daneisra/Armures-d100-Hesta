@@ -1,5 +1,6 @@
 import { chassis as chassisDefault, materials as materialsDefault, qualities as qualitiesDefault, shields as shieldsDefault, params as paramsDefault, categories as categoriesDefault, enchants as enchantsDefault, shieldMaterials as shieldMaterialsDefault } from "./data";
 import type { Chassis, Material, Quality, Shield, Params, Category, Enchant, ShieldMaterial } from "./types";
+import { assertValidCatalogOverrides, ImportValidationError, type ImportIssue } from "./lib/importValidation";
 
 export type Catalog = {
   chassis: Chassis[];
@@ -97,38 +98,33 @@ export function exportCatalog(overrides: CatalogOverrides): string {
 }
 
 export function importCatalog(text: string): CatalogOverrides {
-  const errors: string[] = [];
-  let parsed: any;
+  let parsed: unknown;
   try {
     parsed = JSON.parse(text);
-  } catch (e: any) {
-    throw new Error("JSON invalide : " + (e?.message ?? "parse error"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "erreur de lecture inconnue";
+    throw new ImportValidationError("Import catalogue refusé", [{ path: "$", message: `JSON invalide : ${message}` }]);
   }
 
-  if (parsed?.schemaVersion !== SCHEMA_VERSION) {
-    errors.push("schemaVersion manquante ou incompatible");
-  }
-  if (typeof parsed !== "object") {
-    errors.push("Le fichier doit contenir un objet JSON racine");
-  }
-  if (parsed.overrides && typeof parsed.overrides !== "object") {
-    errors.push("overrides doit être un objet");
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new ImportValidationError("Import catalogue refusé", [{ path: "$", message: "doit être un objet JSON" }]);
   }
 
-  const ov = (parsed?.overrides ?? {}) as CatalogOverrides;
-  const checkArray = (key: keyof CatalogOverrides) => {
-    const val = (ov as any)[key];
-    if (val !== undefined && !Array.isArray(val)) {
-      errors.push(`${String(key)} doit être un tableau`);
-    }
-  };
-  ["chassis","materials","qualities","shields","categories","enchants","shieldMaterials"].forEach(k => checkArray(k as keyof CatalogOverrides));
-  if (ov.params && typeof ov.params !== "object") errors.push("params doit être un objet");
-
-  if (errors.length) {
-    throw new Error("Import catalogue invalide :\n- " + errors.join("\n- "));
+  const root = parsed as Record<string, unknown>;
+  const issues: ImportIssue[] = [];
+  Object.keys(root).forEach(key => {
+    if (key !== "schemaVersion" && key !== "overrides") issues.push({ path: `$.${key}`, message: "champ inconnu" });
+  });
+  if (root.schemaVersion !== SCHEMA_VERSION) {
+    issues.push({ path: "$.schemaVersion", message: `version attendue : ${SCHEMA_VERSION}` });
   }
-  return ov;
+  if (!Object.prototype.hasOwnProperty.call(root, "overrides")) {
+    issues.push({ path: "$.overrides", message: "champ obligatoire manquant" });
+  }
+  if (issues.length) throw new ImportValidationError("Import catalogue refusé", issues);
+
+  assertValidCatalogOverrides(root.overrides, defaults);
+  return root.overrides;
 }
 
 export { defaults as defaultCatalog, STORAGE_KEY as CATALOG_STORAGE_KEY };

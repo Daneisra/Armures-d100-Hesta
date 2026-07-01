@@ -41,9 +41,11 @@ Types clés (extraits de `src/types.ts`) :
   - Table triable/filtrable, badges d’effets/résistances, sticky header, densité compacte.
 - **Catalogue de builds**
   - Liste filtrable, supprimer/exporter/importer (JSON), appliquer au calculateur.
+  - Import strict : types, bornes, doublons et références contrôlés avant écriture, avec rapport copiable.
 - **Éditeur**
   - CRUD local pour châssis/matériaux/qualités/boucliers/params.
   - Diff overrides vs canon, import/export JSON, reset par onglet ou global.
+  - Import strict avec blocage des références invalides et rapport d’erreurs copiable.
 - **Thème & accessibilité**
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.

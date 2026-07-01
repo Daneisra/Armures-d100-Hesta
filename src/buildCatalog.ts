@@ -1,4 +1,6 @@
 import type { BuildInput } from "./types";
+import type { Catalog } from "./catalog";
+import { assertValidBuildImport, ImportValidationError, type ImportIssue } from "./lib/importValidation";
 
 export type SavedBuild = {
   id: string;
@@ -51,26 +53,35 @@ export function exportBuilds(): string {
   return JSON.stringify({ schemaVersion: 1, builds: load() }, null, 2);
 }
 
-export function importBuilds(text: string, mode: "replace" | "merge" = "merge") {
-  let parsed: any;
+export function importBuilds(text: string, mode: "replace" | "merge", catalog: Catalog) {
+  let parsed: unknown;
   try {
     parsed = JSON.parse(text);
-  } catch (e: any) {
-    throw new Error("JSON invalide : " + (e?.message ?? "parse error"));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "erreur de lecture inconnue";
+    throw new ImportValidationError("Import de builds refusé", [{ path: "$", message: `JSON invalide : ${message}` }]);
   }
-  const errors: string[] = [];
-  const incoming: SavedBuild[] = Array.isArray(parsed?.builds) ? parsed.builds : [];
-  if (!Array.isArray(parsed?.builds)) {
-    errors.push("`builds` doit être un tableau");
+
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new ImportValidationError("Import de builds refusé", [{ path: "$", message: "doit être un objet JSON" }]);
   }
-  incoming.forEach((b, idx) => {
-    if (!b?.name) errors.push(`build #${idx+1} : name manquant`);
-    if (!b?.build) errors.push(`build #${idx+1} : champ build manquant`);
+
+  const root = parsed as Record<string, unknown>;
+  const issues: ImportIssue[] = [];
+  Object.keys(root).forEach(key => {
+    if (key !== "schemaVersion" && key !== "builds") issues.push({ path: `$.${key}`, message: "champ inconnu" });
   });
-  if (errors.length) {
-    throw new Error("Import builds invalide :\n- " + errors.join("\n- "));
+  if (root.schemaVersion !== 1) {
+    issues.push({ path: "$.schemaVersion", message: "version attendue : 1" });
   }
+  if (!Object.prototype.hasOwnProperty.call(root, "builds")) {
+    issues.push({ path: "$.builds", message: "champ obligatoire manquant" });
+  }
+  if (issues.length) throw new ImportValidationError("Import de builds refusé", issues);
+
   const current = mode === "replace" ? [] : load();
+  assertValidBuildImport(root.builds, catalog, current);
+  const incoming = root.builds;
   const merged = [...incoming, ...current];
   persist(merged);
 }

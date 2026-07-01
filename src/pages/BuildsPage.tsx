@@ -3,12 +3,14 @@ import type { BuildInput } from "../types";
 import { getBuilds, deleteBuild, resetBuilds, exportBuilds, importBuilds } from "../buildCatalog";
 import { useNavigate } from "react-router-dom";
 import { cls } from "../ui/styles";
+import { useCatalogData } from "../catalogContext";
 
 export default function BuildsPage() {
   const [builds, setBuilds] = useState(() => getBuilds());
   const [filter, setFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
+  const catalog = useCatalogData();
   const navigate = useNavigate();
 
   const exportToFile = () => {
@@ -50,14 +52,24 @@ export default function BuildsPage() {
     if (!file) return;
     file.text().then(text => {
       try {
-        importBuilds(text, "merge");
+        importBuilds(text, "merge", catalog);
         setBuilds(getBuilds());
         setError(null);
         setFlash("Import réussi");
-      } catch (err: any) {
-        setError(err?.message || "Import invalide");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Import invalide");
       }
     });
+  };
+
+  const copyErrorReport = async () => {
+    if (!error) return;
+    try {
+      await navigator.clipboard.writeText(error);
+      setFlash("Rapport d’erreurs copié");
+    } catch {
+      prompt("Copie le rapport d’erreurs :", error);
+    }
   };
 
   const encodeBuildParam = (build: BuildInput) => {
@@ -126,7 +138,15 @@ export default function BuildsPage() {
         </div>
       </header>
 
-      {error && <div className={`${cls.card} border-rose-500 text-rose-500 text-sm`}>{error}</div>}
+      {error && (
+        <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
+            <button className={cls.btnGhost} onClick={copyErrorReport}>Copier le rapport d’erreurs</button>
+          </div>
+          <pre className="whitespace-pre-wrap break-words font-mono text-xs text-rose-700 dark:text-rose-200">{error}</pre>
+        </section>
+      )}
       <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 
       <div className="flex items-center gap-3">

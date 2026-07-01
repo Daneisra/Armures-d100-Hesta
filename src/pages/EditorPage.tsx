@@ -39,10 +39,20 @@ export default function EditorPage() {
         importAll(text, "replace");
         setImportError(null);
         setFlash("Import overrides appliqué");
-      } catch (e: any) {
-        setImportError(e?.message || "Import invalide");
+      } catch (error: unknown) {
+        setImportError(error instanceof Error ? error.message : "Import invalide");
       }
     });
+  };
+
+  const copyImportReport = async () => {
+    if (!importError) return;
+    try {
+      await navigator.clipboard.writeText(importError);
+      setFlash("Rapport d’erreurs copié");
+    } catch {
+      prompt("Copie le rapport d’erreurs :", importError);
+    }
   };
 
   return (
@@ -62,7 +72,15 @@ export default function EditorPage() {
         </div>
       </header>
 
-      {importError && <div className={`${cls.card} border-rose-500 text-rose-500`}>{importError}</div>}
+      {importError && (
+        <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
+            <button className={cls.btnGhost} onClick={copyImportReport}>Copier le rapport d’erreurs</button>
+          </div>
+          <pre className="whitespace-pre-wrap break-words font-mono text-xs text-rose-700 dark:text-rose-200">{importError}</pre>
+        </section>
+      )}
       <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 
       <nav className="flex flex-wrap gap-2">
