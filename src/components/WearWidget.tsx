@@ -119,7 +119,7 @@ export default function WearWidget({
             />
           </label>
           <p id="wear-armor-piercing-help" className="mt-1 text-xs text-muted-foreground">
-            Réduit temporairement les PA pour ce coup. La résistance <code>penIgnore</code> du matériau en annule une partie, sans réduire directement les dégâts.
+            Réduit les PA effectives uniquement pour ce coup. Le <code>penIgnore</code> du matériau en annule une partie, sans réduire directement les dégâts.
           </p>
         </div>
       </details>
@@ -142,7 +142,7 @@ export default function WearWidget({
           <b className="tabular">
             {preview.wearApplied}
             {preview.breakdown.capped && <span className={`ml-2 ${cls.badgeWarn}`}>cap</span>}
-            {preview.breakdown.penetrated && <span className={`ml-2 ${cls.badgeBad}`}>pénétration</span>}
+            {preview.breakdown.penetrated && <span className={`ml-2 ${cls.badgeBad}`}>coup pénétrant</span>}
           </b>
           <span className="text-muted-foreground">PA après</span>       <b className="tabular">{preview.paAfter}</b>
         </div>
