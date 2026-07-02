@@ -51,6 +51,7 @@ Types clés (extraits de `src/types.ts`) :
 - **Thème & accessibilité**
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.
+  - Modales accessibles pour les confirmations et la sauvegarde : focus piégé nativement, fermeture Échap et restauration du focus.
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
@@ -61,7 +62,6 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.6.x — Stabilisation & qualité
 
-- [ ] Améliorer l’accessibilité des modales et drawers.
 - [ ] Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée

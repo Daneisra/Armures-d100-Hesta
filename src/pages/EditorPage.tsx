@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useCatalog } from "../catalogContext";
 import type { Chassis, Material, Quality, Shield, Params } from "../types";
 import { cls } from "../ui/styles";
+import AccessibleDialog from "../components/AccessibleDialog";
 
 type TabKey = "chassis" | "materials" | "qualities" | "shields" | "params";
 
@@ -18,6 +19,7 @@ export default function EditorPage() {
   const [tab, setTab] = useState<TabKey>("chassis");
   const [importError, setImportError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const exportToFile = () => {
     const data = exportAll();
@@ -68,7 +70,7 @@ export default function EditorPage() {
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
           </label>
           <button className={cls.btnGhost} onClick={exportToFile}>Exporter (JSON)</button>
-          <button className={cls.btnGhost} onClick={resetAll}>Reset global</button>
+          <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)}>Reset global</button>
         </div>
       </header>
 
@@ -112,6 +114,31 @@ export default function EditorPage() {
       {tab === "params" && (
         <ParamsEditor value={catalog.params} onChange={p => updateDomain("params", p)} onReset={()=>resetDomain("params")} />
       )}
+
+      <AccessibleDialog
+        open={resetDialogOpen}
+        title="Réinitialiser tout le catalogue local ?"
+        description="Tous les overrides locaux seront supprimés et les données officielles du repo seront restaurées."
+        onClose={() => setResetDialogOpen(false)}
+        footer={(
+          <>
+            <button className={cls.btnGhost} type="button" onClick={() => setResetDialogOpen(false)}>Annuler</button>
+            <button
+              className={`${cls.btnPrimary} bg-rose-600 hover:bg-rose-700`}
+              type="button"
+              onClick={() => {
+                resetAll();
+                setResetDialogOpen(false);
+                setFlash("Catalogue local réinitialisé.");
+              }}
+            >
+              Réinitialiser
+            </button>
+          </>
+        )}
+      >
+        <p className="text-sm text-muted-foreground">Exporte d’abord le catalogue si tu souhaites conserver ces personnalisations.</p>
+      </AccessibleDialog>
     </div>
   );
 }

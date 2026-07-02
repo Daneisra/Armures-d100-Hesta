@@ -1,15 +1,18 @@
 import { useMemo, useState } from "react";
 import type { BuildInput } from "../types";
-import { getBuilds, deleteBuild, resetBuilds, exportBuilds, importBuilds } from "../buildCatalog";
+import { getBuilds, deleteBuild, resetBuilds, exportBuilds, importBuilds, type SavedBuild } from "../buildCatalog";
 import { useNavigate } from "react-router-dom";
 import { cls } from "../ui/styles";
 import { useCatalogData } from "../catalogContext";
+import AccessibleDialog from "../components/AccessibleDialog";
 
 export default function BuildsPage() {
   const [builds, setBuilds] = useState(() => getBuilds());
   const [filter, setFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<SavedBuild | null>(null);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const catalog = useCatalogData();
   const navigate = useNavigate();
 
@@ -31,16 +34,19 @@ export default function BuildsPage() {
     return builds.filter(b => b.name.toLowerCase().includes(q));
   }, [builds, filter]);
 
-  const onDelete = (id: string) => {
-    deleteBuild(id);
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    deleteBuild(pendingDelete.id);
     setBuilds(getBuilds());
+    setFlash(`Build « ${pendingDelete.name} » supprimé.`);
+    setPendingDelete(null);
   };
 
   const onReset = () => {
-    if (!window.confirm("Supprimer tous les builds sauvegardés ?")) return;
     resetBuilds();
     setBuilds([]);
     setFlash("Catalogue vidé");
+    setResetDialogOpen(false);
   };
 
   const onExport = () => {
@@ -134,7 +140,7 @@ export default function BuildsPage() {
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
           </label>
           <button className={cls.btnGhost} onClick={onExport}>Exporter (copie)</button>
-          <button className={cls.btnGhost} onClick={onReset}>Tout réinitialiser</button>
+          <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)}>Tout réinitialiser</button>
         </div>
       </header>
 
@@ -175,7 +181,7 @@ export default function BuildsPage() {
                 <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat, b.name)}>Appliquer</button>
                 <button className={cls.btnGhost} onClick={()=>onCopyLink(b.build, b.cat, b.name)}>Partager</button>
                 <button className={cls.btnGhost} onClick={()=>exportSingleJSON(b.build, b.cat, b.name)}>Exporter JSON</button>
-                <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>onDelete(b.id)}>Supprimer</button>
+                <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>setPendingDelete(b)}>Supprimer</button>
               </div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
@@ -189,6 +195,40 @@ export default function BuildsPage() {
           </div>
         ))}
       </div>
+
+      <AccessibleDialog
+        open={Boolean(pendingDelete)}
+        title="Supprimer ce build ?"
+        description={pendingDelete ? `Le build « ${pendingDelete.name} » sera supprimé du catalogue local.` : undefined}
+        onClose={() => setPendingDelete(null)}
+        footer={(
+          <>
+            <button className={cls.btnGhost} type="button" onClick={() => setPendingDelete(null)}>Annuler</button>
+            <button className={`${cls.btnPrimary} bg-rose-600 hover:bg-rose-700`} type="button" onClick={confirmDelete}>
+              Supprimer
+            </button>
+          </>
+        )}
+      >
+        <p className="text-sm text-muted-foreground">Cette action est définitive.</p>
+      </AccessibleDialog>
+
+      <AccessibleDialog
+        open={resetDialogOpen}
+        title="Vider tout le catalogue ?"
+        description="Tous les builds sauvegardés localement seront supprimés."
+        onClose={() => setResetDialogOpen(false)}
+        footer={(
+          <>
+            <button className={cls.btnGhost} type="button" onClick={() => setResetDialogOpen(false)}>Annuler</button>
+            <button className={`${cls.btnPrimary} bg-rose-600 hover:bg-rose-700`} type="button" onClick={onReset}>
+              Tout supprimer
+            </button>
+          </>
+        )}
+      >
+        <p className="text-sm text-muted-foreground">Pense à exporter les builds que tu souhaites conserver.</p>
+      </AccessibleDialog>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -76,6 +76,7 @@ src/data/*.json
   - `Calculator.tsx` orchestre le build actif, les filtres, le stockage local, le partage et les widgets.
   - `WearWidget.tsx` gère les PA actuelles et l’historique des coups.
   - `RepairWidget.tsx` présente le calcul de réparation.
+  - `AccessibleDialog.tsx` encapsule l’élément natif `<dialog>` pour les confirmations et formulaires modaux accessibles.
 
 - `src/pages/`
   - Pages routées : matériaux, PV/Constitution, catalogue de builds et éditeur.
@@ -253,6 +254,7 @@ Règles de compatibilité :
 - Conserver les utilitaires Tailwind de layout (`flex`, `grid`, `gap-*`, `px-*`, etc.) quand ils sont spécifiques au composant.
 - Maintenir un contraste correct en modes clair, sombre et auto.
 - Conserver un focus clavier visible et relier les labels aux champs avec `htmlFor`/`id` lorsque possible.
+- Utiliser `AccessibleDialog` pour toute nouvelle modale afin de conserver Échap, focus modal et restauration du focus déclencheur.
 - Pour les données numériques, conserver les bornes, conversions et fallbacks explicites.
 - Ne pas muter les tableaux du catalogue partagé ; préférer une copie avant `sort()`.
 
@@ -273,7 +275,6 @@ Règles de compatibilité :
 
 ### 0.6.x — Stabilisation & qualité
 
-- Améliorer l’accessibilité des modales et drawers.
 - Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée

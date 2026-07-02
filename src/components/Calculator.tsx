@@ -6,6 +6,7 @@ import RatioPill from "./RatioPill";
 import CompatBadge from "./CompatBadge";
 import WearWidget from "./WearWidget";
 import RepairWidget from "./RepairWidget";
+import AccessibleDialog from "./AccessibleDialog";
 import { addBuild } from "../buildCatalog";
 import { useCatalogData } from "../catalogContext";
 import { cls } from "../ui/styles";
@@ -72,6 +73,10 @@ export default function Calculator(){
     }
   });
   const [showLegend, setShowLegend] = useState(false);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [saveName, setSaveName] = useState("");
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   // Build partagé via URL (?build=...&cat=...)
   useEffect(() => {
@@ -117,11 +122,19 @@ export default function Calculator(){
 
   // reset local config (bouton)
   const resetLocal = () => {
-    if (!window.confirm("Effacer la configuration locale et recharger ?")) return;
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(CAT_KEY);
     LEGACY_KEYS.forEach(k=>localStorage.removeItem(k));
     window.location.reload();
+  };
+
+  const saveCurrentBuild = () => {
+    const name = saveName.trim();
+    if (!name) return;
+    addBuild({ name, build: { ...inp, cat }, cat });
+    setSaveName("");
+    setSaveDialogOpen(false);
+    setFeedback(`Build « ${name} » sauvegardé dans le catalogue local.`);
   };
 
   // --- filtre catégorie pilotée par châssis ---
@@ -226,7 +239,7 @@ export default function Calculator(){
     <div className={`${cls.page} max-w-4xl space-y-6`}>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Calculateur d'armure <span className="text-sm opacity-60">v{__APP_VERSION__}</span></h1>
-        <button className={cls.btnGhost} onClick={resetLocal} title="Efface la configuration locale et recharge">
+        <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)} title="Efface la configuration locale et recharge">
           Réinitialiser la config locale
         </button>
       </div>
@@ -390,15 +403,7 @@ export default function Calculator(){
               {`PA ${res.paFinal}, malus ${res.malusFinal}, ratio ${ratioSpoken}, ${compatOk ? "châssis et matériau compatibles." : "châssis et matériau incompatibles."} ${res.sweet ? "Bon équilibre." : ""}`}
             </div>
             <div className="pt-3 border-t mt-3 flex gap-2 flex-wrap">
-              <button
-                className={cls.btnPrimary}
-                onClick={() => {
-                  const name = prompt("Nom du build à sauvegarder ?")?.trim();
-                  if (!name) return;
-                  addBuild({ name, build: { ...inp, cat }, cat });
-                  alert("Build sauvegardé dans le catalogue local.");
-                }}
-              >
+              <button className={cls.btnPrimary} onClick={() => setSaveDialogOpen(true)}>
                 Enregistrer ce build
               </button>
               <button
@@ -406,7 +411,7 @@ export default function Calculator(){
                 onClick={() => {
                   localStorage.setItem("lastBuild_v2", JSON.stringify({ ...inp, cat }));
                   localStorage.setItem("lastBuildCat_v2", cat);
-                  alert("Build appliqué pour chargement rapide.");
+                  setFeedback("Build appliqué pour le chargement rapide.");
                 }}
               >
                 Charger ce build
@@ -477,6 +482,54 @@ export default function Calculator(){
           />
         </div>
       </div>
+
+      <div aria-live="polite" className="text-sm text-emerald-600 dark:text-emerald-300">
+        {feedback}
+      </div>
+
+      <AccessibleDialog
+        open={saveDialogOpen}
+        title="Enregistrer le build"
+        description="Choisis un nom pour retrouver cette configuration dans le catalogue local."
+        onClose={() => setSaveDialogOpen(false)}
+        initialFocusSelector="#save-build-name"
+        footer={(
+          <>
+            <button className={cls.btnGhost} type="button" onClick={() => setSaveDialogOpen(false)}>Annuler</button>
+            <button className={cls.btnPrimary} type="submit" form="save-build-form" disabled={!saveName.trim()}>
+              Enregistrer
+            </button>
+          </>
+        )}
+      >
+        <form id="save-build-form" onSubmit={event => { event.preventDefault(); saveCurrentBuild(); }}>
+          <label htmlFor="save-build-name" className="text-sm font-medium">Nom du build</label>
+          <input
+            id="save-build-name"
+            className={`${cls.input} mt-1`}
+            value={saveName}
+            onChange={event => setSaveName(event.target.value)}
+            autoComplete="off"
+          />
+        </form>
+      </AccessibleDialog>
+
+      <AccessibleDialog
+        open={resetDialogOpen}
+        title="Réinitialiser la configuration locale ?"
+        description="Le dernier build actif sera effacé et la page sera rechargée avec les valeurs par défaut."
+        onClose={() => setResetDialogOpen(false)}
+        footer={(
+          <>
+            <button className={cls.btnGhost} type="button" onClick={() => setResetDialogOpen(false)}>Annuler</button>
+            <button className={`${cls.btnPrimary} bg-rose-600 hover:bg-rose-700`} type="button" onClick={resetLocal}>
+              Réinitialiser
+            </button>
+          </>
+        )}
+      >
+        <p className="text-sm text-muted-foreground">Cette action ne supprime pas les builds enregistrés dans le catalogue.</p>
+      </AccessibleDialog>
     </div>
   );
 }
