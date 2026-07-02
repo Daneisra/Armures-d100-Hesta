@@ -7,13 +7,20 @@ import EditorPage from "./pages/EditorPage";
 import BuildsPage from "./pages/BuildsPage";
 import OfflineStatus from "./components/OfflineStatus";
 import { cls } from "./ui/styles";
+import {
+  Calculator as CalculatorIcon,
+  HeartPulse,
+  Layers,
+  Library,
+  SlidersHorizontal,
+} from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Calculateur", to: "/", match: (path: string) => path === "/" },
-  { label: "Matériaux", to: "/materials", match: (path: string) => path.startsWith("/materials") },
-  { label: "PV / Constitution", to: "/pv", match: (path: string) => path.startsWith("/pv") },
-  { label: "Catalogue", to: "/builds", match: (path: string) => path.startsWith("/builds") },
-  { label: "Éditeur", to: "/editeur", match: (path: string) => path.startsWith("/editeur") },
+  { label: "Calculateur", mobileLabel: "Calcul", icon: CalculatorIcon, to: "/", match: (path: string) => path === "/" },
+  { label: "Matériaux", mobileLabel: "Matériaux", icon: Layers, to: "/materials", match: (path: string) => path.startsWith("/materials") },
+  { label: "PV / Constitution", mobileLabel: "PV", icon: HeartPulse, to: "/pv", match: (path: string) => path.startsWith("/pv") },
+  { label: "Catalogue", mobileLabel: "Builds", icon: Library, to: "/builds", match: (path: string) => path.startsWith("/builds") },
+  { label: "Éditeur", mobileLabel: "Éditeur", icon: SlidersHorizontal, to: "/editeur", match: (path: string) => path.startsWith("/editeur") },
 ];
 
 export default function App() {
@@ -23,7 +30,7 @@ return (
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-3 focus:py-2 focus:rounded-md focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:fixed focus:z-50 focus:top-2 focus:left-2 focus:bg-primary focus:text-primary-foreground focus:px-3 focus:py-2 focus:rounded-md focus:shadow-lg"
       >
         Aller au contenu
       </a>
@@ -53,7 +60,7 @@ return (
             </div>
           </div>
 
-          <nav className="flex flex-wrap items-center gap-2">
+          <nav className="hidden flex-wrap items-center gap-2 sm:flex" aria-label="Navigation principale">
             {NAV_ITEMS.map(item => {
               const active = item.match(location.pathname);
               return (
@@ -70,7 +77,7 @@ return (
           </nav>
         </header>
 
-        <main id="main">
+        <main id="main" className="pb-20 sm:pb-0">
           <Routes>
             <Route path="/" element={<Calculator />} />
             <Route path="/materials" element={<MaterialsPage />} />
@@ -80,6 +87,25 @@ return (
           </Routes>
         </main>
       </div>
+
+      <nav className="mobile-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 px-1 pt-1 shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur sm:hidden" aria-label="Navigation mobile">
+        {NAV_ITEMS.map(item => {
+          const active = item.match(location.pathname);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-md px-1 text-[10px] font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/50 ${active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"}`}
+              aria-label={item.label}
+              aria-current={active ? "page" : undefined}
+            >
+              <Icon size={19} strokeWidth={active ? 2.5 : 2} aria-hidden="true" />
+              <span className="max-w-full truncate">{item.mobileLabel}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }

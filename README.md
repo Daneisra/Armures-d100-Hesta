@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.2)
+## Fonctionnalités actuelles (0.7.3)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -60,6 +60,9 @@ Types clés (extraits de `src/types.ts`) :
   - Cache versionné du shell, du bundle et des données JSON embarquées après la première visite.
   - Routes SPA accessibles hors ligne et indicateur « Mode hors ligne » dans le header.
   - Dernier build, catalogue et préférences conservés par `localStorage`.
+- **Navigation responsive**
+  - Onglets complets dans le header sur desktop.
+  - Barre de navigation inférieure sur mobile avec icônes, page active et prise en charge des zones sûres.
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
@@ -71,7 +74,6 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.7.x — Expérience avancée
 
-- [ ] Repenser la navigation mobile.
 - [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - [ ] Rendre les graphiques interactifs et permettre l’export image/CSV.
 

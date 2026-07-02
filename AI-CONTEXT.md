@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.2`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -102,7 +102,7 @@ src/data/*.json
 - `public/manifest.webmanifest` : métadonnées d’installation de la PWA.
 - `src/catalogContext.tsx` : contexte React donnant accès au catalogue fusionné.
 - `src/buildCatalog.ts` : CRUD local et import/export du catalogue de builds.
-- `src/App.tsx` : navigation, routes, skip link et shell principal.
+- `src/App.tsx` : routes, skip link et shell principal ; navigation dans le header sur desktop, barre inférieure dédiée sous le breakpoint `sm`.
 
 ## 4. Inventaire des données JSON
 
@@ -285,7 +285,6 @@ Règles de compatibilité :
 
 ### 0.7.x — Expérience avancée
 
-- Repenser la navigation mobile.
 - Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - Rendre les graphiques interactifs et permettre l’export image/CSV.
 
