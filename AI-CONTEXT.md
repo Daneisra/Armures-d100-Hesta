@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -81,6 +81,7 @@ src/data/*.json
 - `src/pages/`
   - Pages routées : matériaux, PV/Constitution, catalogue de builds et éditeur.
   - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`.
+  - L’éditeur propose un historique limité à 20 actions, une corbeille de session, une sauvegarde automatique optionnelle et des listes filtrables/triables.
 
 - `src/ui/`
   - Styles centralisés et primitives visuelles.
@@ -88,7 +89,7 @@ src/data/*.json
 
 - `tests/`
   - Tests unitaires Vitest des règles métier principales.
-  - Couvre actuellement `calc`, `wear`, `repair` et `importValidation`.
+  - Couvre actuellement `calc`, `wear`, `repair`, `importValidation` et la fusion du catalogue.
 
 ### Fichiers structurants complémentaires
 
@@ -220,7 +221,8 @@ temps = PA_manquants
 ### Personnalisation runtime
 
 - `localStorage` est une couche de personnalisation utilisateur, jamais la source canonique du projet.
-- Le catalogue runtime est obtenu par fusion : defaults du repo puis overrides locaux.
+- Le catalogue runtime utilise les defaults du repo pour les domaines sans override. Une liste éditée est stockée comme un instantané complet du domaine afin que les suppressions restent effectives ; les paramètres restent fusionnés avec leurs defaults.
+- Lorsque la sauvegarde automatique de l’éditeur est désactivée, les overrides restent en mémoire jusqu’à un enregistrement manuel ou un abandon du brouillon.
 - Ne pas introduire de backend, d’API distante ou de base de données sans décision explicite du propriétaire du projet.
 
 Clés actuellement utilisées :
@@ -231,6 +233,7 @@ Clés actuellement utilisées :
 - `lastBuildCat_v2` : dernière catégorie d’affinage sélectionnée.
 - `lastBuild` : ancienne clé lue uniquement pour migration.
 - `theme-mode` : préférence `auto`, `light` ou `dark`.
+- `pa_editor_autosave` : préférence de sauvegarde automatique de l’éditeur (`true` ou `false`).
 
 Règles de compatibilité :
 
@@ -272,10 +275,6 @@ Règles de compatibilité :
 - `dangerous-clean-slate: true` supprime le contenu du dossier distant avant upload. Ne l’utiliser que si `server-dir` pointe vers un dossier exclusivement dédié à cette application.
 
 ## 9. Roadmap actuelle
-
-### 0.6.x — Stabilisation & qualité
-
-- Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée
 

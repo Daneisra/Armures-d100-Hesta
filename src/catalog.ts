@@ -29,12 +29,8 @@ const defaults: Catalog = {
   shieldMaterials: shieldMaterialsDefault,
 };
 
-function mergeList<T extends Record<string, any>>(base: T[], ov?: T[], key: keyof T = "name"): T[] {
-  if (!ov || ov.length === 0) return base;
-  const map = new Map<string, T>();
-  base.forEach(item => map.set(String(item[key]), item));
-  ov.forEach(item => map.set(String(item[key]), item));
-  return Array.from(map.values());
+function mergeList<T>(base: T[], override?: T[]): T[] {
+  return override === undefined ? base : override;
 }
 
 function mergeParams(base: Params, override?: Partial<Params>): Params {

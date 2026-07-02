@@ -1,10 +1,27 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useCatalog } from "../catalogContext";
 import type { Chassis, Material, Quality, Shield, Params } from "../types";
 import { cls } from "../ui/styles";
 import AccessibleDialog from "../components/AccessibleDialog";
 
 type TabKey = "chassis" | "materials" | "qualities" | "shields" | "params";
+type ListTabKey = Exclude<TabKey, "params">;
+type NamedItem = Chassis | Material | Quality | Shield;
+
+type TrashEntry = {
+  id: string;
+  key: ListTabKey;
+  item: NamedItem;
+};
+
+type UndoEntry = {
+  key: TabKey;
+  previous: unknown;
+  hadOverride: boolean;
+  label: string;
+  removeTrashId?: string;
+  restoreTrash?: TrashEntry;
+};
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: "chassis", label: "Châssis" },
@@ -15,11 +32,81 @@ const tabs: { key: TabKey; label: string }[] = [
 ];
 
 export default function EditorPage() {
-  const { catalog, overrides, defaults, updateDomain, resetDomain, resetAll, exportAll, importAll } = useCatalog();
+  const {
+    catalog,
+    overrides,
+    defaults,
+    autosave,
+    dirty,
+    setAutosave,
+    saveNow,
+    discardPending,
+    updateDomain,
+    resetDomain,
+    resetAll,
+    exportAll,
+    importAll,
+  } = useCatalog();
   const [tab, setTab] = useState<TabKey>("chassis");
   const [importError, setImportError] = useState<string | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [history, setHistory] = useState<UndoEntry[]>([]);
+  const [trash, setTrash] = useState<TrashEntry[]>([]);
+
+  const snapshot = (key: TabKey, label: string, extras: Partial<UndoEntry> = {}): UndoEntry => {
+    const hadOverride = Object.prototype.hasOwnProperty.call(overrides, key);
+    const previous = hadOverride
+      ? JSON.parse(JSON.stringify(overrides[key as keyof typeof overrides]))
+      : undefined;
+    return { key, previous, hadOverride, label, ...extras };
+  };
+
+  const pushHistory = (entry: UndoEntry) => {
+    setHistory(current => [...current.slice(-19), entry]);
+  };
+
+  const applyDomainChange = (key: TabKey, value: unknown, label: string, extras: Partial<UndoEntry> = {}) => {
+    pushHistory(snapshot(key, label, extras));
+    updateDomain(key, value);
+    setFlash(label);
+  };
+
+  const resetEditorDomain = (key: TabKey) => {
+    if (!Object.prototype.hasOwnProperty.call(overrides, key)) return;
+    pushHistory(snapshot(key, `Réinitialisation de l’onglet ${key}`));
+    resetDomain(key);
+    setFlash("Onglet réinitialisé aux données officielles.");
+  };
+
+  const undoLast = () => {
+    const entry = history[history.length - 1];
+    if (!entry) return;
+    if (entry.hadOverride) updateDomain(entry.key, entry.previous);
+    else resetDomain(entry.key);
+    if (entry.removeTrashId) setTrash(current => current.filter(item => item.id !== entry.removeTrashId));
+    if (entry.restoreTrash) setTrash(current => [...current, entry.restoreTrash!]);
+    setHistory(current => current.slice(0, -1));
+    setFlash(`Annulé : ${entry.label}`);
+  };
+
+  const deleteItem = (key: ListTabKey, item: NamedItem) => {
+    const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${item.name}`;
+    const entry: TrashEntry = { id, key, item: JSON.parse(JSON.stringify(item)) };
+    const next = (catalog[key] as NamedItem[]).filter(candidate => candidate.name !== item.name);
+    applyDomainChange(key, next, `Suppression de « ${item.name} »`, { removeTrashId: id });
+    setTrash(current => [entry, ...current]);
+  };
+
+  const restoreTrash = (entry: TrashEntry) => {
+    const current = catalog[entry.key] as NamedItem[];
+    if (current.some(item => item.name === entry.item.name)) {
+      setFlash(`Impossible de restaurer « ${entry.item.name} » : ce nom existe déjà.`);
+      return;
+    }
+    applyDomainChange(entry.key, [...current, entry.item], `Restauration de « ${entry.item.name} »`, { restoreTrash: entry });
+    setTrash(items => items.filter(item => item.id !== entry.id));
+  };
 
   const exportToFile = () => {
     const data = exportAll();
@@ -39,6 +126,8 @@ export default function EditorPage() {
     file.text().then(text => {
       try {
         importAll(text, "replace");
+        setHistory([]);
+        setTrash([]);
         setImportError(null);
         setFlash("Import overrides appliqué");
       } catch (error: unknown) {
@@ -74,6 +163,54 @@ export default function EditorPage() {
         </div>
       </header>
 
+      <section className={`${cls.card} flex flex-wrap items-center justify-between gap-3 py-3`}>
+        <label className="flex items-center gap-2 text-sm font-medium">
+          <input
+            type="checkbox"
+            checked={autosave}
+            onChange={event => {
+              setAutosave(event.target.checked);
+              setFlash(event.target.checked ? "Sauvegarde automatique activée." : "Sauvegarde automatique désactivée.");
+            }}
+          />
+          Sauvegarde automatique
+        </label>
+        <div className="flex flex-wrap items-center gap-2">
+          {dirty && <span className={cls.badgeWarn}>Modifications non enregistrées</span>}
+          <button className={cls.btnGhost} type="button" onClick={undoLast} disabled={history.length === 0}>
+            Annuler{history.length > 0 ? ` (${history.length})` : ""}
+          </button>
+          {!autosave && (
+            <>
+              <button
+                className={cls.btnGhost}
+                type="button"
+                disabled={!dirty}
+                onClick={() => {
+                  discardPending();
+                  setHistory([]);
+                  setTrash([]);
+                  setFlash("Modifications non enregistrées abandonnées.");
+                }}
+              >
+                Abandonner
+              </button>
+              <button
+                className={cls.btnPrimary}
+                type="button"
+                disabled={!dirty}
+                onClick={() => {
+                  saveNow();
+                  setFlash("Catalogue local enregistré.");
+                }}
+              >
+                Enregistrer
+              </button>
+            </>
+          )}
+        </div>
+      </section>
+
       {importError && (
         <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
           <div className="flex items-center justify-between gap-3 mb-2">
@@ -98,21 +235,22 @@ export default function EditorPage() {
         ))}
       </nav>
       <DiffCard tab={tab} overrides={overrides} defaults={defaults} />
+      <TrashCard entries={trash} onRestore={restoreTrash} onClear={() => setTrash([])} />
 
       {tab === "chassis" && (
-        <ChassisEditor items={catalog.chassis} onChange={list => updateDomain("chassis", list)} onReset={()=>resetDomain("chassis")} />
+        <ChassisEditor items={catalog.chassis} onChange={list => applyDomainChange("chassis", list, "Châssis modifiés")} onDelete={item => deleteItem("chassis", item)} onReset={()=>resetEditorDomain("chassis")} />
       )}
       {tab === "materials" && (
-        <MaterialsEditor items={catalog.materials} onChange={list => updateDomain("materials", list)} onReset={()=>resetDomain("materials")} />
+        <MaterialsEditor items={catalog.materials} onChange={list => applyDomainChange("materials", list, "Matériaux modifiés")} onDelete={item => deleteItem("materials", item)} onReset={()=>resetEditorDomain("materials")} />
       )}
       {tab === "qualities" && (
-        <QualitiesEditor items={catalog.qualities} onChange={list => updateDomain("qualities", list)} onReset={()=>resetDomain("qualities")} />
+        <QualitiesEditor items={catalog.qualities} onChange={list => applyDomainChange("qualities", list, "Qualités modifiées")} onDelete={item => deleteItem("qualities", item)} onReset={()=>resetEditorDomain("qualities")} />
       )}
       {tab === "shields" && (
-        <ShieldsEditor items={catalog.shields as Shield[]} onChange={list => updateDomain("shields", list)} onReset={()=>resetDomain("shields")} />
+        <ShieldsEditor items={catalog.shields as Shield[]} onChange={list => applyDomainChange("shields", list, "Boucliers modifiés")} onDelete={item => deleteItem("shields", item)} onReset={()=>resetEditorDomain("shields")} />
       )}
       {tab === "params" && (
-        <ParamsEditor value={catalog.params} onChange={p => updateDomain("params", p)} onReset={()=>resetDomain("params")} />
+        <ParamsEditor value={catalog.params} onChange={p => applyDomainChange("params", p, "Paramètres modifiés")} onReset={()=>resetEditorDomain("params")} />
       )}
 
       <AccessibleDialog
@@ -128,6 +266,8 @@ export default function EditorPage() {
               type="button"
               onClick={() => {
                 resetAll();
+                setHistory([]);
+                setTrash([]);
                 setResetDialogOpen(false);
                 setFlash("Catalogue local réinitialisé.");
               }}
@@ -140,6 +280,81 @@ export default function EditorPage() {
         <p className="text-sm text-muted-foreground">Exporte d’abord le catalogue si tu souhaites conserver ces personnalisations.</p>
       </AccessibleDialog>
     </div>
+  );
+}
+
+function useFilteredItems<T extends { name: string }>(items: T[]) {
+  const [query, setQuery] = useState("");
+  const [direction, setDirection] = useState<"asc" | "desc">("asc");
+  const visibleItems = useMemo(() => {
+    const normalizedQuery = query.trim().toLocaleLowerCase("fr");
+    return [...items]
+      .filter(item => !normalizedQuery || JSON.stringify(item).toLocaleLowerCase("fr").includes(normalizedQuery))
+      .sort((left, right) => left.name.localeCompare(right.name, "fr") * (direction === "asc" ? 1 : -1));
+  }, [direction, items, query]);
+  return { query, setQuery, direction, setDirection, visibleItems };
+}
+
+function EditorListToolbar({
+  query,
+  onQueryChange,
+  direction,
+  onDirectionChange,
+  visibleCount,
+  totalCount,
+}: {
+  query: string;
+  onQueryChange: (value: string) => void;
+  direction: "asc" | "desc";
+  onDirectionChange: (value: "asc" | "desc") => void;
+  visibleCount: number;
+  totalCount: number;
+}) {
+  return (
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <label className="min-w-0 flex-1 text-sm">
+        <span className="sr-only">Rechercher dans cet onglet</span>
+        <input
+          className={cls.input}
+          type="search"
+          value={query}
+          onChange={event => onQueryChange(event.target.value)}
+          placeholder="Rechercher…"
+        />
+      </label>
+      <button
+        className={cls.btnGhost}
+        type="button"
+        onClick={() => onDirectionChange(direction === "asc" ? "desc" : "asc")}
+        aria-label={`Trier par nom, ordre ${direction === "asc" ? "décroissant" : "croissant"}`}
+      >
+        Nom {direction === "asc" ? "A–Z" : "Z–A"}
+      </button>
+      <span className="text-xs text-muted-foreground tabular-nums">{visibleCount} / {totalCount}</span>
+    </div>
+  );
+}
+
+function TrashCard({ entries, onRestore, onClear }: { entries: TrashEntry[]; onRestore: (entry: TrashEntry) => void; onClear: () => void }) {
+  if (entries.length === 0) return null;
+  return (
+    <section className={`${cls.card} space-y-3`}>
+      <header className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold">Corbeille de session</h2>
+          <p className="text-xs text-muted-foreground">Les éléments restent récupérables tant que cette page reste ouverte.</p>
+        </div>
+        <button className={cls.btnGhost} type="button" onClick={onClear}>Vider</button>
+      </header>
+      <div className="flex flex-wrap gap-2">
+        {entries.map(entry => (
+          <div key={entry.id} className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
+            <span><span className="text-muted-foreground">{tabs.find(item => item.key === entry.key)?.label} :</span> {entry.item.name}</span>
+            <button className={cls.btnGhost} type="button" onClick={() => onRestore(entry)}>Restaurer</button>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -210,10 +425,11 @@ function DiffCard({ tab, overrides, defaults }: { tab: TabKey; overrides: any; d
 }
 
 /* ---------------- Chassis ---------------- */
-function ChassisEditor({ items, onChange, onReset }: { items: Chassis[]; onChange: (v: Chassis[])=>void; onReset: ()=>void; }) {
+function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[]; onChange: (v: Chassis[])=>void; onDelete: (item: Chassis)=>void; onReset: ()=>void; }) {
   const empty: Chassis = { name: "", basePA: 0, baseMalus: 0, group: "Légère" as any, category: "Gambison" as any };
   const [draft, setDraft] = useState<Chassis>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const filtered = useFilteredItems(items);
 
   const save = () => {
     if (!draft.name.trim()) return;
@@ -233,11 +449,12 @@ function ChassisEditor({ items, onChange, onReset }: { items: Chassis[]; onChang
           <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
+      <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="grid md:grid-cols-[1.2fr_1fr_1fr_1fr] text-sm font-semibold text-muted-foreground px-2">
         <span>Nom</span><span>Groupe</span><span>Compat</span><span>PA / Malus</span>
       </div>
       <div className="space-y-1">
-        {items.map(c => (
+        {filtered.visibleItems.map(c => (
           <div key={c.name} className="grid md:grid-cols-[1.2fr_1fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
             <span className="font-medium">{c.name}</span>
             <span>{c.group}</span>
@@ -246,7 +463,7 @@ function ChassisEditor({ items, onChange, onReset }: { items: Chassis[]; onChang
             <div className="flex gap-1 md:col-span-4">
               <button className={cls.btnGhost} onClick={()=>edit(c)}>Éditer</button>
               <button className={cls.btnGhost} onClick={()=>dup(c)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onChange(items.filter(x=>x.name!==c.name))}>Supprimer</button>
+              <button className={cls.btnGhost} onClick={()=>onDelete(c)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -288,10 +505,11 @@ function ChassisEditor({ items, onChange, onReset }: { items: Chassis[]; onChang
 }
 
 /* ---------------- Materials ---------------- */
-function MaterialsEditor({ items, onChange, onReset }: { items: Material[]; onChange:(v:Material[])=>void; onReset:()=>void; }) {
+function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Material[]; onChange:(v:Material[])=>void; onDelete:(item:Material)=>void; onReset:()=>void; }) {
   const empty: Material = { name:"", category:"", compat:"Gambison" as any, modPA:0, malusMod:0, extraPen:0, penIgnore:0, effects:"", res:{} };
   const [draft, setDraft] = useState<Material>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const filtered = useFilteredItems(items);
 
   const save = () => {
     if (!draft.name.trim()) return;
@@ -311,8 +529,9 @@ function MaterialsEditor({ items, onChange, onReset }: { items: Material[]; onCh
           <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
+      <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="space-y-1 max-h-[420px] overflow-auto pr-1">
-        {items.map(m => (
+        {filtered.visibleItems.map(m => (
           <div key={m.name} className="grid md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
             <span className="font-medium">{m.name}</span>
             <span>{m.category}</span>
@@ -322,7 +541,7 @@ function MaterialsEditor({ items, onChange, onReset }: { items: Material[]; onCh
             <div className="flex gap-1 md:col-span-5">
               <button className={cls.btnGhost} onClick={()=>edit(m)}>Éditer</button>
               <button className={cls.btnGhost} onClick={()=>dup(m)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onChange(items.filter(x=>x.name!==m.name))}>Supprimer</button>
+              <button className={cls.btnGhost} onClick={()=>onDelete(m)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -376,10 +595,11 @@ function MaterialsEditor({ items, onChange, onReset }: { items: Material[]; onCh
 }
 
 /* ---------------- Qualities ---------------- */
-function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onChange:(v:Quality[])=>void; onReset:()=>void; }) {
+function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Quality[]; onChange:(v:Quality[])=>void; onDelete:(item:Quality)=>void; onReset:()=>void; }) {
   const empty: Quality = { name:"", bonusPA:0, malusMod:0, repair:{ costMul:1, timeMul:1 } };
   const [draft, setDraft] = useState<Quality>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const filtered = useFilteredItems(items);
 
   const save = () => {
     if (!draft.name.trim()) return;
@@ -400,8 +620,9 @@ function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onCha
           <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
+      <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="space-y-1">
-        {items.map(q=>(
+        {filtered.visibleItems.map(q=>(
           <div key={q.name} className="grid md:grid-cols-[1.5fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
             <span className="font-medium">{q.name}</span>
             <span className="tabular">PA +{q.bonusPA} / Malus {q.malusMod}</span>
@@ -409,7 +630,7 @@ function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onCha
             <div className="flex gap-1 md:col-span-3">
               <button className={cls.btnGhost} onClick={()=>edit(q)}>Éditer</button>
               <button className={cls.btnGhost} onClick={()=>dup(q)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onChange(items.filter(x=>x.name!==q.name))}>Supprimer</button>
+              <button className={cls.btnGhost} onClick={()=>onDelete(q)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -449,10 +670,11 @@ function QualitiesEditor({ items, onChange, onReset }: { items: Quality[]; onCha
 }
 
 /* ---------------- Shields ---------------- */
-function ShieldsEditor({ items, onChange, onReset }: { items: Shield[]; onChange:(v:Shield[])=>void; onReset:()=>void; }) {
+function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]; onChange:(v:Shield[])=>void; onDelete:(item:Shield)=>void; onReset:()=>void; }) {
   const empty: Shield = { name:"", pa:0, malus:0 };
   const [draft, setDraft] = useState<Shield>(empty);
   const [editing, setEditing] = useState<string | null>(null);
+  const filtered = useFilteredItems(items);
 
   const save = () => {
     if (!draft.name.trim()) return;
@@ -473,8 +695,9 @@ function ShieldsEditor({ items, onChange, onReset }: { items: Shield[]; onChange
           <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
         </div>
       </header>
+      <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="space-y-1">
-        {items.map(s=>(
+        {filtered.visibleItems.map(s=>(
           <div key={s.name} className="grid md:grid-cols-[1.5fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
             <span className="font-medium">{s.name}</span>
             <span className="tabular">PA {s.pa}</span>
@@ -482,7 +705,7 @@ function ShieldsEditor({ items, onChange, onReset }: { items: Shield[]; onChange
             <div className="flex gap-1 md:col-span-3">
               <button className={cls.btnGhost} onClick={()=>edit(s)}>Éditer</button>
               <button className={cls.btnGhost} onClick={()=>dup(s)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onChange(items.filter(x=>x.name!==s.name))}>Supprimer</button>
+              <button className={cls.btnGhost} onClick={()=>onDelete(s)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -511,8 +734,9 @@ function ShieldsEditor({ items, onChange, onReset }: { items: Shield[]; onChange
 
 /* ---------------- Params ---------------- */
 function ParamsEditor({ value, onChange, onReset }: { value: Params; onChange:(v:Params)=>void; onReset:()=>void; }) {
-  const draftState = useMemo(()=>value, [value]);
-  const [draft, setDraft] = useState<Params>(draftState);
+  const [draft, setDraft] = useState<Params>(value);
+
+  useEffect(() => setDraft(value), [value]);
 
   const save = () => onChange(draft);
 

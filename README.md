@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.6.0)
+## Fonctionnalités actuelles (0.6.5)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -48,6 +48,9 @@ Types clés (extraits de `src/types.ts`) :
   - CRUD local pour châssis/matériaux/qualités/boucliers/params.
   - Diff overrides vs canon, import/export JSON, reset par onglet ou global.
   - Import strict avec blocage des références invalides et rapport d’erreurs copiable.
+  - Annulation des 20 dernières actions et corbeille de session avec restauration.
+  - Sauvegarde automatique désactivable, avec enregistrement manuel ou abandon du brouillon.
+  - Recherche plein texte et tri alphabétique dans chaque liste éditable.
 - **Thème & accessibilité**
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.
@@ -59,10 +62,6 @@ Types clés (extraits de `src/types.ts`) :
 - Pour GitHub Pages : pousser `dist/` (ou workflow Actions) et définir `base` si nécessaire.
 
 ## Roadmap
-
-### 0.6.x — Stabilisation & qualité
-
-- [ ] Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
 ### 0.7.x — Expérience avancée
 
