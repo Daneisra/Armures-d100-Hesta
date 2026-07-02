@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -170,7 +170,7 @@ PA_après = max(0, PA_avant - usure appliquée)
 - `penIgnore` réduit uniquement la pénétration de l’attaque ; il ne réduit jamais directement les dégâts bruts.
 - `PA_effective` est temporaire pour la résolution du coup. Les PA permanentes ne diminuent ensuite que de l’usure appliquée.
 - Les PA diminuent de l’usure, pas des dégâts bruts.
-- `WearWidget` autorise les dégâts supérieurs à 20, accepte une pénétration d’attaque distincte, permet de modifier les PA actuelles et conserve un historique local des coups tant que le composant reste monté.
+- `WearWidget` autorise les dégâts supérieurs à 20, accepte un perce-armure distinct (option avancée repliée et valeur `0` par défaut), permet de modifier les PA actuelles et conserve un historique local des coups tant que le composant reste monté.
 - Un changement de `paFinal` réinitialise les PA actuelles et l’historique.
 - L’enchantement `extraPen_delta` est appliqué au matériau transmis au widget d’usure.
 - L’enchantement `pen_ignore_add` augmente le `penIgnore` total transmis au widget d’usure.
@@ -278,7 +278,6 @@ Règles de compatibilité :
 
 ### 0.7.x — Expérience avancée
 
-- Améliorer l’UX du widget Usure : renommer “Pénétration de l’attaque” en “Perce-armure (optionnel)”, laisser la valeur à 0 par défaut, ajouter une aide claire et éventuellement masquer ce champ dans une section avancée.
 - Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - Repenser la navigation mobile.
 - Ajouter les tables avancées : pagination, vues détaillées et comparateur.

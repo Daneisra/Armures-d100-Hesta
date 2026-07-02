@@ -30,11 +30,11 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.6.5)
+## Fonctionnalités actuelles (0.7.0)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
-  - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, pénétration d’attaque, `penIgnore`, cap par coup, historique).
+  - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, perce-armure optionnel dans les options avancées, `penIgnore`, cap par coup, historique).
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
 - **PV / Constitution**
@@ -65,7 +65,6 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.7.x — Expérience avancée
 
-- [ ] Améliorer l’UX du widget Usure : renommer “Pénétration de l’attaque” en “Perce-armure (optionnel)”, le laisser à 0 par défaut, ajouter une aide claire, et éventuellement masquer ce champ dans une section avancée.
 - [ ] Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - [ ] Repenser la navigation mobile.
 - [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.

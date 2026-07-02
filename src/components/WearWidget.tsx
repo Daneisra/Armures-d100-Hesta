@@ -74,7 +74,7 @@ export default function WearWidget({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-4 items-end">
+      <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] items-end">
         <label className="text-sm">
           <div className="text-xs font-medium text-muted-foreground mb-1">PA actuelle</div>
           <input
@@ -95,29 +95,47 @@ export default function WearWidget({
             onChange={e => setDmg(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
           />
         </label>
-        <label className="text-sm">
-          <div className="text-xs font-medium text-muted-foreground mb-1">Pénétration de l’attaque</div>
-          <input
-            type="number"
-            min={0}
-            className={cls.input}
-            value={attackPenetration}
-            onChange={e => setAttackPenetration(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
-          />
-        </label>
         <button className={cls.btnPrimary} onClick={applyHit} disabled={!material}>
           Appliquer le coup
         </button>
       </div>
 
+      <details className="mt-3 rounded-md border border-border bg-muted/20 px-3 py-2 text-sm">
+        <summary className="cursor-pointer font-medium outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-sm">
+          Options avancées
+          {attackPenetration > 0 && <span className={`ml-2 ${cls.badgeInfo}`}>Perce-armure {attackPenetration}</span>}
+        </summary>
+        <div className="mt-3 max-w-sm">
+          <label className="text-sm" htmlFor="wear-armor-piercing">
+            <span className="mb-1 block text-xs font-medium text-muted-foreground">Perce-armure (optionnel)</span>
+            <input
+              id="wear-armor-piercing"
+              type="number"
+              min={0}
+              className={cls.input}
+              value={attackPenetration}
+              aria-describedby="wear-armor-piercing-help"
+              onChange={e => setAttackPenetration(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
+            />
+          </label>
+          <p id="wear-armor-piercing-help" className="mt-1 text-xs text-muted-foreground">
+            Réduit temporairement les PA pour ce coup. La résistance <code>penIgnore</code> du matériau en annule une partie, sans réduire directement les dégâts.
+          </p>
+        </div>
+      </details>
+
       {preview && (
         <div className="text-sm grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
           <span className="text-muted-foreground">PA avant</span>      <b className="tabular">{preview.paBefore}</b>
-          <span className="text-muted-foreground">Pénétration effective</span>
-          <b className="tabular">
-            {preview.effectivePenetration}
-            {preview.penIgnore > 0 && <span className={`ml-2 ${cls.badgeGood}`}>ignore {preview.penIgnore}</span>}
-          </b>
+          {attackPenetration > 0 && (
+            <>
+              <span className="text-muted-foreground">Perce-armure effectif</span>
+              <b className="tabular">
+                {preview.effectivePenetration}
+                {preview.penIgnore > 0 && <span className={`ml-2 ${cls.badgeGood}`}>résistance {preview.penIgnore}</span>}
+              </b>
+            </>
+          )}
           <span className="text-muted-foreground">PA effective</span>  <b className="tabular">{preview.paEffective}</b>
           <span className="text-muted-foreground">PV subis</span>       <b className="tabular">{preview.pvLost}</b>
           <span className="text-muted-foreground">Usure appliquée</span>
@@ -137,7 +155,7 @@ export default function WearWidget({
             {log.map((l, idx) => (
               <div key={idx} className="grid gap-2 items-center rounded border px-2 py-1 md:grid-cols-5">
                 <span className="tabular">dégâts {l.dmg}</span>
-                <span className="tabular">pén. {l.attackPenetration} → {l.effectivePenetration}</span>
+                <span className="tabular">perce-armure {l.attackPenetration} → {l.effectivePenetration}</span>
                 <span className="tabular">PA eff. {l.paEffective}</span>
                 <span className="tabular">PA {l.paBefore} → {l.paAfter}</span>
                 <span className="tabular">usure {l.wearApplied}</span>
