@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.1`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.2`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -21,6 +21,7 @@
 - `lucide-react` pour les icônes.
 - Données métier en JSON dans `src/data/`.
 - Persistance navigateur via `localStorage`.
+- PWA sans dépendance externe : manifeste et service worker manuel dans `public/`, enregistrement dans `src/pwa.ts`.
 - Node 20 utilisé dans le workflow de déploiement ; Node 18+ est attendu localement.
 
 Scripts disponibles :
@@ -77,6 +78,7 @@ src/data/*.json
   - `WearWidget.tsx` gère les PA actuelles et l’historique des coups.
   - `RepairWidget.tsx` présente le calcul de réparation.
   - `AccessibleDialog.tsx` encapsule l’élément natif `<dialog>` pour les confirmations et formulaires modaux accessibles.
+  - `OfflineStatus.tsx` affiche l’état hors ligne dans le header.
 
 - `src/pages/`
   - Pages routées : matériaux, PV/Constitution, catalogue de builds et éditeur.
@@ -95,6 +97,9 @@ src/data/*.json
 
 - `src/types.ts` : contrats TypeScript des données et résultats métier.
 - `src/catalog.ts` : catalogue canonique, fusion et persistance des overrides.
+- `src/pwa.ts` : enregistrement du service worker uniquement sur les builds de production.
+- `public/sw.js` : cache versionné du shell et des ressources same-origin, stratégie network-first pour les navigations et cache-first pour les assets.
+- `public/manifest.webmanifest` : métadonnées d’installation de la PWA.
 - `src/catalogContext.tsx` : contexte React donnant accès au catalogue fusionné.
 - `src/buildCatalog.ts` : CRUD local et import/export du catalogue de builds.
 - `src/App.tsx` : navigation, routes, skip link et shell principal.
@@ -271,6 +276,8 @@ Règles de compatibilité :
 - Dossier distant actuel : `pahesta/`.
 - Secrets requis : `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
 - `public/.htaccess` est copié dans `dist/` et fournit le fallback SPA vers `/index.html`.
+- `public/sw.js` et `public/manifest.webmanifest` sont copiés tels quels dans `dist/`. Le service worker est versionné via la version de l’application passée dans son URL d’enregistrement.
+- Le mode PWA requiert HTTPS en production. `localhost` reste autorisé par les navigateurs pour le développement, mais l’enregistrement est volontairement limité au build de production.
 - Le fallback actuel suppose que le sous-domaine sert l’application depuis sa racine. Si l’application passe dans un sous-dossier URL, adapter `RewriteBase`, la cible de rewrite et éventuellement `base` dans Vite.
 - `dangerous-clean-slate: true` supprime le contenu du dossier distant avant upload. Ne l’utiliser que si `server-dir` pointe vers un dossier exclusivement dédié à cette application.
 
@@ -278,7 +285,6 @@ Règles de compatibilité :
 
 ### 0.7.x — Expérience avancée
 
-- Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - Repenser la navigation mobile.
 - Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - Rendre les graphiques interactifs et permettre l’export image/CSV.

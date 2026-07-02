@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.1)
+## Fonctionnalités actuelles (0.7.2)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -55,17 +55,22 @@ Types clés (extraits de `src/types.ts`) :
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.
   - Modales accessibles pour les confirmations et la sauvegarde : focus piégé nativement, fermeture Échap et restauration du focus.
+- **PWA / hors ligne**
+  - Application installable grâce au manifeste web.
+  - Cache versionné du shell, du bundle et des données JSON embarquées après la première visite.
+  - Routes SPA accessibles hors ligne et indicateur « Mode hors ligne » dans le header.
+  - Dernier build, catalogue et préférences conservés par `localStorage`.
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
 - Pour OVH/Apache : ajouter un `public/.htaccess` avec fallback SPA (rewrite vers `index.html`).
+- La PWA et le service worker nécessitent HTTPS en production (le sous-domaine OVH doit disposer d’un certificat valide).
 - Pour GitHub Pages : pousser `dist/` (ou workflow Actions) et définir `base` si nécessaire.
 
 ## Roadmap
 
 ### 0.7.x — Expérience avancée
 
-- [ ] Ajouter le mode PWA/offline et mettre en cache les données et la dernière session.
 - [ ] Repenser la navigation mobile.
 - [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - [ ] Rendre les graphiques interactifs et permettre l’export image/CSV.

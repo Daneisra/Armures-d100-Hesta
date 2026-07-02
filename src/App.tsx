@@ -5,6 +5,7 @@ import ThemeToggle from "./components/ThemeToggle";
 import PVPage from "./pages/PVPage";
 import EditorPage from "./pages/EditorPage";
 import BuildsPage from "./pages/BuildsPage";
+import OfflineStatus from "./components/OfflineStatus";
 import { cls } from "./ui/styles";
 
 const NAV_ITEMS = [
@@ -46,7 +47,10 @@ return (
               </p>
             </div>
 
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <OfflineStatus />
+              <ThemeToggle />
+            </div>
           </div>
 
           <nav className="flex flex-wrap items-center gap-2">

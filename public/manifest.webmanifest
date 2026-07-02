@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Système PA — Armures d100",
+  "short_name": "Système PA",
+  "description": "Calculateur d’armures, d’usure, de réparation et de PV pour le système Hesta d100 inversé.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
