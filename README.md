@@ -12,6 +12,8 @@ Calculateur d’armures pour un **système d100 inversé** : PA, malus, sweet‑
 ```bash
 npm install
 npm run dev
+npm run lint
+npm test
 npm run build   # build statique
 npm run preview
 ```
@@ -59,8 +61,6 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.6.x — Stabilisation & qualité
 
-- [ ] Ajouter les scripts `lint` et `test`.
-- [ ] Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
 - [ ] Améliorer l’accessibilité des modales et drawers.
 - [ ] Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
@@ -81,4 +81,4 @@ Types clés (extraits de `src/types.ts`) :
 ## Contribution
 - PR petites et ciblées (une feature par PR).
 - Respecter les clés/compat dans les JSON (`src/types.ts` en référence).
-- Avant PR : `npm run build` doit passer (lint/tests à venir).
+- Avant PR : `npm run lint`, `npm test` et `npm run build` doivent passer.

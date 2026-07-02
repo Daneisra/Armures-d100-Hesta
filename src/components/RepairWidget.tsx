@@ -88,9 +88,9 @@ export default function RepairWidget({
           <div className="rounded-lg border p-3 bg-muted/20">
             <div className="text-xs font-medium text-muted-foreground mb-1">Multiplicateurs</div>
             <div className="text-xs leading-6 text-muted-foreground">
-              Matériau : coût ×{rep.breakdown.mCost} — temps ×{rep.breakdown.mTime}
+              Matériau : coût ×{rep.breakdown.mCost} — temps ×{rep.breakdown.mTime}
               <br />
-              Qualité : coût ×{rep.breakdown.qCost} — temps ×{rep.breakdown.qTime}
+              Qualité : coût ×{rep.breakdown.qCost} — temps ×{rep.breakdown.qTime}
             </div>
             {rep.note && (
               <div className="text-[11px] mt-2 opacity-70 italic">{rep.note}</div>

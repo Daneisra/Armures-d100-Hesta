@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent au jalon fonctionnel `0.6.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.6.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -27,11 +27,13 @@ Scripts disponibles :
 
 ```bash
 npm run dev
+npm run lint
+npm test
 npm run build
 npm run preview
 ```
 
-`npm run build` exécute `tsc -b && vite build`. Il n’existe actuellement aucun script `test` ou `lint` dans `package.json`.
+`npm run build` exécute `tsc -b && vite build`. `npm test` lance Vitest en mode non interactif et `npm run lint` analyse `src/`, `tests/` et `vite.config.ts` avec ESLint.
 
 ### Particularités Tailwind CSS v4
 
@@ -82,6 +84,10 @@ src/data/*.json
 - `src/ui/`
   - Styles centralisés et primitives visuelles.
   - `styles.ts` expose l’objet `cls` (`page`, `card`, `input`, `select`, `btnPrimary`, `btnGhost`, `badge*`, `noteList`, styles de table, etc.).
+
+- `tests/`
+  - Tests unitaires Vitest des règles métier principales.
+  - Couvre actuellement `calc`, `wear`, `repair` et `importValidation`.
 
 ### Fichiers structurants complémentaires
 
@@ -256,7 +262,7 @@ Règles de compatibilité :
 - Sortie Vite : `dist/`.
 - Workflow : `.github/workflows/deploy.yml`.
 - Déclenchement : push sur `main` ou lancement manuel (`workflow_dispatch`).
-- Installation avec `npm ci`, build avec Node 20, puis déploiement FTP via `SamKirkland/FTP-Deploy-Action@4.0.0`.
+- Installation avec `npm ci`, lint, tests, build avec Node 20, puis déploiement FTP via `SamKirkland/FTP-Deploy-Action@4.0.0`.
 - Dossier distant actuel : `pahesta/`.
 - Secrets requis : `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
 - `public/.htaccess` est copié dans `dist/` et fournit le fallback SPA vers `/index.html`.
@@ -267,8 +273,6 @@ Règles de compatibilité :
 
 ### 0.6.x — Stabilisation & qualité
 
-- Ajouter les scripts `lint` et `test`.
-- Ajouter les tests unitaires de `calc`, `wear`, `repair` et `importValidation`.
 - Améliorer l’accessibilité des modales et drawers.
 - Améliorer l’UX éditeur : undo/corbeille, autosave optionnelle, filtres et tri.
 
@@ -288,15 +292,14 @@ Règles de compatibilité :
 
 ## 10. Points à vérifier avant de modifier le métier
 
-1. **Absence de tests automatisés et de lint**
-   - La validation actuelle repose principalement sur TypeScript, le build Vite et les tests manuels.
+- Aucun point bloquant connu à ce stade. Ajouter ici toute divergence confirmée entre règles métier, données, UI et documentation.
 
 ## 11. Checklist avant et après une modification
 
 - Lire les types et le JSON concernés avant de changer le code.
 - Vérifier si la modification touche une clé `localStorage` ou un schéma exporté.
 - Vérifier les références par nom et catégorie dans les données.
-- Lancer `npm run build` pour valider TypeScript et Vite.
+- Lancer `npm run lint`, `npm test` et `npm run build`.
 - Tester le thème clair, sombre et auto.
 - Tester au minimum les routes `/`, `/materials` et `/pv`.
 - Si la modification concerne le catalogue, tester aussi `/builds` et `/editeur`.
