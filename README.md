@@ -30,13 +30,14 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.4)
+## Fonctionnalités actuelles (0.7.5)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
   - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, perce-armure optionnel dans les options avancées, `penIgnore`, cap par coup, historique).
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
+  - Graphiques d’équilibrage explorables à la souris ou au clavier, exportables en SVG et CSV.
 - **PV / Constitution**
   - Mini calculateur (input + slider), tableau repère scrollable, texte d’aide.
 - **Matériaux**
@@ -72,10 +73,6 @@ Types clés (extraits de `src/types.ts`) :
 - Pour GitHub Pages : pousser `dist/` (ou workflow Actions) et définir `base` si nécessaire.
 
 ## Roadmap
-
-### 0.7.x — Expérience avancée
-
-- [ ] Rendre les graphiques interactifs et permettre l’export image/CSV.
 
 ### 0.8.x — Impression & partage long terme
 

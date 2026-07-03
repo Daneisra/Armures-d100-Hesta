@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { computeBuild } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
@@ -536,6 +536,26 @@ export default function Calculator(){
 
 type Point = { x: number; y: number };
 
+function chartFilename(title: string, extension: "svg" | "csv") {
+  const slug = title
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  return `${slug || "graphique"}.${extension}`;
+}
+
+function downloadChart(content: string, filename: string, type: string) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function MiniLineChart({
   title,
   points,
@@ -551,6 +571,8 @@ function MiniLineChart({
   yLabel: string;
   note?: string;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [activePointIndex, setActivePointIndex] = useState<number | null>(null);
   const cleanPoints = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
   const highlightFinite = highlight && Number.isFinite(highlight.x) && Number.isFinite(highlight.y) ? highlight : undefined;
   if (!cleanPoints.length) return null;
@@ -572,19 +594,62 @@ function MiniLineChart({
     return h - pad - ((y - minY) / (maxY - minY)) * (h - pad * 2);
   };
   const poly = cleanPoints.map(p => `${scaleX(p.x)},${scaleY(p.y)}`).join(" ");
+  const activePoint = activePointIndex === null ? highlightFinite : cleanPoints[activePointIndex];
+  const formatValue = (value: number) => Number.isInteger(value) ? String(value) : value.toFixed(2);
+
+  const exportCSV = () => {
+    const rows = cleanPoints.map(point => `${point.x},${point.y}`);
+    downloadChart(`\uFEFF${xLabel},${yLabel}\n${rows.join("\n")}`, chartFilename(title, "csv"), "text/csv;charset=utf-8");
+  };
+
+  const exportSVG = () => {
+    if (!svgRef.current) return;
+    const clone = svgRef.current.cloneNode(true) as SVGSVGElement;
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("style", "color:#0ea5e9;background:#ffffff");
+    clone.querySelectorAll("[data-interactive]").forEach(element => element.remove());
+    const content = `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
+    downloadChart(content, chartFilename(title, "svg"), "image/svg+xml;charset=utf-8");
+  };
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="font-semibold text-sm">{title}</h4>
-        <span className="text-xs text-muted-foreground">{yLabel}</span>
+        <div className="flex items-center gap-1">
+          <span className="mr-1 text-xs text-muted-foreground">{yLabel}</span>
+          <button className={`${cls.btnGhost} px-2 py-1 text-xs`} type="button" onClick={exportSVG}>SVG</button>
+          <button className={`${cls.btnGhost} px-2 py-1 text-xs`} type="button" onClick={exportCSV}>CSV</button>
+        </div>
       </div>
-      <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={title} className="w-full h-auto text-primary">
+      <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`${title}. Utilise Tab pour explorer les points.`} className="w-full h-auto text-primary">
+        <title>{title}</title>
         <line x1={pad} y1={h - pad} x2={w - pad} y2={h - pad} stroke="currentColor" strokeOpacity={0.25} />
         <line x1={pad} y1={pad} x2={pad} y2={h - pad} stroke="currentColor" strokeOpacity={0.25} />
         <polyline fill="none" stroke="currentColor" strokeWidth={2} points={poly} />
         {cleanPoints.map((p, idx) => (
-          <circle key={idx} cx={scaleX(p.x)} cy={scaleY(p.y)} r={3} fill="currentColor" fillOpacity={0.15} />
+          <circle
+            key={idx}
+            cx={scaleX(p.x)}
+            cy={scaleY(p.y)}
+            r={activePointIndex === idx ? 5 : 3.5}
+            fill="currentColor"
+            fillOpacity={activePointIndex === idx ? 0.9 : 0.2}
+            stroke="currentColor"
+            strokeWidth={1}
+            tabIndex={0}
+            role="button"
+            aria-label={`${xLabel} ${formatValue(p.x)}, ${yLabel} ${formatValue(p.y)}`}
+            onMouseEnter={() => setActivePointIndex(idx)}
+            onFocus={() => setActivePointIndex(idx)}
+            onClick={() => setActivePointIndex(idx)}
+            onKeyDown={event => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                setActivePointIndex(idx);
+              }
+            }}
+          />
         ))}
         {highlightFinite && (
           <circle
@@ -596,7 +661,32 @@ function MiniLineChart({
             strokeWidth={1.5}
           />
         )}
+        {activePoint && (
+          <g data-interactive="tooltip" pointerEvents="none">
+            <rect
+              x={Math.min(w - 142, Math.max(pad, scaleX(activePoint.x) - 65))}
+              y={Math.max(pad, scaleY(activePoint.y) - 30)}
+              width={138}
+              height={22}
+              rx={5}
+              fill="white"
+              stroke="currentColor"
+              strokeOpacity={0.4}
+            />
+            <text
+              x={Math.min(w - 137, Math.max(pad + 5, scaleX(activePoint.x) - 60))}
+              y={Math.max(pad + 15, scaleY(activePoint.y) - 15)}
+              fill="#0f172a"
+              fontSize={10}
+            >
+              {xLabel} {formatValue(activePoint.x)} · {yLabel} {formatValue(activePoint.y)}
+            </text>
+          </g>
+        )}
       </svg>
+      <p className="min-h-4 text-xs text-muted-foreground" aria-live="polite">
+        {activePoint ? `${xLabel} ${formatValue(activePoint.x)} — ${yLabel} ${formatValue(activePoint.y)}` : "Survole un point ou utilise le clavier pour afficher sa valeur."}
+      </p>
       <div className="text-xs text-muted-foreground flex items-center justify-between">
         <span>{xLabel}</span>
         <span>{note}</span>

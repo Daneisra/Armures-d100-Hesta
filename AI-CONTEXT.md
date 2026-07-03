@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -75,6 +75,7 @@ src/data/*.json
 - `src/components/`
   - Composants réutilisables et widgets métier.
   - `Calculator.tsx` orchestre le build actif, les filtres, le stockage local, le partage et les widgets.
+  - Les graphiques SVG internes de `Calculator.tsx` sont explorables au pointeur et au clavier, avec exports SVG et CSV générés côté navigateur.
   - `WearWidget.tsx` gère les PA actuelles et l’historique des coups.
   - `RepairWidget.tsx` présente le calcul de réparation.
   - `AccessibleDialog.tsx` encapsule l’élément natif `<dialog>` pour les confirmations et formulaires modaux accessibles.
@@ -283,10 +284,6 @@ Règles de compatibilité :
 - `dangerous-clean-slate: true` supprime le contenu du dossier distant avant upload. Ne l’utiliser que si `server-dir` pointe vers un dossier exclusivement dédié à cette application.
 
 ## 9. Roadmap actuelle
-
-### 0.7.x — Expérience avancée
-
-- Rendre les graphiques interactifs et permettre l’export image/CSV.
 
 ### 0.8.x — Impression & partage long terme
 
