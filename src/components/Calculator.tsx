@@ -447,7 +447,7 @@ export default function Calculator(){
 
           <section className={`${cls.card} ${cardFx} order-3 xl:order-none xl:col-start-2 xl:row-start-2 2xl:col-start-3 2xl:row-start-1`}>
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">Équilibrage (aperçu)</h3>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-6">
               <MiniLineChart
                 title="Efficacité selon le malus"
                 points={efficiencyPoints}
@@ -533,6 +533,7 @@ export default function Calculator(){
 }
 
 type Point = { x: number; y: number };
+const chartExportButton = "inline-flex items-center rounded-md border border-border bg-card px-2 py-1 text-[11px] font-medium shadow-sm outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary/50";
 
 function chartFilename(title: string, extension: "svg" | "csv") {
   const slug = title
@@ -592,7 +593,7 @@ function MiniLineChart({
     return h - pad - ((y - minY) / (maxY - minY)) * (h - pad * 2);
   };
   const poly = cleanPoints.map(p => `${scaleX(p.x)},${scaleY(p.y)}`).join(" ");
-  const activePoint = activePointIndex === null ? highlightFinite : cleanPoints[activePointIndex];
+  const activePoint = activePointIndex === null ? undefined : cleanPoints[activePointIndex];
   const formatValue = (value: number) => Number.isInteger(value) ? String(value) : value.toFixed(2);
 
   const exportCSV = () => {
@@ -616,8 +617,8 @@ function MiniLineChart({
         <h4 className="font-semibold text-sm">{title}</h4>
         <div className="flex items-center gap-1">
           <span className="mr-1 text-xs text-muted-foreground">{yLabel}</span>
-          <button className={`${cls.btnGhost} px-2 py-1 text-xs`} type="button" onClick={exportSVG}>SVG</button>
-          <button className={`${cls.btnGhost} px-2 py-1 text-xs`} type="button" onClick={exportCSV}>CSV</button>
+          <button className={chartExportButton} type="button" onClick={exportSVG}>SVG</button>
+          <button className={chartExportButton} type="button" onClick={exportCSV}>CSV</button>
         </div>
       </div>
       <svg ref={svgRef} viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`${title}. Utilise Tab pour explorer les points.`} className="w-full h-auto text-primary">
@@ -662,20 +663,20 @@ function MiniLineChart({
         {activePoint && (
           <g data-interactive="tooltip" pointerEvents="none">
             <rect
-              x={Math.min(w - 142, Math.max(pad, scaleX(activePoint.x) - 65))}
-              y={Math.max(pad, scaleY(activePoint.y) - 30)}
-              width={138}
-              height={22}
+              x={Math.min(w - 196, Math.max(pad, scaleX(activePoint.x) - 90))}
+              y={Math.max(pad, scaleY(activePoint.y) - 38)}
+              width={190}
+              height={28}
               rx={5}
               fill="white"
               stroke="currentColor"
               strokeOpacity={0.4}
             />
             <text
-              x={Math.min(w - 137, Math.max(pad + 5, scaleX(activePoint.x) - 60))}
-              y={Math.max(pad + 15, scaleY(activePoint.y) - 15)}
+              x={Math.min(w - 190, Math.max(pad + 6, scaleX(activePoint.x) - 84))}
+              y={Math.max(pad + 19, scaleY(activePoint.y) - 19)}
               fill="#0f172a"
-              fontSize={10}
+              fontSize={11.5}
             >
               {xLabel} {formatValue(activePoint.x)} · {yLabel} {formatValue(activePoint.y)}
             </text>
@@ -685,10 +686,7 @@ function MiniLineChart({
       <p className="min-h-4 text-xs text-muted-foreground" aria-live="polite">
         {activePoint ? `${xLabel} ${formatValue(activePoint.x)} — ${yLabel} ${formatValue(activePoint.y)}` : "Survole un point ou utilise le clavier pour afficher sa valeur."}
       </p>
-      <div className="text-xs text-muted-foreground flex items-center justify-between">
-        <span>{xLabel}</span>
-        <span>{note}</span>
-      </div>
+      {note && <div className="text-right text-xs text-muted-foreground">{note}</div>}
     </div>
   );
 }

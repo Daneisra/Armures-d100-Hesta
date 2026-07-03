@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.6)
+## Fonctionnalités actuelles (0.7.7)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -38,6 +38,7 @@ Types clés (extraits de `src/types.ts`) :
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
   - Graphiques d’équilibrage explorables à la souris ou au clavier, exportables en SVG et CSV.
+  - Graphiques empilés avec contrôles compacts, infobulles lisibles et informations non redondantes.
   - Layout responsive : Résumé avant Entrées sur mobile, deux colonnes sur desktop et trois colonnes sur très grand écran.
 - **PV / Constitution**
   - Mini calculateur (input + slider), tableau repère scrollable, texte d’aide.
@@ -55,6 +56,7 @@ Types clés (extraits de `src/types.ts`) :
   - Sauvegarde automatique désactivable, avec enregistrement manuel ou abandon du brouillon.
   - Recherche plein texte et tri alphabétique dans chaque liste éditable.
   - Listes compactes avec colonnes métier et colonne Actions dédiée.
+  - Hauteur de liste uniforme et libellés métier humanisés dans l’éditeur.
 - **Thème & accessibilité**
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.

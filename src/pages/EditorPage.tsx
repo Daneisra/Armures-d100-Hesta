@@ -30,7 +30,22 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: "shields", label: "Boucliers" },
   { key: "params", label: "Params" },
 ];
-const compactAction = `${cls.btnGhost} px-2 py-1 text-xs`;
+const compactAction = "inline-flex min-h-7 items-center rounded-md border border-border bg-card px-2 py-1 text-xs font-medium shadow-sm outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary/50";
+const categoryLabels: Record<string, string> = {
+  Textile: "Textile rembourré",
+  Cuir: "Cuir et peaux",
+  MetalFerreux: "Métal — ferreux",
+  MetalNonFerreux: "Métal — non ferreux",
+  MetalMythique: "Métal — mythique",
+  OrganiqueRigide: "Organique rigide",
+  Bois: "Bois dur",
+  MineralVerre: "Minéral / verre",
+  ResineDure: "Résine dure",
+};
+
+function categoryLabel(key: string) {
+  return categoryLabels[key] ?? key.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
 
 export default function EditorPage() {
   const {
@@ -454,7 +469,7 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
       <div className="hidden md:grid md:grid-cols-[1.2fr_1fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
         <span>Nom</span><span>Groupe</span><span>Compat</span><span>PA / Malus</span><span className="text-right">Actions</span>
       </div>
-      <div className="space-y-1">
+      <div className="max-h-[420px] space-y-1 overflow-auto pr-1">
         {filtered.visibleItems.map(c => (
           <div key={c.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.2fr_1fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{c.name}</span>
@@ -538,10 +553,10 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
         {filtered.visibleItems.map(m => (
           <div key={m.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{m.name}</span>
-            <span>{m.category}</span>
+            <span>{categoryLabel(m.category)}</span>
             <span>{m.compat}</span>
             <span className="tabular">{m.modPA} / {m.malusMod}</span>
-            <span className="tabular">extraPen {m.extraPen ?? 0}</span>
+            <span className="tabular">+{m.extraPen ?? 0}</span>
             <div className="flex flex-wrap gap-1 md:justify-end">
               <button className={compactAction} onClick={()=>edit(m)}>Éditer</button>
               <button className={compactAction} onClick={()=>dup(m)}>Dupliquer</button>
@@ -558,7 +573,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
             <input className={cls.input} value={draft.name} onChange={e=>setDraft({...draft, name:e.target.value})}/>
           </label>
           <label className="text-sm">
-            <div className="text-muted-foreground text-xs mb-1">Catégorie</div>
+            <div className="text-muted-foreground text-xs mb-1">Clé de catégorie</div>
             <input className={cls.input} value={draft.category} onChange={e=>setDraft({...draft, category:e.target.value})}/>
           </label>
           <label className="text-sm">
@@ -579,11 +594,11 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
           </div>
           <div className="grid grid-cols-3 gap-2">
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Extra Pen</div>
+              <div className="text-muted-foreground text-xs mb-1">Usure pénétration</div>
               <input className={cls.input} type="number" value={draft.extraPen ?? 0} onChange={e=>setDraft({...draft, extraPen:Number(e.target.value)||0})}/>
             </label>
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Ignore Pen</div>
+              <div className="text-muted-foreground text-xs mb-1">Pénétration ignorée</div>
               <input className={cls.input} type="number" value={draft.penIgnore ?? 0} onChange={e=>setDraft({...draft, penIgnore:Number(e.target.value)||0})}/>
             </label>
             <label className="text-sm">
@@ -628,12 +643,12 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
       <div className="hidden md:grid md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
         <span>Nom</span><span>PA / Malus</span><span>Réparation</span><span className="text-right">Actions</span>
       </div>
-      <div className="space-y-1">
+      <div className="max-h-[420px] space-y-1 overflow-auto pr-1">
         {filtered.visibleItems.map(q=>(
           <div key={q.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{q.name}</span>
             <span className="tabular">PA +{q.bonusPA} / Malus {q.malusMod}</span>
-            <span className="text-xs text-muted-foreground">Repair x{q.repair?.costMul ?? 1} / x{q.repair?.timeMul ?? 1}</span>
+            <span className="text-xs text-muted-foreground">Coût ×{q.repair?.costMul ?? 1} / temps ×{q.repair?.timeMul ?? 1}</span>
             <div className="flex flex-wrap gap-1 md:justify-end">
               <button className={compactAction} onClick={()=>edit(q)}>Éditer</button>
               <button className={compactAction} onClick={()=>dup(q)}>Dupliquer</button>
@@ -706,7 +721,7 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
       <div className="hidden md:grid md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
         <span>Nom</span><span>PA</span><span>Malus</span><span className="text-right">Actions</span>
       </div>
-      <div className="space-y-1">
+      <div className="max-h-[420px] space-y-1 overflow-auto pr-1">
         {filtered.visibleItems.map(s=>(
           <div key={s.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{s.name}</span>
