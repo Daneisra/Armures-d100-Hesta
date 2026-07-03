@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.5)
+## Fonctionnalités actuelles (0.7.6)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -38,6 +38,7 @@ Types clés (extraits de `src/types.ts`) :
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
   - Graphiques d’équilibrage explorables à la souris ou au clavier, exportables en SVG et CSV.
+  - Layout responsive : Résumé avant Entrées sur mobile, deux colonnes sur desktop et trois colonnes sur très grand écran.
 - **PV / Constitution**
   - Mini calculateur (input + slider), tableau repère scrollable, texte d’aide.
 - **Matériaux**
@@ -53,6 +54,7 @@ Types clés (extraits de `src/types.ts`) :
   - Annulation des 20 dernières actions et corbeille de session avec restauration.
   - Sauvegarde automatique désactivable, avec enregistrement manuel ou abandon du brouillon.
   - Recherche plein texte et tri alphabétique dans chaque liste éditable.
+  - Listes compactes avec colonnes métier et colonne Actions dédiée.
 - **Thème & accessibilité**
   - Modes clair/sombre/auto (prefers-color-scheme), contrastes corrigés.
   - Skip link “Aller au contenu”, focus visibles, aria-live sur le résumé, badges cohérents.
@@ -76,9 +78,12 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.8.x — Impression & partage long terme
 
-- [ ] Ajouter une fiche imprimable.
-- [ ] Ajouter l’export PDF.
-- [ ] Proposer des templates de fiche compact et détaillé.
+- [ ] Créer une fiche imprimable depuis le build actuel.
+- [ ] Créer une fiche imprimable depuis un build sauvegardé.
+- [ ] Ajouter un mode compact.
+- [ ] Ajouter un mode détaillé.
+- [ ] Ajouter une feuille de style `@media print`.
+- [ ] Ajouter l’export PDF via impression navigateur.
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).

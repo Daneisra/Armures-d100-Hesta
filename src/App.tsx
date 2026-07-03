@@ -34,7 +34,7 @@ return (
       >
         Aller au contenu
       </a>
-      <div className={`${cls.page} max-w-5xl space-y-6`}>
+      <div className={`${cls.page} max-w-7xl space-y-6`}>
         <header className="space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>

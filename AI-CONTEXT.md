@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.6`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -76,6 +76,7 @@ src/data/*.json
   - Composants réutilisables et widgets métier.
   - `Calculator.tsx` orchestre le build actif, les filtres, le stockage local, le partage et les widgets.
   - Les graphiques SVG internes de `Calculator.tsx` sont explorables au pointeur et au clavier, avec exports SVG et CSV générés côté navigateur.
+  - Son layout place le Résumé avant les Entrées sur mobile, utilise deux colonnes sur desktop et répartit les cartes sur trois colonnes au breakpoint `2xl`.
   - `WearWidget.tsx` gère les PA actuelles et l’historique des coups.
   - `RepairWidget.tsx` présente le calcul de réparation.
   - `AccessibleDialog.tsx` encapsule l’élément natif `<dialog>` pour les confirmations et formulaires modaux accessibles.
@@ -86,6 +87,7 @@ src/data/*.json
   - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`.
   - `MaterialsPage.tsx` fournit filtres, tri, pagination, détail modal et comparaison de un à trois matériaux.
   - L’éditeur propose un historique limité à 20 actions, une corbeille de session, une sauvegarde automatique optionnelle et des listes filtrables/triables.
+  - Les listes de l’éditeur utilisent une colonne Actions compacte sur desktop et repassent en empilement sur petit écran.
 
 - `src/ui/`
   - Styles centralisés et primitives visuelles.
@@ -287,9 +289,12 @@ Règles de compatibilité :
 
 ### 0.8.x — Impression & partage long terme
 
-- Ajouter une fiche imprimable.
-- Ajouter l’export PDF.
-- Proposer des templates de fiche compact et détaillé.
+- Créer une fiche imprimable depuis le build actuel.
+- Créer une fiche imprimable depuis un build sauvegardé.
+- Ajouter un mode compact.
+- Ajouter un mode détaillé.
+- Ajouter une feuille de style `@media print`.
+- Ajouter l’export PDF via impression navigateur.
 
 ## 10. Points à vérifier avant de modifier le métier
 

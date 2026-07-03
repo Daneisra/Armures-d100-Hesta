@@ -30,6 +30,7 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: "shields", label: "Boucliers" },
   { key: "params", label: "Params" },
 ];
+const compactAction = `${cls.btnGhost} px-2 py-1 text-xs`;
 
 export default function EditorPage() {
   const {
@@ -450,20 +451,20 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
-      <div className="grid md:grid-cols-[1.2fr_1fr_1fr_1fr] text-sm font-semibold text-muted-foreground px-2">
-        <span>Nom</span><span>Groupe</span><span>Compat</span><span>PA / Malus</span>
+      <div className="hidden md:grid md:grid-cols-[1.2fr_1fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
+        <span>Nom</span><span>Groupe</span><span>Compat</span><span>PA / Malus</span><span className="text-right">Actions</span>
       </div>
       <div className="space-y-1">
         {filtered.visibleItems.map(c => (
-          <div key={c.name} className="grid md:grid-cols-[1.2fr_1fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
+          <div key={c.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.2fr_1fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{c.name}</span>
             <span>{c.group}</span>
             <span>{c.category}</span>
             <span className="tabular">{c.basePA} / {c.baseMalus}</span>
-            <div className="flex gap-1 md:col-span-4">
-              <button className={cls.btnGhost} onClick={()=>edit(c)}>Éditer</button>
-              <button className={cls.btnGhost} onClick={()=>dup(c)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onDelete(c)}>Supprimer</button>
+            <div className="flex flex-wrap gap-1 md:justify-end">
+              <button className={compactAction} onClick={()=>edit(c)}>Éditer</button>
+              <button className={compactAction} onClick={()=>dup(c)}>Dupliquer</button>
+              <button className={compactAction} onClick={()=>onDelete(c)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -530,18 +531,21 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
+      <div className="hidden md:grid md:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
+        <span>Nom</span><span>Catégorie</span><span>Compat</span><span>PA / Malus</span><span>Usure</span><span className="text-right">Actions</span>
+      </div>
       <div className="space-y-1 max-h-[420px] overflow-auto pr-1">
         {filtered.visibleItems.map(m => (
-          <div key={m.name} className="grid md:grid-cols-[1.3fr_1fr_1fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
+          <div key={m.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{m.name}</span>
             <span>{m.category}</span>
             <span>{m.compat}</span>
             <span className="tabular">{m.modPA} / {m.malusMod}</span>
             <span className="tabular">extraPen {m.extraPen ?? 0}</span>
-            <div className="flex gap-1 md:col-span-5">
-              <button className={cls.btnGhost} onClick={()=>edit(m)}>Éditer</button>
-              <button className={cls.btnGhost} onClick={()=>dup(m)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onDelete(m)}>Supprimer</button>
+            <div className="flex flex-wrap gap-1 md:justify-end">
+              <button className={compactAction} onClick={()=>edit(m)}>Éditer</button>
+              <button className={compactAction} onClick={()=>dup(m)}>Dupliquer</button>
+              <button className={compactAction} onClick={()=>onDelete(m)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -621,16 +625,19 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
+      <div className="hidden md:grid md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
+        <span>Nom</span><span>PA / Malus</span><span>Réparation</span><span className="text-right">Actions</span>
+      </div>
       <div className="space-y-1">
         {filtered.visibleItems.map(q=>(
-          <div key={q.name} className="grid md:grid-cols-[1.5fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
+          <div key={q.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{q.name}</span>
             <span className="tabular">PA +{q.bonusPA} / Malus {q.malusMod}</span>
             <span className="text-xs text-muted-foreground">Repair x{q.repair?.costMul ?? 1} / x{q.repair?.timeMul ?? 1}</span>
-            <div className="flex gap-1 md:col-span-3">
-              <button className={cls.btnGhost} onClick={()=>edit(q)}>Éditer</button>
-              <button className={cls.btnGhost} onClick={()=>dup(q)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onDelete(q)}>Supprimer</button>
+            <div className="flex flex-wrap gap-1 md:justify-end">
+              <button className={compactAction} onClick={()=>edit(q)}>Éditer</button>
+              <button className={compactAction} onClick={()=>dup(q)}>Dupliquer</button>
+              <button className={compactAction} onClick={()=>onDelete(q)}>Supprimer</button>
             </div>
           </div>
         ))}
@@ -696,16 +703,19 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
+      <div className="hidden md:grid md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
+        <span>Nom</span><span>PA</span><span>Malus</span><span className="text-right">Actions</span>
+      </div>
       <div className="space-y-1">
         {filtered.visibleItems.map(s=>(
-          <div key={s.name} className="grid md:grid-cols-[1.5fr_1fr_1fr] items-center text-sm px-2 py-1 rounded hover:bg-muted/40">
+          <div key={s.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.5fr_1fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{s.name}</span>
             <span className="tabular">PA {s.pa}</span>
             <span className="tabular">Malus {s.malus}</span>
-            <div className="flex gap-1 md:col-span-3">
-              <button className={cls.btnGhost} onClick={()=>edit(s)}>Éditer</button>
-              <button className={cls.btnGhost} onClick={()=>dup(s)}>Dupliquer</button>
-              <button className={cls.btnGhost} onClick={()=>onDelete(s)}>Supprimer</button>
+            <div className="flex flex-wrap gap-1 md:justify-end">
+              <button className={compactAction} onClick={()=>edit(s)}>Éditer</button>
+              <button className={compactAction} onClick={()=>dup(s)}>Dupliquer</button>
+              <button className={compactAction} onClick={()=>onDelete(s)}>Supprimer</button>
             </div>
           </div>
         ))}

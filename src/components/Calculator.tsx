@@ -236,7 +236,7 @@ export default function Calculator(){
   }, [materialForWear?.extraPen, params.baseWear, params.capWearPerHit, res.paFinal]);
 
   return (
-    <div className={`${cls.page} max-w-4xl space-y-6`}>
+    <div className={`${cls.page} max-w-7xl space-y-6`}>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Calculateur d'armure <span className="text-sm opacity-60">v{__APP_VERSION__}</span></h1>
         <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)} title="Efface la configuration locale et recharge">
@@ -247,8 +247,8 @@ export default function Calculator(){
         D100 inversé - objectif : ratio PA/Malus ˜ {params.sweetSpotRatio}
       </p>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-start">
-        <section className={`${cls.card} ${cardFx}`}>
+      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">
+        <section className={`${cls.card} ${cardFx} order-2 xl:order-none xl:col-start-1 xl:row-start-1 xl:row-span-4 2xl:row-span-2`}>
           <h2 className="text-base font-semibold mb-3">Entrées</h2>
 
           <InputRow label="Châssis" id="calc-chassis">
@@ -370,8 +370,7 @@ export default function Calculator(){
           )}
         </section>
 
-        <div className="space-y-4">
-          <section className={`${cls.card} ${cardFx}`}>
+          <section className={`${cls.card} ${cardFx} order-1 xl:order-none xl:col-start-2 xl:row-start-1`}>
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">Résumé</h3>
             <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between"><span>PA final</span><b className="tabular">{res.paFinal}</b></div>
@@ -446,7 +445,7 @@ export default function Calculator(){
             )}
           </section>
 
-          <section className={`${cls.card} ${cardFx}`}>
+          <section className={`${cls.card} ${cardFx} order-3 xl:order-none xl:col-start-2 xl:row-start-2 2xl:col-start-3 2xl:row-start-1`}>
             <h3 className="text-sm font-semibold text-muted-foreground mb-3">Équilibrage (aperçu)</h3>
             <div className="grid gap-4 md:grid-cols-2">
               <MiniLineChart
@@ -471,16 +470,15 @@ export default function Calculator(){
             paFinal={res.paFinal}
             material={materialForWear}
             params={params}
-            className={`${cls.card} ${cardFx}`}
+            className={`${cls.card} ${cardFx} order-4 xl:order-none xl:col-start-2 xl:row-start-3 2xl:row-start-2`}
           />
           <RepairWidget
             paMax={res.paFinal}
             material={matCurrent}
             quality={qCurrent}
             params={params}
-            className={`${cls.card} ${cardFx}`}
+            className={`${cls.card} ${cardFx} order-5 xl:order-none xl:col-start-2 xl:row-start-4 2xl:col-start-3 2xl:row-start-2`}
           />
-        </div>
       </div>
 
       <div aria-live="polite" className="text-sm text-emerald-600 dark:text-emerald-300">
