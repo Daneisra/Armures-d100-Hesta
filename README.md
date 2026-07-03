@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.7.3)
+## Fonctionnalités actuelles (0.7.4)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -41,6 +41,7 @@ Types clés (extraits de `src/types.ts`) :
   - Mini calculateur (input + slider), tableau repère scrollable, texte d’aide.
 - **Matériaux**
   - Table triable/filtrable, badges d’effets/résistances, sticky header, densité compacte.
+  - Pagination configurable, fiches détaillées et comparateur de trois matériaux maximum.
 - **Catalogue de builds**
   - Liste filtrable, supprimer/exporter/importer (JSON), appliquer au calculateur.
   - Import strict : types, bornes, doublons et références contrôlés avant écriture, avec rapport copiable.
@@ -74,7 +75,6 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.7.x — Expérience avancée
 
-- [ ] Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - [ ] Rendre les graphiques interactifs et permettre l’export image/CSV.
 
 ### 0.8.x — Impression & partage long terme

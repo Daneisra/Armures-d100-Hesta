@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.7.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -83,6 +83,7 @@ src/data/*.json
 - `src/pages/`
   - Pages routées : matériaux, PV/Constitution, catalogue de builds et éditeur.
   - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`.
+  - `MaterialsPage.tsx` fournit filtres, tri, pagination, détail modal et comparaison de un à trois matériaux.
   - L’éditeur propose un historique limité à 20 actions, une corbeille de session, une sauvegarde automatique optionnelle et des listes filtrables/triables.
 
 - `src/ui/`
@@ -285,7 +286,6 @@ Règles de compatibilité :
 
 ### 0.7.x — Expérience avancée
 
-- Ajouter les tables avancées : pagination, vues détaillées et comparateur.
 - Rendre les graphiques interactifs et permettre l’export image/CSV.
 
 ### 0.8.x — Impression & partage long terme
