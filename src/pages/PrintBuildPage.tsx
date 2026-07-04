@@ -17,6 +17,16 @@ type PrintLocationState = {
 
 const BUILD_STORAGE_KEY = "lastBuild_v2";
 const CATEGORY_STORAGE_KEY = "lastBuildCat_v2";
+type SheetMode = "standard" | "compact" | "detailed";
+const RESISTANCE_LABELS = [
+  ["tr", "Tranchant"],
+  ["per", "Perforant"],
+  ["con", "Contondant"],
+  ["feu", "Feu"],
+  ["froid", "Froid"],
+  ["foudre", "Foudre"],
+  ["magie", "Magie"],
+] as const;
 
 export default function PrintBuildPage() {
   const catalog = useCatalogData();
@@ -24,7 +34,10 @@ export default function PrintBuildPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const state = location.state as PrintLocationState | null;
   const savedBuildId = searchParams.get("buildId");
-  const compact = searchParams.get("mode") === "compact";
+  const requestedMode = searchParams.get("mode");
+  const mode: SheetMode = requestedMode === "compact" || requestedMode === "detailed" ? requestedMode : "standard";
+  const compact = mode === "compact";
+  const detailed = mode === "detailed";
   const savedBuild = useMemo(
     () => savedBuildId ? getBuilds().find(item => item.id === savedBuildId) : undefined,
     [savedBuildId]
@@ -70,16 +83,28 @@ export default function PrintBuildPage() {
   const material = catalog.materials.find(item => item.name === build.material) ?? catalog.materials[0];
   const quality = catalog.qualities.find(item => item.name === build.quality) ?? catalog.qualities[0];
   const shield = catalog.shields.find(item => item.name === build.shield) ?? catalog.shields[0];
+  const shieldMaterial = catalog.shieldMaterials.find(item => item.name === build.shieldMaterial);
   const enchant = catalog.enchants.find(item => item.id === build.enchantId);
   const category = catalog.categories.find(item => item.key === build.cat);
   const compatible = Boolean(chassis && material && chassis.category === material.compat);
   const ratio = result.malusFinal === 0 ? "∞" : (result.paFinal / result.malusFinal).toFixed(2);
   const repairPerPa = material && quality ? computeRepair(1, material, quality, catalog.params) : null;
+  const shieldPa = (shield?.pa ?? 0) + (shieldMaterial?.paMod ?? 0);
+  const shieldMalus = (shield?.malus ?? 0) + (shieldMaterial?.malusMod ?? 0);
+  const enchantLevel = build.enchant ?? 0;
+  const enchantPa = !enchant || enchantLevel === 0
+    ? 0
+    : enchant.kind === "pa_flat" ? (enchant.perLevel ?? 0) * enchantLevel
+      : enchant.kind === "malus_flat" ? 0 : null;
+  const enchantMalus = !enchant || enchantLevel === 0
+    ? 0
+    : enchant.kind === "malus_flat" ? (enchant.perLevel ?? 0) * enchantLevel
+      : enchant.kind === "pa_flat" ? 0 : null;
 
-  const toggleCompact = () => {
+  const setSheetMode = (nextMode: SheetMode) => {
     const next = new URLSearchParams(searchParams);
-    if (compact) next.delete("mode");
-    else next.set("mode", "compact");
+    if (nextMode === "standard") next.delete("mode");
+    else next.set("mode", nextMode);
     setSearchParams(next, { replace: true, state: location.state });
   };
 
@@ -100,9 +125,19 @@ export default function PrintBuildPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button className={cls.btnGhost} type="button" onClick={toggleCompact} aria-pressed={compact}>
-            {compact ? "Mode standard" : "Mode compact"}
-          </button>
+          <div className="inline-flex rounded-md border border-border bg-card p-1" role="group" aria-label="Mode de fiche">
+            {(["standard", "compact", "detailed"] as SheetMode[]).map(item => (
+              <button
+                key={item}
+                className={`rounded px-2 py-1 text-xs font-medium outline-none transition focus-visible:ring-2 focus-visible:ring-primary/50 ${mode === item ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
+                type="button"
+                onClick={() => setSheetMode(item)}
+                aria-pressed={mode === item}
+              >
+                {item === "standard" ? "Standard" : item === "compact" ? "Compact" : "Détaillé"}
+              </button>
+            ))}
+          </div>
           <Link className={cls.btnGhost} to={fromSavedBuild ? "/builds" : "/"}>
             {fromSavedBuild ? "Retour au catalogue" : "Retour au calculateur"}
           </Link>
@@ -184,6 +219,49 @@ export default function PrintBuildPage() {
             </dl>
           ) : <p className="text-sm text-muted-foreground">Données de réparation indisponibles.</p>}
         </section>
+
+        {detailed && (
+          <section className={`${cls.card} space-y-3 lg:col-span-2`}>
+            <h2 className="text-lg font-semibold">Décomposition PA / malus</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[34rem] text-sm">
+                <thead className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr><th className="px-2 py-2 text-left">Source</th><th className="px-2 py-2 text-right">PA</th><th className="px-2 py-2 text-right">Malus</th></tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  <BreakdownRow label={`Châssis — ${chassis?.name ?? "—"}`} pa={chassis?.basePA ?? 0} malus={chassis?.baseMalus ?? 0} />
+                  <BreakdownRow label={`Matériau — ${material?.name ?? "—"}`} pa={material?.modPA ?? 0} malus={material?.malusMod ?? 0} />
+                  <BreakdownRow label={`Qualité — ${quality?.name ?? "—"}`} pa={quality?.bonusPA ?? 0} malus={quality?.malusMod ?? 0} />
+                  <BreakdownRow label={`Renfort — niveau ${build.renfort}`} pa={build.renfort} malus={build.renfort} />
+                  <BreakdownRow label={`Bouclier — ${shield?.name ?? "—"}`} pa={shieldPa} malus={shieldMalus} />
+                  <BreakdownRow label={`Enchantement — ${enchant?.name ?? "Aucun"} niveau ${enchantLevel}`} pa={enchantPa} malus={enchantMalus} />
+                  <tr className="font-bold"><th className="px-2 py-2 text-left">Total final</th><td className="px-2 py-2 text-right tabular-nums">{result.paFinal}</td><td className="px-2 py-2 text-right tabular-nums">{result.malusFinal}</td></tr>
+                </tbody>
+              </table>
+            </div>
+            {(material?.halfMalus || (enchant && enchantLevel > 0 && enchantPa === null && enchantMalus === null)) && (
+              <p className="text-xs text-muted-foreground">
+                Le total final intègre aussi {material?.halfMalus ? "la division du malus par deux" : ""}
+                {material?.halfMalus && enchant && enchantLevel > 0 && enchantPa === null && enchantMalus === null ? " et " : ""}
+                {enchant && enchantLevel > 0 && enchantPa === null && enchantMalus === null ? `l’effet spécial « ${enchant.name} »` : ""}.
+              </p>
+            )}
+          </section>
+        )}
+
+        {detailed && (
+          <section className={`${cls.card} space-y-3 lg:col-span-2`}>
+            <h2 className="text-lg font-semibold">Résistances chiffrées</h2>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+              {RESISTANCE_LABELS.map(([key, label]) => (
+                <div key={key} className="rounded-lg border border-border bg-muted/20 p-3 text-center">
+                  <div className="text-xs text-muted-foreground">{label}</div>
+                  <div className="mt-1 text-lg font-bold tabular-nums">{material?.res?.[key] ?? 0}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
       )}
 
@@ -209,6 +287,17 @@ function CompactItem({ label, value }: { label: string; value: string | number }
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="break-words text-sm font-semibold">{value}</div>
     </div>
+  );
+}
+
+function BreakdownRow({ label, pa, malus }: { label: string; pa: number | null; malus: number | null }) {
+  const display = (value: number | null) => value === null ? "effet spécial" : value > 0 ? `+${value}` : String(value);
+  return (
+    <tr>
+      <th className="px-2 py-2 text-left font-medium">{label}</th>
+      <td className="px-2 py-2 text-right tabular-nums">{display(pa)}</td>
+      <td className="px-2 py-2 text-right tabular-nums">{display(malus)}</td>
+    </tr>
   );
 }
 

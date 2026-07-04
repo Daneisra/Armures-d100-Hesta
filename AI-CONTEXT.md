@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.8.2`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.8.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -87,7 +87,7 @@ src/data/*.json
   - Pages routées : matériaux, PV/Constitution, catalogue de builds, éditeur et fiche d’armure.
   - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`, `/print`.
   - `MaterialsPage.tsx` fournit filtres, tri, pagination, détail modal et comparaison de un à trois matériaux.
-  - `PrintBuildPage.tsx` compose une fiche depuis le build courant ou un build sauvegardé. Le paramètre `buildId` recharge un build du catalogue local après actualisation ; sans identifiant, la page se replie sur `lastBuild_v2`. Le paramètre `mode=compact` active une présentation condensée.
+  - `PrintBuildPage.tsx` compose une fiche depuis le build courant ou un build sauvegardé. Le paramètre `buildId` recharge un build du catalogue local après actualisation ; sans identifiant, la page se replie sur `lastBuild_v2`. Les paramètres `mode=compact` et `mode=detailed` sélectionnent les présentations condensée et détaillée.
   - L’éditeur propose un historique limité à 20 actions, une corbeille de session, une sauvegarde automatique optionnelle et des listes filtrables/triables.
   - Les listes de l’éditeur utilisent une colonne Actions compacte sur desktop et repassent en empilement sur petit écran.
   - Toutes les listes éditables sont limitées à la même hauteur avec défilement interne ; les catégories et multiplicateurs sont présentés avec des libellés lisibles.
@@ -292,7 +292,6 @@ Règles de compatibilité :
 
 ### 0.8.x — Impression & partage long terme
 
-- Ajouter un mode détaillé.
 - Ajouter une feuille de style `@media print`.
 - Ajouter l’export PDF via impression navigateur.
 
