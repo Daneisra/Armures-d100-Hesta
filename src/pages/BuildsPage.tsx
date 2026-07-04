@@ -177,8 +177,14 @@ export default function BuildsPage() {
                 <div className="text-xs text-muted-foreground">Créé le {new Date(b.createdAt).toLocaleString()}</div>
                 {b.cat && <span className={cls.badgeNeutral}>Catégorie {b.cat}</span>}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap justify-end gap-2">
                 <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat, b.name)}>Appliquer</button>
+                <button
+                  className={cls.btnGhost}
+                  onClick={() => navigate(`/print?buildId=${encodeURIComponent(b.id)}`, { state: { build: b.build, cat: b.cat, name: b.name, source: "saved" } })}
+                >
+                  Voir la fiche
+                </button>
                 <button className={cls.btnGhost} onClick={()=>onCopyLink(b.build, b.cat, b.name)}>Partager</button>
                 <button className={cls.btnGhost} onClick={()=>exportSingleJSON(b.build, b.cat, b.name)}>Exporter JSON</button>
                 <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>setPendingDelete(b)}>Supprimer</button>

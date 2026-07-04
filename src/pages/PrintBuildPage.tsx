@@ -6,10 +6,13 @@ import { computeBuild } from "../lib/calc";
 import { computeRepair, formatHours } from "../lib/repair";
 import MaterialBadges from "../components/MaterialBadges";
 import { cls } from "../ui/styles";
+import { getBuilds } from "../buildCatalog";
 
 type PrintLocationState = {
   build?: BuildInput;
   cat?: string;
+  name?: string;
+  source?: "current" | "saved";
 };
 
 const BUILD_STORAGE_KEY = "lastBuild_v2";
@@ -19,6 +22,13 @@ export default function PrintBuildPage() {
   const catalog = useCatalogData();
   const location = useLocation();
   const state = location.state as PrintLocationState | null;
+  const savedBuildId = new URLSearchParams(location.search).get("buildId");
+  const savedBuild = useMemo(
+    () => savedBuildId ? getBuilds().find(item => item.id === savedBuildId) : undefined,
+    [savedBuildId]
+  );
+  const sheetName = state?.name ?? savedBuild?.name;
+  const fromSavedBuild = state?.source === "saved" || Boolean(savedBuildId);
 
   const build = useMemo(() => {
     const fallback: BuildInput = {
@@ -30,10 +40,10 @@ export default function PrintBuildPage() {
       enchantId: "protection",
       shield: catalog.shields[0]?.name ?? "",
       shieldMaterial: catalog.shieldMaterials[0]?.name ?? "",
-      cat: state?.cat ?? localStorage.getItem(CATEGORY_STORAGE_KEY) ?? "",
+      cat: state?.cat ?? savedBuild?.cat ?? localStorage.getItem(CATEGORY_STORAGE_KEY) ?? "",
     };
 
-    let candidate = state?.build;
+    let candidate = state?.build ?? savedBuild?.build;
     if (!candidate) {
       try {
         const stored = localStorage.getItem(BUILD_STORAGE_KEY);
@@ -43,7 +53,7 @@ export default function PrintBuildPage() {
       }
     }
 
-    const next = { ...fallback, ...candidate, cat: state?.cat ?? candidate?.cat ?? fallback.cat };
+    const next = { ...fallback, ...candidate, cat: state?.cat ?? savedBuild?.cat ?? candidate?.cat ?? fallback.cat };
     if (!catalog.chassis.some(item => item.name === next.chassis)) next.chassis = fallback.chassis;
     if (!catalog.materials.some(item => item.name === next.material)) next.material = fallback.material;
     if (!catalog.qualities.some(item => item.name === next.quality)) next.quality = fallback.quality;
@@ -51,7 +61,7 @@ export default function PrintBuildPage() {
     if (!catalog.enchants.some(item => item.id === next.enchantId)) next.enchantId = fallback.enchantId;
     if (!catalog.shieldMaterials.some(item => item.name === next.shieldMaterial)) next.shieldMaterial = fallback.shieldMaterial;
     return next;
-  }, [catalog, state]);
+  }, [catalog, savedBuild, state]);
 
   const result = useMemo(() => computeBuild(build, catalog), [build, catalog]);
   const chassis = catalog.chassis.find(item => item.name === build.chassis) ?? catalog.chassis[0];
@@ -66,19 +76,23 @@ export default function PrintBuildPage() {
 
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = `Fiche ${build.chassis} — Système PA`;
+    document.title = `Fiche ${sheetName ?? build.chassis} — Système PA`;
     return () => { document.title = previousTitle; };
-  }, [build.chassis]);
+  }, [build.chassis, sheetName]);
 
   return (
     <div className="mx-auto max-w-4xl space-y-5">
       <header className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Fiche d’armure</p>
-          <h1 className="text-3xl font-bold">{build.chassis}</h1>
-          <p className="text-sm text-muted-foreground">{build.material} · {build.quality}</p>
+          <h1 className="text-3xl font-bold">{sheetName ?? build.chassis}</h1>
+          <p className="text-sm text-muted-foreground">
+            {sheetName ? `${build.chassis} · ` : ""}{build.material} · {build.quality}
+          </p>
         </div>
-        <Link className={cls.btnGhost} to="/">Retour au calculateur</Link>
+        <Link className={cls.btnGhost} to={fromSavedBuild ? "/builds" : "/"}>
+          {fromSavedBuild ? "Retour au catalogue" : "Retour au calculateur"}
+        </Link>
       </header>
 
       <section className="grid gap-3 sm:grid-cols-3" aria-label="Résultats principaux">
@@ -137,7 +151,7 @@ export default function PrintBuildPage() {
       </div>
 
       <footer className="border-t border-border pt-3 text-xs text-muted-foreground">
-        Généré depuis le build actuel · Système PA v{__APP_VERSION__}
+        Généré depuis {fromSavedBuild ? "le catalogue de builds" : "le build actuel"} · Système PA v{__APP_VERSION__}
       </footer>
     </div>
   );
