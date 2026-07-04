@@ -35,8 +35,8 @@ return (
       >
         Aller au contenu
       </a>
-      <div className={`${cls.page} max-w-7xl space-y-6`}>
-        <header className="space-y-4">
+      <div className={`${cls.page} app-shell max-w-7xl space-y-6`}>
+        <header className="app-shell-header space-y-4">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h1 className="text-xl font-bold">
@@ -78,7 +78,7 @@ return (
           </nav>
         </header>
 
-        <main id="main" className="pb-20 sm:pb-0">
+        <main id="main" className="app-shell-main pb-20 sm:pb-0">
           <Routes>
             <Route path="/" element={<Calculator />} />
             <Route path="/materials" element={<MaterialsPage />} />
@@ -90,7 +90,7 @@ return (
         </main>
       </div>
 
-      <nav className="mobile-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 px-1 pt-1 shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur sm:hidden" aria-label="Navigation mobile">
+      <nav className="mobile-nav app-mobile-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 px-1 pt-1 shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur sm:hidden" aria-label="Navigation mobile">
         {NAV_ITEMS.map(item => {
           const active = item.match(location.pathname);
           const Icon = item.icon;

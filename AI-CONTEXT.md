@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.8.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.8.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -110,6 +110,7 @@ src/data/*.json
 - `src/catalogContext.tsx` : contexte React donnant accès au catalogue fusionné.
 - `src/buildCatalog.ts` : CRUD local et import/export du catalogue de builds.
 - `src/App.tsx` : routes, skip link et shell principal ; navigation dans le header sur desktop, barre inférieure dédiée sous le breakpoint `sm`.
+- `src/index.css` : tokens globaux et feuille A4 `@media print` ; shell et contrôles masqués, couleurs papier, cartes sans ombre et gestion des coupures.
 
 ## 4. Inventaire des données JSON
 
@@ -292,7 +293,6 @@ Règles de compatibilité :
 
 ### 0.8.x — Impression & partage long terme
 
-- Ajouter une feuille de style `@media print`.
 - Ajouter l’export PDF via impression navigateur.
 
 ## 10. Points à vérifier avant de modifier le métier

@@ -115,10 +115,85 @@ body {
 .td          { @apply border-t border-[var(--border)] px-3 py-2; }
 .tr          { @apply border-b hover:bg-muted/40; }
 
-/* Impression : résumé uniquement propre */
-@media print{
-  nav, .no-print { display:none !important; }
-  .print-card { box-shadow:none; border-color:#ccc; }
+/* Impression des fiches d'armure */
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@media print {
+  :root,
+  :root.dark,
+  :root[data-theme="dark"] {
+    --bg: #ffffff !important;
+    --fg: #111827 !important;
+    --muted: #4b5563 !important;
+    --panel: #ffffff !important;
+    --border: #b8bec8 !important;
+    --color-background: #ffffff !important;
+    --color-foreground: #111827 !important;
+    --color-card: #ffffff !important;
+    --color-muted: #f3f4f6 !important;
+    --color-border: #b8bec8 !important;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    margin: 0 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  body {
+    font-size: 10.5pt;
+    transition: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .app-shell {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .app-shell-header,
+  .app-mobile-nav,
+  .print-hidden {
+    display: none !important;
+  }
+
+  .app-shell-main {
+    padding: 0 !important;
+  }
+
+  .print-sheet {
+    max-width: none !important;
+    margin: 0 !important;
+    color: #111827 !important;
+  }
+
+  .print-sheet .print-card {
+    break-inside: avoid;
+    border-color: #b8bec8 !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+  }
+
+  .print-sheet .text-muted-foreground {
+    color: #4b5563 !important;
+  }
+
+  .print-sheet table,
+  .print-sheet tr,
+  .print-sheet dl {
+    break-inside: avoid;
+  }
+
+  .print-sheet footer {
+    break-inside: avoid;
+  }
 }
 
 /* A11y hidden but readable to SR */

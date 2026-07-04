@@ -115,7 +115,7 @@ export default function PrintBuildPage() {
   }, [build.chassis, sheetName]);
 
   return (
-    <div className={`mx-auto max-w-4xl ${compact ? "space-y-3" : "space-y-5"}`}>
+    <div className={`print-sheet mx-auto max-w-4xl ${compact ? "space-y-3" : "space-y-5"}`}>
       <header className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Fiche d’armure</p>
@@ -124,7 +124,7 @@ export default function PrintBuildPage() {
             {sheetName ? `${build.chassis} · ` : ""}{build.material} · {build.quality}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="print-hidden flex flex-wrap gap-2">
           <div className="inline-flex rounded-md border border-border bg-card p-1" role="group" aria-label="Mode de fiche">
             {(["standard", "compact", "detailed"] as SheetMode[]).map(item => (
               <button
@@ -151,7 +151,7 @@ export default function PrintBuildPage() {
       </section>
 
       {compact ? (
-        <section className={`${cls.card} space-y-4`} aria-labelledby="compact-sheet-title">
+        <section className={`${cls.card} print-card space-y-4`} aria-labelledby="compact-sheet-title">
           <h2 id="compact-sheet-title" className="sr-only">Résumé compact</h2>
           <div className="grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
             <CompactItem label="Châssis" value={build.chassis} />
@@ -173,7 +173,7 @@ export default function PrintBuildPage() {
         </section>
       ) : (
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className={`${cls.card} space-y-3`}>
+        <section className={`${cls.card} print-card space-y-3`}>
           <h2 className="text-lg font-semibold">Composition</h2>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <Term label="Châssis" value={build.chassis} />
@@ -187,7 +187,7 @@ export default function PrintBuildPage() {
           </dl>
         </section>
 
-        <section className={`${cls.card} space-y-3`}>
+        <section className={`${cls.card} print-card space-y-3`}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-semibold">Évaluation</h2>
             <span className={compatible ? cls.badgeGood : cls.badgeBad}>{compatible ? "Compatible" : "Incompatible"}</span>
@@ -202,13 +202,13 @@ export default function PrintBuildPage() {
           </dl>
         </section>
 
-        <section className={`${cls.card} space-y-3`}>
+        <section className={`${cls.card} print-card space-y-3`}>
           <h2 className="text-lg font-semibold">Effets et résistances</h2>
           {material && <MaterialBadges mat={material} />}
           {result.notes.length > 0 && <ul className={cls.noteList}>{result.notes.map(note => <li key={note}>{note}</li>)}</ul>}
         </section>
 
-        <section className={`${cls.card} space-y-3`}>
+        <section className={`${cls.card} print-card space-y-3`}>
           <h2 className="text-lg font-semibold">Réparation par PA</h2>
           {repairPerPa ? (
             <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2 text-sm">
@@ -221,7 +221,7 @@ export default function PrintBuildPage() {
         </section>
 
         {detailed && (
-          <section className={`${cls.card} space-y-3 lg:col-span-2`}>
+          <section className={`${cls.card} print-card space-y-3 lg:col-span-2`}>
             <h2 className="text-lg font-semibold">Décomposition PA / malus</h2>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[34rem] text-sm">
@@ -250,7 +250,7 @@ export default function PrintBuildPage() {
         )}
 
         {detailed && (
-          <section className={`${cls.card} space-y-3 lg:col-span-2`}>
+          <section className={`${cls.card} print-card space-y-3 lg:col-span-2`}>
             <h2 className="text-lg font-semibold">Résistances chiffrées</h2>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
               {RESISTANCE_LABELS.map(([key, label]) => (
@@ -274,7 +274,7 @@ export default function PrintBuildPage() {
 
 function Metric({ label, value, compact = false }: { label: string; value: string | number; compact?: boolean }) {
   return (
-    <div className={`${cls.card} ${compact ? "!p-3" : ""} text-center`}>
+    <div className={`${cls.card} print-card ${compact ? "!p-3" : ""} text-center`}>
       <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className={`mt-1 ${compact ? "text-2xl" : "text-3xl"} font-bold tabular-nums`}>{value}</div>
     </div>
