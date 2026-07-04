@@ -407,6 +407,12 @@ export default function Calculator(){
               </button>
               <button
                 className={cls.btnGhost}
+                onClick={() => navigate("/print", { state: { build: { ...inp, cat }, cat } })}
+              >
+                Voir la fiche
+              </button>
+              <button
+                className={cls.btnGhost}
                 onClick={() => {
                   localStorage.setItem("lastBuild_v2", JSON.stringify({ ...inp, cat }));
                   localStorage.setItem("lastBuildCat_v2", cat);

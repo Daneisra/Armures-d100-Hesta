@@ -6,6 +6,7 @@ import PVPage from "./pages/PVPage";
 import EditorPage from "./pages/EditorPage";
 import BuildsPage from "./pages/BuildsPage";
 import OfflineStatus from "./components/OfflineStatus";
+import PrintBuildPage from "./pages/PrintBuildPage";
 import { cls } from "./ui/styles";
 import {
   Calculator as CalculatorIcon,
@@ -84,6 +85,7 @@ return (
             <Route path="/pv" element={<PVPage />} />
             <Route path="/builds" element={<BuildsPage />} />
             <Route path="/editeur" element={<EditorPage />} />
+            <Route path="/print" element={<PrintBuildPage />} />
           </Routes>
         </main>
       </div>
