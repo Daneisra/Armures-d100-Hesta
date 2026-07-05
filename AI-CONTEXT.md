@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.8.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -84,10 +84,11 @@ src/data/*.json
   - `OfflineStatus.tsx` affiche l’état hors ligne dans le header.
 
 - `src/pages/`
-  - Pages routées : matériaux, PV/Constitution, catalogue de builds, éditeur et fiche d’armure.
-  - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`, `/print`.
+  - Pages routées : matériaux, PV/Constitution, catalogue de builds, éditeur, fiche d’armure et aide rapide.
+  - Routes actuelles : `/`, `/materials`, `/pv`, `/builds`, `/editeur`, `/print`, `/aide`.
   - `MaterialsPage.tsx` fournit filtres, tri, pagination, détail modal et comparaison de un à trois matériaux.
   - `PrintBuildPage.tsx` compose une fiche depuis le build courant ou un build sauvegardé. Le paramètre `buildId` recharge un build du catalogue local après actualisation ; sans identifiant, la page se replie sur `lastBuild_v2`. Les paramètres `mode=compact` et `mode=detailed` sélectionnent les présentations condensée et détaillée. Le bouton « Imprimer / PDF » appelle `window.print()`.
+  - `HelpPage.tsx` explique le parcours joueur, les principales règles affichées par l’outil, l’impression et la portée locale des données.
   - L’éditeur propose un historique limité à 20 actions, une corbeille de session, une sauvegarde automatique optionnelle et des listes filtrables/triables.
   - Les listes de l’éditeur utilisent une colonne Actions compacte sur desktop et repassent en empilement sur petit écran.
   - Toutes les listes éditables sont limitées à la même hauteur avec défilement interne ; les catégories et multiplicateurs sont présentés avec des libellés lisibles.
@@ -291,9 +292,22 @@ Règles de compatibilité :
 
 ## 9. Roadmap actuelle
 
-### 0.8.x — Impression & partage long terme
+### 0.9.x — Stabilisation publique & confort d’usage
 
-- Jalon terminé en `0.8.5`. Définir explicitement le prochain jalon avant d’ajouter de nouvelles fonctionnalités majeures.
+- Audit complet responsive mobile/tablette/desktop.
+- Audit PWA/offline après plusieurs mises à jour de version.
+- Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
+- Page “À propos / Aide rapide” ajoutée en `0.9.0`.
+- Ajouter un changelog visible dans l’app ou dans le README.
+- Nettoyer les dernières incohérences UI et textes.
+
+### 1.0.0 — Première version stable
+
+- Geler les règles métier principales.
+- Vérifier toutes les données JSON par défaut.
+- Valider les tests unitaires métier.
+- Valider l’impression/PDF sur Chrome, Firefox et Edge.
+- Taguer une release GitHub `v1.0.0`.
 
 ## 10. Points à vérifier avant de modifier le métier
 

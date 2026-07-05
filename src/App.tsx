@@ -7,12 +7,14 @@ import EditorPage from "./pages/EditorPage";
 import BuildsPage from "./pages/BuildsPage";
 import OfflineStatus from "./components/OfflineStatus";
 import PrintBuildPage from "./pages/PrintBuildPage";
+import HelpPage from "./pages/HelpPage";
 import { cls } from "./ui/styles";
 import {
   Calculator as CalculatorIcon,
   HeartPulse,
   Layers,
   Library,
+  CircleHelp,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -22,6 +24,7 @@ const NAV_ITEMS = [
   { label: "PV / Constitution", mobileLabel: "PV", icon: HeartPulse, to: "/pv", match: (path: string) => path.startsWith("/pv") },
   { label: "Catalogue", mobileLabel: "Builds", icon: Library, to: "/builds", match: (path: string) => path.startsWith("/builds") },
   { label: "Éditeur", mobileLabel: "Éditeur", icon: SlidersHorizontal, to: "/editeur", match: (path: string) => path.startsWith("/editeur") },
+  { label: "Aide", mobileLabel: "Aide", icon: CircleHelp, to: "/aide", match: (path: string) => path.startsWith("/aide") },
 ];
 
 export default function App() {
@@ -86,11 +89,12 @@ return (
             <Route path="/builds" element={<BuildsPage />} />
             <Route path="/editeur" element={<EditorPage />} />
             <Route path="/print" element={<PrintBuildPage />} />
+            <Route path="/aide" element={<HelpPage />} />
           </Routes>
         </main>
       </div>
 
-      <nav className="mobile-nav app-mobile-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-border bg-card/95 px-1 pt-1 shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur sm:hidden" aria-label="Navigation mobile">
+      <nav className="mobile-nav app-mobile-nav fixed inset-x-0 bottom-0 z-40 grid grid-cols-6 border-t border-border bg-card/95 px-1 pt-1 shadow-[0_-4px_16px_rgb(0_0_0/0.08)] backdrop-blur sm:hidden" aria-label="Navigation mobile">
         {NAV_ITEMS.map(item => {
           const active = item.match(location.pathname);
           const Icon = item.icon;

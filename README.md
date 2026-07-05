@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.8.5)
+## Fonctionnalités actuelles (0.9.0)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -78,6 +78,9 @@ Types clés (extraits de `src/types.ts`) :
   - Mode détaillé avec décomposition PA/malus et résistances chiffrées (`mode=detailed`).
   - Feuille d’impression A4 dédiée, indépendante du thème et sans navigation ni contrôles.
   - Bouton « Imprimer / PDF » ouvrant la boîte d’impression native du navigateur.
+- **Aide rapide**
+  - Page `/aide` accessible depuis les navigations desktop et mobile.
+  - Explications sur les châssis, matériaux, compatibilité, usure, Perce-armure, builds, impression et données locales.
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
@@ -87,9 +90,22 @@ Types clés (extraits de `src/types.ts`) :
 
 ## Roadmap
 
-### 0.8.x — Impression & partage long terme
+### 0.9.x — Stabilisation publique & confort d’usage
 
-- [x] Jalon terminé : fiches courantes et sauvegardées, modes standard/compact/détaillé, impression A4 et export PDF navigateur.
+- [ ] Audit complet responsive mobile/tablette/desktop.
+- [ ] Audit PWA/offline après plusieurs mises à jour de version.
+- [ ] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
+- [x] Ajouter une page “À propos / Aide rapide”.
+- [ ] Ajouter un changelog visible dans l’app ou dans le README.
+- [ ] Nettoyer les dernières incohérences UI et textes.
+
+### 1.0.0 — Première version stable
+
+- [ ] Geler les règles métier principales.
+- [ ] Vérifier toutes les données JSON par défaut.
+- [ ] Valider les tests unitaires métier.
+- [ ] Valider l’impression/PDF sur Chrome, Firefox et Edge.
+- [ ] Taguer une release GitHub `v1.0.0`.
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).
