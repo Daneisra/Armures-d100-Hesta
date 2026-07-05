@@ -125,6 +125,9 @@ export default function PrintBuildPage() {
           </p>
         </div>
         <div className="print-hidden flex flex-wrap gap-2">
+          <button className={cls.btnPrimary} type="button" onClick={() => window.print()}>
+            Imprimer / PDF
+          </button>
           <div className="inline-flex rounded-md border border-border bg-card p-1" role="group" aria-label="Mode de fiche">
             {(["standard", "compact", "detailed"] as SheetMode[]).map(item => (
               <button

@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.8.4)
+## Fonctionnalités actuelles (0.8.5)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -77,6 +77,7 @@ Types clés (extraits de `src/types.ts`) :
   - Mode compact activable et conservé dans l’URL avec `mode=compact`.
   - Mode détaillé avec décomposition PA/malus et résistances chiffrées (`mode=detailed`).
   - Feuille d’impression A4 dédiée, indépendante du thème et sans navigation ni contrôles.
+  - Bouton « Imprimer / PDF » ouvrant la boîte d’impression native du navigateur.
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
@@ -88,7 +89,7 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.8.x — Impression & partage long terme
 
-- [ ] Ajouter l’export PDF via impression navigateur.
+- [x] Jalon terminé : fiches courantes et sauvegardées, modes standard/compact/détaillé, impression A4 et export PDF navigateur.
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).
