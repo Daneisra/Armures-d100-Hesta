@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.1`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -294,7 +294,7 @@ Règles de compatibilité :
 
 ### 0.9.x — Stabilisation publique & confort d’usage
 
-- Audit complet responsive mobile/tablette/desktop.
+- Audit responsive mobile/tablette/desktop réalisé en `0.9.1` aux largeurs 390, 768 et 1440 px.
 - Audit PWA/offline après plusieurs mises à jour de version.
 - Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - Page “À propos / Aide rapide” ajoutée en `0.9.0`.

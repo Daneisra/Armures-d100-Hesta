@@ -67,7 +67,7 @@ export default function WearWidget({
 
   return (
     <div className={className ?? cls.card}>
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
         <h3 className="text-sm font-semibold text-muted-foreground">Usure en combat</h3>
         <div className="text-xs text-muted-foreground">
           base: {params.baseWear} — cap/coup: {params.capWearPerHit}

@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.0)
+## Fonctionnalités actuelles (0.9.1)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -69,6 +69,7 @@ Types clés (extraits de `src/types.ts`) :
 - **Navigation responsive**
   - Onglets complets dans le header sur desktop.
   - Barre de navigation inférieure sur mobile avec icônes, page active et prise en charge des zones sûres.
+  - Audit réalisé à 390 px, 768 px et 1440 px : formulaires empilés sur mobile, en-têtes d’actions adaptatifs et tables conservées dans leurs zones de défilement.
 - **Fiche d’armure**
   - Prévisualisation dédiée depuis le build actuellement configuré (`/print`).
   - Accès depuis chaque build sauvegardé, avec restauration par identifiant après actualisation.
@@ -92,7 +93,7 @@ Types clés (extraits de `src/types.ts`) :
 
 ### 0.9.x — Stabilisation publique & confort d’usage
 
-- [ ] Audit complet responsive mobile/tablette/desktop.
+- [x] Audit complet responsive mobile/tablette/desktop.
 - [ ] Audit PWA/offline après plusieurs mises à jour de version.
 - [ ] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - [x] Ajouter une page “À propos / Aide rapide”.

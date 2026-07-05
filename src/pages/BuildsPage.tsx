@@ -129,12 +129,12 @@ export default function BuildsPage() {
 
   return (
     <div className={`${cls.page} max-w-4xl space-y-6`}>
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Catalogue de builds</h1>
           <p className="text-sm text-muted-foreground">Sauvegardes locales (localStorage) exportables en JSON.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 sm:justify-end">
           <label className={cls.btnGhost}>
             Import JSON
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
@@ -146,7 +146,7 @@ export default function BuildsPage() {
 
       {error && (
         <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
-          <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
             <button className={cls.btnGhost} onClick={copyErrorReport}>Copier le rapport d’erreurs</button>
           </div>
@@ -155,7 +155,7 @@ export default function BuildsPage() {
       )}
       <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
         <input
           className={cls.input}
           placeholder="Filtrer par nom..."
@@ -171,13 +171,13 @@ export default function BuildsPage() {
         )}
         {filtered.map(b => (
           <div key={b.id} className={`${cls.card} flex flex-col gap-2`}>
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <div className="font-semibold">{b.name}</div>
                 <div className="text-xs text-muted-foreground">Créé le {new Date(b.createdAt).toLocaleString()}</div>
                 {b.cat && <span className={cls.badgeNeutral}>Catégorie {b.cat}</span>}
               </div>
-              <div className="flex flex-wrap justify-end gap-2">
+              <div className="flex flex-wrap gap-2 sm:justify-end">
                 <button className={cls.btnPrimary} onClick={()=>applyBuild(b.build, b.cat, b.name)}>Appliquer</button>
                 <button
                   className={cls.btnGhost}
@@ -190,7 +190,7 @@ export default function BuildsPage() {
                 <button className={`${cls.btnGhost} border border-rose-200 text-rose-600`} onClick={()=>setPendingDelete(b)}>Supprimer</button>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
+            <div className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2 md:grid-cols-3">
               <span>Châssis : <b className="text-foreground">{b.build.chassis}</b></span>
               <span>Matériau : <b className="text-foreground">{b.build.material}</b></span>
               <span>Qualité : <b className="text-foreground">{b.build.quality}</b></span>

@@ -237,7 +237,7 @@ export default function Calculator(){
 
   return (
     <div className={`${cls.page} max-w-7xl space-y-6`}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">Calculateur d'armure <span className="text-sm opacity-60">v{__APP_VERSION__}</span></h1>
         <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)} title="Efface la configuration locale et recharge">
           Réinitialiser la config locale

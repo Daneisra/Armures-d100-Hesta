@@ -164,12 +164,12 @@ export default function EditorPage() {
 
   return (
     <div className={`${cls.page} max-w-6xl space-y-6`}>
-      <header className="flex items-center justify-between">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Éditeur de catalogue <span className="text-sm opacity-60">local</span></h1>
           <p className="text-sm text-muted-foreground">Ces changements restent sur ton navigateur (localStorage). Exporte pour partager.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap gap-2 sm:justify-end">
           <label className={cls.btnGhost}>
             Import JSON
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
@@ -229,7 +229,7 @@ export default function EditorPage() {
 
       {importError && (
         <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
-          <div className="flex items-center justify-between gap-3 mb-2">
+          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
             <button className={cls.btnGhost} onClick={copyImportReport}>Copier le rapport d’erreurs</button>
           </div>
