@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.1)
+## Fonctionnalités actuelles (0.9.2)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -63,7 +63,7 @@ Types clés (extraits de `src/types.ts`) :
   - Modales accessibles pour les confirmations et la sauvegarde : focus piégé nativement, fermeture Échap et restauration du focus.
 - **PWA / hors ligne**
   - Application installable grâce au manifeste web.
-  - Cache versionné du shell, du bundle et des données JSON embarquées après la première visite.
+  - Cache versionné et préchargement atomique du shell, du JS et du CSS avant activation d’une mise à jour.
   - Routes SPA accessibles hors ligne et indicateur « Mode hors ligne » dans le header.
   - Dernier build, catalogue et préférences conservés par `localStorage`.
 - **Navigation responsive**
@@ -94,7 +94,7 @@ Types clés (extraits de `src/types.ts`) :
 ### 0.9.x — Stabilisation publique & confort d’usage
 
 - [x] Audit complet responsive mobile/tablette/desktop.
-- [ ] Audit PWA/offline après plusieurs mises à jour de version.
+- [x] Audit PWA/offline après plusieurs mises à jour de version.
 - [ ] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - [x] Ajouter une page “À propos / Aide rapide”.
 - [ ] Ajouter un changelog visible dans l’app ou dans le README.

@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.1`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.2`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -106,7 +106,7 @@ src/data/*.json
 - `src/types.ts` : contrats TypeScript des données et résultats métier.
 - `src/catalog.ts` : catalogue canonique, fusion et persistance des overrides.
 - `src/pwa.ts` : enregistrement du service worker uniquement sur les builds de production.
-- `public/sw.js` : cache versionné du shell et des ressources same-origin, stratégie network-first pour les navigations et cache-first pour les assets.
+- `public/sw.js` : cache versionné, préchargement du HTML et des bundles JS/CSS avant activation, stratégie network-first pour les navigations et cache-first pour les assets.
 - `public/manifest.webmanifest` : métadonnées d’installation de la PWA.
 - `src/catalogContext.tsx` : contexte React donnant accès au catalogue fusionné.
 - `src/buildCatalog.ts` : CRUD local et import/export du catalogue de builds.
@@ -295,7 +295,7 @@ Règles de compatibilité :
 ### 0.9.x — Stabilisation publique & confort d’usage
 
 - Audit responsive mobile/tablette/desktop réalisé en `0.9.1` aux largeurs 390, 768 et 1440 px.
-- Audit PWA/offline après plusieurs mises à jour de version.
+- Audit PWA/offline multi-version réalisé en `0.9.2` ; le nouveau service worker précharge son shell complet avant de supprimer les anciens caches.
 - Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - Page “À propos / Aide rapide” ajoutée en `0.9.0`.
 - Ajouter un changelog visible dans l’app ou dans le README.

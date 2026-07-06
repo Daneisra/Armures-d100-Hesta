@@ -1,12 +1,27 @@
 const APP_PREFIX = "systeme-pa-";
 const version = new URL(self.location.href).searchParams.get("v") || "dev";
 const CACHE_NAME = `${APP_PREFIX}${version}`;
-const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest", "/favicon.svg"];
+const STATIC_SHELL = ["/manifest.webmanifest", "/favicon.svg"];
+
+async function precacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  const indexResponse = await fetch(new Request("/index.html", { cache: "reload" }));
+  if (!indexResponse.ok) throw new Error(`Unable to cache index.html (${indexResponse.status})`);
+
+  const html = await indexResponse.clone().text();
+  const assetUrls = [...html.matchAll(/(?:src|href)=["']([^"']+)["']/g)]
+    .map(match => new URL(match[1], self.location.origin))
+    .filter(url => url.origin === self.location.origin && url.pathname.startsWith("/assets/"))
+    .map(url => `${url.pathname}${url.search}`);
+
+  await cache.put("/", indexResponse.clone());
+  await cache.put("/index.html", indexResponse);
+  await cache.addAll([...STATIC_SHELL, ...new Set(assetUrls)]);
+}
 
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(APP_SHELL))
+    precacheAppShell()
       .then(() => self.skipWaiting())
   );
 });
