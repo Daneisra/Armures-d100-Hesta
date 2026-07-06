@@ -30,7 +30,7 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: "materials", label: "Matériaux" },
   { key: "qualities", label: "Qualités" },
   { key: "shields", label: "Boucliers" },
-  { key: "params", label: "Params" },
+  { key: "params", label: "Paramètres" },
 ];
 const compactAction = "inline-flex min-h-7 items-center rounded-md border border-border bg-card px-2 py-1 text-xs font-medium shadow-sm outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary/50";
 const categoryLabels: Record<string, string> = {
@@ -187,7 +187,7 @@ export default function EditorPage() {
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
           </label>
           <button className={cls.btnGhost} onClick={exportToFile}>Exporter (JSON)</button>
-          <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)}>Reset global</button>
+          <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)}>Réinitialiser tout</button>
         </div>
       </header>
 
@@ -472,12 +472,12 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Châssis</h2>
         <div className="flex gap-2">
-          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Réinitialiser l’onglet</button>
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="hidden md:grid md:grid-cols-[1.2fr_1fr_1fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
-        <span>Nom</span><span>Groupe</span><span>Compat</span><span>PA / Malus</span><span className="text-right">Actions</span>
+        <span>Nom</span><span>Groupe</span><span>Compatibilité</span><span>PA / Malus</span><span className="text-right">Actions</span>
       </div>
       <div className="max-h-[420px] space-y-1 overflow-auto pr-1">
         {filtered.visibleItems.map(c => (
@@ -495,7 +495,7 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
         ))}
       </div>
       <div className="border-t pt-3 space-y-2">
-        <h3 className="font-semibold text-sm">Nouvel élément</h3>
+        <h3 className="font-semibold text-sm">{editing ? "Modifier l’élément" : "Nouvel élément"}</h3>
         <div className="grid sm:grid-cols-2 gap-3">
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Nom</div>
@@ -508,7 +508,7 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
             </select>
           </label>
           <label className="text-sm">
-            <div className="text-muted-foreground text-xs mb-1">Compat</div>
+            <div className="text-muted-foreground text-xs mb-1">Compatibilité</div>
             <select className={cls.select} value={draft.category} onChange={e=>setDraft({...draft, category:e.target.value as any})}>
               <option>Gambison</option><option>Cuir</option><option>Métal</option>
             </select>
@@ -552,12 +552,12 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Matériaux</h2>
         <div className="flex gap-2">
-          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Réinitialiser l’onglet</button>
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
       <div className="hidden md:grid md:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr_auto] gap-2 px-2 text-sm font-semibold text-muted-foreground">
-        <span>Nom</span><span>Catégorie</span><span>Compat</span><span>PA / Malus</span><span>Usure</span><span className="text-right">Actions</span>
+        <span>Nom</span><span>Catégorie</span><span>Compatibilité</span><span>PA / Malus</span><span>Usure</span><span className="text-right">Actions</span>
       </div>
       <div className="space-y-1 max-h-[420px] overflow-auto pr-1">
         {filtered.visibleItems.map(m => (
@@ -576,7 +576,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
         ))}
       </div>
       <div className="border-t pt-3 space-y-2">
-        <h3 className="font-semibold text-sm">Nouvel élément</h3>
+        <h3 className="font-semibold text-sm">{editing ? "Modifier l’élément" : "Nouvel élément"}</h3>
         <div className="grid sm:grid-cols-2 gap-3">
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Nom</div>
@@ -587,18 +587,18 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
             <input className={cls.input} value={draft.category} onChange={e=>setDraft({...draft, category:e.target.value})}/>
           </label>
           <label className="text-sm">
-            <div className="text-muted-foreground text-xs mb-1">Compat</div>
+            <div className="text-muted-foreground text-xs mb-1">Compatibilité</div>
             <select className={cls.select} value={draft.compat} onChange={e=>setDraft({...draft, compat:e.target.value as any})}>
               <option>Gambison</option><option>Cuir</option><option>Métal</option>
             </select>
           </label>
           <div className="grid grid-cols-2 gap-2">
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Mod PA</div>
+              <div className="text-muted-foreground text-xs mb-1">Modificateur de PA</div>
               <input className={cls.input} type="number" value={draft.modPA} onChange={e=>setDraft({...draft, modPA:Number(e.target.value)||0})}/>
             </label>
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Malus Mod</div>
+              <div className="text-muted-foreground text-xs mb-1">Modificateur de malus</div>
               <input className={cls.input} type="number" value={draft.malusMod} onChange={e=>setDraft({...draft, malusMod:Number(e.target.value)||0})}/>
             </label>
           </div>
@@ -646,7 +646,7 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Qualités</h2>
         <div className="flex gap-2">
-          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Réinitialiser l’onglet</button>
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
@@ -668,7 +668,7 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
         ))}
       </div>
       <div className="border-t pt-3 space-y-2">
-        <h3 className="font-semibold text-sm">Nouvel élément</h3>
+        <h3 className="font-semibold text-sm">{editing ? "Modifier l’élément" : "Nouvel élément"}</h3>
         <div className="grid sm:grid-cols-2 gap-3">
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Nom</div>
@@ -680,17 +680,17 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
               <input className={cls.input} type="number" value={draft.bonusPA} onChange={e=>setDraft({...draft, bonusPA:Number(e.target.value)||0})}/>
             </label>
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Malus Mod</div>
+              <div className="text-muted-foreground text-xs mb-1">Modificateur de malus</div>
               <input className={cls.input} type="number" value={draft.malusMod} onChange={e=>setDraft({...draft, malusMod:Number(e.target.value)||0})}/>
             </label>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Réparation coût x</div>
+              <div className="text-muted-foreground text-xs mb-1">Coût de réparation ×</div>
               <input className={cls.input} type="number" value={draft.repair?.costMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, costMul:Number(e.target.value)||1}})}/>
             </label>
             <label className="text-sm">
-              <div className="text-muted-foreground text-xs mb-1">Réparation temps x</div>
+              <div className="text-muted-foreground text-xs mb-1">Temps de réparation ×</div>
               <input className={cls.input} type="number" value={draft.repair?.timeMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, timeMul:Number(e.target.value)||1}})}/>
             </label>
           </div>
@@ -724,7 +724,7 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
       <header className="flex items-center justify-between">
         <h2 className="font-semibold">Boucliers</h2>
         <div className="flex gap-2">
-          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset} disabled={items.length === 0}>Réinitialiser l’onglet</button>
         </div>
       </header>
       <EditorListToolbar query={filtered.query} onQueryChange={filtered.setQuery} direction={filtered.direction} onDirectionChange={filtered.setDirection} visibleCount={filtered.visibleItems.length} totalCount={items.length} />
@@ -746,7 +746,7 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
         ))}
       </div>
       <div className="border-t pt-3 space-y-2">
-        <h3 className="font-semibold text-sm">Nouvel élément</h3>
+        <h3 className="font-semibold text-sm">{editing ? "Modifier l’élément" : "Nouvel élément"}</h3>
         <div className="grid sm:grid-cols-3 gap-3">
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Nom</div>
@@ -767,7 +767,7 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
   );
 }
 
-/* ---------------- Params ---------------- */
+/* ---------------- Paramètres ---------------- */
 function ParamsEditor({ value, onChange, onReset }: { value: Params; onChange:(v:Params)=>void; onReset:()=>void; }) {
   const [draft, setDraft] = useState<Params>(value);
 
@@ -778,33 +778,33 @@ function ParamsEditor({ value, onChange, onReset }: { value: Params; onChange:(v
   return (
     <section className={`${cls.card} space-y-3`}>
       <header className="flex items-center justify-between">
-        <h2 className="font-semibold">Params</h2>
+        <h2 className="font-semibold">Paramètres</h2>
         <div className="flex gap-2">
-          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset}>Reset onglet</button>
+          <button className={`${cls.btnGhost} disabled:opacity-50`} onClick={onReset}>Réinitialiser l’onglet</button>
           <button className={cls.btnPrimary} onClick={save}>Sauvegarder</button>
         </div>
       </header>
       <div className="grid sm:grid-cols-3 gap-3">
         <label className="text-sm">
-          <div className="text-muted-foreground text-xs mb-1">Sweet spot ratio</div>
+          <div className="text-muted-foreground text-xs mb-1">Ratio cible (sweet spot)</div>
           <input className={cls.input} type="number" value={draft.sweetSpotRatio} onChange={e=>setDraft({...draft, sweetSpotRatio:Number(e.target.value)||0})}/>
         </label>
         <label className="text-sm">
-          <div className="text-muted-foreground text-xs mb-1">Renfort max</div>
+          <div className="text-muted-foreground text-xs mb-1">Renfort maximum</div>
           <input className={cls.input} type="number" value={draft.renfortMax} onChange={e=>setDraft({...draft, renfortMax:Number(e.target.value)||0})}/>
         </label>
         <label className="text-sm">
-          <div className="text-muted-foreground text-xs mb-1">Enchant max</div>
+          <div className="text-muted-foreground text-xs mb-1">Enchantement maximum</div>
           <input className={cls.input} type="number" value={draft.enchantMax} onChange={e=>setDraft({...draft, enchantMax:Number(e.target.value)||0})}/>
         </label>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <label className="text-sm">
-          <div className="text-muted-foreground text-xs mb-1">Base usure</div>
+          <div className="text-muted-foreground text-xs mb-1">Usure de base</div>
           <input className={cls.input} type="number" value={draft.baseWear} onChange={e=>setDraft({...draft, baseWear:Number(e.target.value)||0})}/>
         </label>
         <label className="text-sm">
-          <div className="text-muted-foreground text-xs mb-1">Cap usure / coup</div>
+          <div className="text-muted-foreground text-xs mb-1">Usure maximum par coup</div>
           <input className={cls.input} type="number" value={draft.capWearPerHit} onChange={e=>setDraft({...draft, capWearPerHit:Number(e.target.value)||0})}/>
         </label>
       </div>

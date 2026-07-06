@@ -244,7 +244,7 @@ export default function Calculator(){
         </button>
       </div>
       <p className="text-sm opacity-80">
-        D100 inversé - objectif : ratio PA/Malus ˜ {params.sweetSpotRatio}
+        d100 inversé — objectif : ratio PA/Malus ≈ {params.sweetSpotRatio}
       </p>
 
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] 2xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)]">

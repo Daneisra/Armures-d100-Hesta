@@ -48,7 +48,7 @@ export default function BuildsPage() {
   const onReset = () => {
     resetBuilds();
     setBuilds([]);
-    setFlash("Catalogue vidé");
+    setFlash("Catalogue vidé.");
     setResetDialogOpen(false);
   };
 
@@ -146,14 +146,14 @@ export default function BuildsPage() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Catalogue de builds</h1>
-          <p className="text-sm text-muted-foreground">Sauvegardes locales (localStorage) exportables en JSON.</p>
+          <p className="text-sm text-muted-foreground">Builds enregistrés dans ce navigateur et exportables en JSON.</p>
         </div>
         <div className="flex flex-wrap gap-2 sm:justify-end">
           <label className={cls.btnGhost}>
             Import JSON
             <input type="file" accept="application/json" className="sr-only" onChange={onImport} />
           </label>
-          <button className={cls.btnGhost} onClick={onExport}>Exporter (copie)</button>
+          <button className={cls.btnGhost} onClick={onExport}>Exporter le catalogue</button>
           <button className={cls.btnGhost} onClick={() => setResetDialogOpen(true)}>Tout réinitialiser</button>
         </div>
       </header>

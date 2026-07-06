@@ -166,15 +166,15 @@ export default function MaterialsPage(){
       {/* Filtres */}
       <div className="grid md:grid-cols-5 gap-3 text-sm">
         <div>
-          <label className="opacity-70 mb-1 block">Compatibilité (châssis)</label>
-          <select className={cls.select} value={compat} onChange={e=>setCompat(e.target.value as any)}>
+          <label className="mb-1 block text-muted-foreground" htmlFor="materials-compat">Compatibilité (châssis)</label>
+          <select id="materials-compat" className={cls.select} value={compat} onChange={e=>setCompat(e.target.value as any)}>
             <option>Toutes</option>
             {COMPATS.map(c=> <option key={c}>{c}</option>)}
           </select>
         </div>
         <div>
-          <label className="opacity-70 mb-1 block">Catégorie (affinage)</label>
-          <select className={cls.select} value={cat} onChange={e=>setCat(e.target.value)}>
+          <label className="mb-1 block text-muted-foreground" htmlFor="materials-category">Catégorie (affinage)</label>
+          <select id="materials-category" className={cls.select} value={cat} onChange={e=>setCat(e.target.value)}>
             {catOptions.map(k => {
               const c = catByKey.get(k);
               return <option key={k} value={k}>{k==="Toutes" ? "Toutes" : (c?.label ?? k)}</option>
@@ -182,8 +182,8 @@ export default function MaterialsPage(){
           </select>
         </div>
         <div className="md:col-span-2">
-          <label className="opacity-70 mb-1 block">Recherche</label>
-          <input className={cls.input} placeholder="Rechercher un matériau" value={q} onChange={e=>setQ(e.target.value)} />
+          <label className="mb-1 block text-muted-foreground" htmlFor="materials-search">Recherche</label>
+          <input id="materials-search" className={cls.input} placeholder="Rechercher un matériau" value={q} onChange={e=>setQ(e.target.value)} />
         </div>
         <div className="flex items-end gap-2 flex-wrap">
           <button className={cls.btnGhost} onClick={resetFilters}>Réinitialiser</button>
@@ -191,8 +191,8 @@ export default function MaterialsPage(){
             <input type="checkbox" checked={dense} onChange={e=>setDense(e.target.checked)} />
             Densité compacte
           </label>
-          <button className={cls.btnGhost} onClick={exportMaterialsCSV} title="Export CSV des matériaux">Export matériaux (CSV)</button>
-          <button className={cls.btnGhost} onClick={exportChassisCSV} title="Export CSV des châssis">Export châssis (CSV)</button>
+          <button className={cls.btnGhost} onClick={exportMaterialsCSV} title="Exporter les matériaux au format CSV">Exporter les matériaux</button>
+          <button className={cls.btnGhost} onClick={exportChassisCSV} title="Exporter les châssis au format CSV">Exporter les châssis</button>
         </div>
       </div>
 

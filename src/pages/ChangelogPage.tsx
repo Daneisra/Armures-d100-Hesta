@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.5",
+    title: "Cohérence des textes et contrôles",
+    changes: [
+      "Harmonisation des actions, paramètres et modificateurs en français dans l’Éditeur.",
+      "Correction des libellés d’export, du symbole d’approximation et des associations entre labels et champs.",
+    ],
+  },
+  {
     version: "0.9.4",
     title: "Journal des versions",
     changes: [

@@ -68,8 +68,9 @@ export default function PVPage() {
         <h2 className="font-semibold">Mini calculateur</h2>
         <div className="grid sm:grid-cols-3 gap-4">
           <div className={`${cls.card} space-y-2`}>
-            <label className="text-sm font-medium text-muted-foreground">CON ({minCon}-{maxCon})</label>
+            <label className="text-sm font-medium text-muted-foreground" htmlFor="pv-constitution">CON ({minCon}-{maxCon})</label>
             <input
+              id="pv-constitution"
               className={cls.input}
               type="number"
               min={minCon}
@@ -82,6 +83,7 @@ export default function PVPage() {
             <input
               className="w-full mt-2"
               type="range"
+              aria-label="Constitution"
               min={minCon}
               max={maxCon}
               step={1}
@@ -91,8 +93,9 @@ export default function PVPage() {
           </div>
 
           <div className={`${cls.card} space-y-2`}>
-            <label className="text-sm font-medium text-muted-foreground">Niveau (optionnel)</label>
+            <label className="text-sm font-medium text-muted-foreground" htmlFor="pv-level">Niveau (optionnel)</label>
             <input
+              id="pv-level"
               className={cls.input}
               type="number"
               min={0}

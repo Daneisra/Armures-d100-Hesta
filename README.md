@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.4)
+## Fonctionnalités actuelles (0.9.5)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -88,6 +88,7 @@ Types clés (extraits de `src/types.ts`) :
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.5** : harmonisation des textes, actions et labels de formulaire.
 - **0.9.4** : journal des versions visible dans l’application.
 - **0.9.3** : retours d’import structurés et rapports techniques copiables.
 - **0.9.2** : mise à jour atomique du cache PWA.
@@ -109,7 +110,7 @@ Le journal complet est consultable directement dans l’application sur `/change
 - [x] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - [x] Ajouter une page “À propos / Aide rapide”.
 - [x] Ajouter un changelog visible dans l’app ou dans le README.
-- [ ] Nettoyer les dernières incohérences UI et textes.
+- [x] Nettoyer les dernières incohérences UI et textes.
 
 ### 1.0.0 — Première version stable
 

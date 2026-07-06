@@ -35,7 +35,7 @@ export default function ThemeToggle() {
   const label = mode === "auto" ? "🌓 Thème : auto" : mode === "light" ? "🌓 Thème : clair" : "🌓 Thème : sombre";
 
   return (
-    <button className={cls.btnGhost} onClick={cycle} aria-label="Basculer thème">
+    <button className={cls.btnGhost} onClick={cycle} aria-label="Changer le thème">
       {label}
     </button>
   );

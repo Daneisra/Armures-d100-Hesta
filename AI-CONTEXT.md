@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.4`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.5`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -302,7 +302,7 @@ Règles de compatibilité :
 - Messages d’import structurés ajoutés en `0.9.3` : résumé utilisateur, erreurs par chemin, rapport technique copiable et garantie de non-écriture en cas d’échec.
 - Page “À propos / Aide rapide” ajoutée en `0.9.0`.
 - Changelog visible ajouté en `0.9.4` sur `/changelog`, accessible depuis l’aide et le numéro de version du header.
-- Nettoyer les dernières incohérences UI et textes.
+- Incohérences UI et textes nettoyées en `0.9.5` : terminologie française homogène, actions explicites et labels de formulaire reliés à leurs champs.
 
 ### 1.0.0 — Première version stable
 
