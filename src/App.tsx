@@ -8,6 +8,7 @@ import BuildsPage from "./pages/BuildsPage";
 import OfflineStatus from "./components/OfflineStatus";
 import PrintBuildPage from "./pages/PrintBuildPage";
 import HelpPage from "./pages/HelpPage";
+import ChangelogPage from "./pages/ChangelogPage";
 import { cls } from "./ui/styles";
 import {
   Calculator as CalculatorIcon,
@@ -24,7 +25,7 @@ const NAV_ITEMS = [
   { label: "PV / Constitution", mobileLabel: "PV", icon: HeartPulse, to: "/pv", match: (path: string) => path.startsWith("/pv") },
   { label: "Catalogue", mobileLabel: "Builds", icon: Library, to: "/builds", match: (path: string) => path.startsWith("/builds") },
   { label: "Éditeur", mobileLabel: "Éditeur", icon: SlidersHorizontal, to: "/editeur", match: (path: string) => path.startsWith("/editeur") },
-  { label: "Aide", mobileLabel: "Aide", icon: CircleHelp, to: "/aide", match: (path: string) => path.startsWith("/aide") },
+  { label: "Aide", mobileLabel: "Aide", icon: CircleHelp, to: "/aide", match: (path: string) => path.startsWith("/aide") || path.startsWith("/changelog") },
 ];
 
 export default function App() {
@@ -46,7 +47,9 @@ return (
                 <Link to="/">Système PA</Link>
               </h1>
               <p className="text-xs text-muted-foreground">
-                v{__APP_VERSION__} —{" "}
+                <Link className="underline underline-offset-2 hover:no-underline" to="/changelog" title="Voir le journal des versions">
+                  v{__APP_VERSION__}
+                </Link>{" "}—{" "}
                 <a
                   href="https://github.com/Daneisra/Armures-d100-Hesta"
                   target="_blank"
@@ -90,6 +93,7 @@ return (
             <Route path="/editeur" element={<EditorPage />} />
             <Route path="/print" element={<PrintBuildPage />} />
             <Route path="/aide" element={<HelpPage />} />
+            <Route path="/changelog" element={<ChangelogPage />} />
           </Routes>
         </main>
       </div>

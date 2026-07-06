@@ -20,6 +20,7 @@ export default function HelpPage() {
         <p className="max-w-3xl text-sm text-muted-foreground">
           Système PA aide à construire, comparer et sauvegarder des armures pour un système d100 inversé. Cette page résume le parcours recommandé et les règles affichées par l’outil.
         </p>
+        <Link className={cls.btnGhost} to="/changelog">Voir le journal des versions</Link>
       </header>
 
       <nav className="flex flex-wrap gap-2" aria-label="Sommaire de l’aide">
