@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.2`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.3`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -71,6 +71,7 @@ src/data/*.json
   - `wear.ts` : simulation d’un coup, pénétration, perte de PV et usure des PA.
   - `repair.ts` : coût et durée de réparation.
   - `importValidation.ts` : validation stricte et rapports structurés pour les imports catalogue/builds.
+  - `importFeedback.ts` : transforme les erreurs techniques d’import en résumé utilisateur sans perdre le rapport complet.
 
 - `src/components/`
   - Composants réutilisables et widgets métier.
@@ -82,6 +83,7 @@ src/data/*.json
   - `RepairWidget.tsx` présente le calcul de réparation.
   - `AccessibleDialog.tsx` encapsule l’élément natif `<dialog>` pour les confirmations et formulaires modaux accessibles.
   - `OfflineStatus.tsx` affiche l’état hors ligne dans le header.
+  - `ImportErrorPanel.tsx` affiche les erreurs d’import par chemin, le rapport dépliable et l’action de copie.
 
 - `src/pages/`
   - Pages routées : matériaux, PV/Constitution, catalogue de builds, éditeur, fiche d’armure et aide rapide.
@@ -99,7 +101,7 @@ src/data/*.json
 
 - `tests/`
   - Tests unitaires Vitest des règles métier principales.
-  - Couvre actuellement `calc`, `wear`, `repair`, `importValidation` et la fusion du catalogue.
+- Couvre actuellement `calc`, `wear`, `repair`, `importValidation`, `importFeedback` et la fusion du catalogue.
 
 ### Fichiers structurants complémentaires
 
@@ -296,7 +298,7 @@ Règles de compatibilité :
 
 - Audit responsive mobile/tablette/desktop réalisé en `0.9.1` aux largeurs 390, 768 et 1440 px.
 - Audit PWA/offline multi-version réalisé en `0.9.2` ; le nouveau service worker précharge son shell complet avant de supprimer les anciens caches.
-- Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
+- Messages d’import structurés ajoutés en `0.9.3` : résumé utilisateur, erreurs par chemin, rapport technique copiable et garantie de non-écriture en cas d’échec.
 - Page “À propos / Aide rapide” ajoutée en `0.9.0`.
 - Ajouter un changelog visible dans l’app ou dans le README.
 - Nettoyer les dernières incohérences UI et textes.

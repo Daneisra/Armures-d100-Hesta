@@ -9,12 +9,14 @@ export type ImportIssue = {
 };
 
 export class ImportValidationError extends Error {
+  readonly title: string;
   readonly issues: ImportIssue[];
 
   constructor(title: string, issues: ImportIssue[]) {
     const lines = issues.map((issue, index) => `${index + 1}. ${issue.path} — ${issue.message}`);
     super(`${title}\n${issues.length} erreur(s) détectée(s)\n\n${lines.join("\n")}`);
     this.name = "ImportValidationError";
+    this.title = title;
     this.issues = issues;
   }
 }

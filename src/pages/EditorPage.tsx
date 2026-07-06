@@ -3,6 +3,8 @@ import { useCatalog } from "../catalogContext";
 import type { Chassis, Material, Quality, Shield, Params } from "../types";
 import { cls } from "../ui/styles";
 import AccessibleDialog from "../components/AccessibleDialog";
+import ImportErrorPanel from "../components/ImportErrorPanel";
+import { describeImportFailure, type ImportFailure } from "../lib/importFeedback";
 
 type TabKey = "chassis" | "materials" | "qualities" | "shields" | "params";
 type ListTabKey = Exclude<TabKey, "params">;
@@ -64,7 +66,7 @@ export default function EditorPage() {
     importAll,
   } = useCatalog();
   const [tab, setTab] = useState<TabKey>("chassis");
-  const [importError, setImportError] = useState<string | null>(null);
+  const [importFailure, setImportFailure] = useState<ImportFailure | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [history, setHistory] = useState<UndoEntry[]>([]);
@@ -136,29 +138,39 @@ export default function EditorPage() {
     setFlash("Export JSON généré (catalog-overrides.json)");
   };
 
-  const onImport = (ev: React.ChangeEvent<HTMLInputElement>) => {
+  const onImport = async (ev: React.ChangeEvent<HTMLInputElement>) => {
+    const input = ev.currentTarget;
     const file = ev.target.files?.[0];
     if (!file) return;
-    file.text().then(text => {
-      try {
-        importAll(text, "replace");
-        setHistory([]);
-        setTrash([]);
-        setImportError(null);
-        setFlash("Import overrides appliqué");
-      } catch (error: unknown) {
-        setImportError(error instanceof Error ? error.message : "Import invalide");
-      }
-    });
+    setFlash(null);
+    let text: string;
+    try {
+      text = await file.text();
+    } catch (error: unknown) {
+      setImportFailure(describeImportFailure(error, file.name, "read"));
+      input.value = "";
+      return;
+    }
+    try {
+      importAll(text, "replace");
+      setHistory([]);
+      setTrash([]);
+      setImportFailure(null);
+      setFlash(`Import de « ${file.name} » appliqué.`);
+    } catch (error: unknown) {
+      setImportFailure(describeImportFailure(error, file.name));
+    } finally {
+      input.value = "";
+    }
   };
 
   const copyImportReport = async () => {
-    if (!importError) return;
+    if (!importFailure) return;
     try {
-      await navigator.clipboard.writeText(importError);
+      await navigator.clipboard.writeText(importFailure.report);
       setFlash("Rapport d’erreurs copié");
     } catch {
-      prompt("Copie le rapport d’erreurs :", importError);
+      prompt("Copie le rapport d’erreurs :", importFailure.report);
     }
   };
 
@@ -227,14 +239,12 @@ export default function EditorPage() {
         </div>
       </section>
 
-      {importError && (
-        <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
-          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
-            <button className={cls.btnGhost} onClick={copyImportReport}>Copier le rapport d’erreurs</button>
-          </div>
-          <pre className="whitespace-pre-wrap break-words font-mono text-xs text-rose-700 dark:text-rose-200">{importError}</pre>
-        </section>
+      {importFailure && (
+        <ImportErrorPanel
+          failure={importFailure}
+          onCopy={copyImportReport}
+          onDismiss={() => setImportFailure(null)}
+        />
       )}
       <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
 

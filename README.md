@@ -30,7 +30,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.2)
+## Fonctionnalités actuelles (0.9.3)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -47,11 +47,11 @@ Types clés (extraits de `src/types.ts`) :
   - Pagination configurable, fiches détaillées et comparateur de trois matériaux maximum.
 - **Catalogue de builds**
   - Liste filtrable, supprimer/exporter/importer (JSON), appliquer au calculateur.
-  - Import strict : types, bornes, doublons et références contrôlés avant écriture, avec rapport copiable.
+  - Import strict : types, bornes, doublons et références contrôlés avant écriture, avec résumé lisible et rapport technique copiable.
 - **Éditeur**
   - CRUD local pour châssis/matériaux/qualités/boucliers/params.
   - Diff overrides vs canon, import/export JSON, reset par onglet ou global.
-  - Import strict avec blocage des références invalides et rapport d’erreurs copiable.
+  - Import strict avec blocage des références invalides, erreurs présentées champ par champ et rapport technique copiable.
   - Annulation des 20 dernières actions et corbeille de session avec restauration.
   - Sauvegarde automatique désactivable, avec enregistrement manuel ou abandon du brouillon.
   - Recherche plein texte et tri alphabétique dans chaque liste éditable.
@@ -95,7 +95,7 @@ Types clés (extraits de `src/types.ts`) :
 
 - [x] Audit complet responsive mobile/tablette/desktop.
 - [x] Audit PWA/offline après plusieurs mises à jour de version.
-- [ ] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
+- [x] Améliorer les messages d’erreur utilisateur dans l’éditeur et les imports.
 - [x] Ajouter une page “À propos / Aide rapide”.
 - [ ] Ajouter un changelog visible dans l’app ou dans le README.
 - [ ] Nettoyer les dernières incohérences UI et textes.

@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { cls } from "../ui/styles";
 import { useCatalogData } from "../catalogContext";
 import AccessibleDialog from "../components/AccessibleDialog";
+import ImportErrorPanel from "../components/ImportErrorPanel";
+import { describeImportFailure, type ImportFailure } from "../lib/importFeedback";
 
 export default function BuildsPage() {
   const [builds, setBuilds] = useState(() => getBuilds());
   const [filter, setFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [importFailure, setImportFailure] = useState<ImportFailure | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<SavedBuild | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
@@ -53,28 +56,39 @@ export default function BuildsPage() {
     exportToFile();
   };
 
-  const onImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.currentTarget;
     const file = e.target.files?.[0];
     if (!file) return;
-    file.text().then(text => {
-      try {
-        importBuilds(text, "merge", catalog);
-        setBuilds(getBuilds());
-        setError(null);
-        setFlash("Import réussi");
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Import invalide");
-      }
-    });
+    setFlash(null);
+    let text: string;
+    try {
+      text = await file.text();
+    } catch (err: unknown) {
+      setImportFailure(describeImportFailure(err, file.name, "read"));
+      input.value = "";
+      return;
+    }
+    try {
+      importBuilds(text, "merge", catalog);
+      setBuilds(getBuilds());
+      setImportFailure(null);
+      setError(null);
+      setFlash(`Import de « ${file.name} » réussi.`);
+    } catch (err: unknown) {
+      setImportFailure(describeImportFailure(err, file.name));
+    } finally {
+      input.value = "";
+    }
   };
 
   const copyErrorReport = async () => {
-    if (!error) return;
+    if (!importFailure) return;
     try {
-      await navigator.clipboard.writeText(error);
+      await navigator.clipboard.writeText(importFailure.report);
       setFlash("Rapport d’erreurs copié");
     } catch {
-      prompt("Copie le rapport d’erreurs :", error);
+      prompt("Copie le rapport d’erreurs :", importFailure.report);
     }
   };
 
@@ -144,13 +158,22 @@ export default function BuildsPage() {
         </div>
       </header>
 
+      {importFailure && (
+        <ImportErrorPanel
+          failure={importFailure}
+          onCopy={copyErrorReport}
+          onDismiss={() => setImportFailure(null)}
+        />
+      )}
       {error && (
         <section className={`${cls.card} border-rose-500 text-sm`} role="alert">
-          <div className="mb-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h2 className="font-semibold text-rose-600 dark:text-rose-300">Import refusé</h2>
-            <button className={cls.btnGhost} onClick={copyErrorReport}>Copier le rapport d’erreurs</button>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="font-semibold text-rose-700 dark:text-rose-200">Action impossible</h2>
+              <p className="mt-1 text-muted-foreground">{error}</p>
+            </div>
+            <button className={cls.btnGhost} type="button" onClick={() => setError(null)}>Fermer</button>
           </div>
-          <pre className="whitespace-pre-wrap break-words font-mono text-xs text-rose-700 dark:text-rose-200">{error}</pre>
         </section>
       )}
       <div aria-live="polite" className="text-sm text-emerald-600">{flash}</div>
