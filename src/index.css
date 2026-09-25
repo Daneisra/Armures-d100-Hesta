@@ -74,10 +74,26 @@ body {
 }
 
 .hesta-wordmark {
+  color: inherit;
   font-size: 0.65em;
   font-weight: 800;
   letter-spacing: 0.14em;
   opacity: 0.85;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: opacity 0.16s ease;
+}
+
+.hesta-wordmark:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.hesta-wordmark:focus-visible {
+  opacity: 1;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 .hesta-divider {
