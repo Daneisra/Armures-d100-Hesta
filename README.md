@@ -1,6 +1,6 @@
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.5-blue)
+![Version](https://img.shields.io/badge/version-0.9.6-blue)
 ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
@@ -37,7 +37,7 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.5)
+## Fonctionnalités actuelles (0.9.6)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -76,6 +76,7 @@ Types clés (extraits de `src/types.ts`) :
 - **Navigation responsive**
   - Onglets complets dans le header sur desktop.
   - Barre de navigation inférieure sur mobile avec icônes, page active et prise en charge des zones sûres.
+  - Lien « Carte Hesta » dans le header, ouvrant la carte dans un nouvel onglet.
   - Audit réalisé à 390 px, 768 px et 1440 px : formulaires empilés sur mobile, en-têtes d’actions adaptatifs et tables conservées dans leurs zones de défilement.
 - **Fiche d’armure**
   - Prévisualisation dédiée depuis le build actuellement configuré (`/print`).
@@ -95,6 +96,7 @@ Types clés (extraits de `src/types.ts`) :
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.6** : accès à la Carte Hesta depuis le header.
 - **0.9.5** : harmonisation des textes, actions et labels de formulaire.
 - **0.9.4** : journal des versions visible dans l’application.
 - **0.9.3** : retours d’import structurés et rapports techniques copiables.

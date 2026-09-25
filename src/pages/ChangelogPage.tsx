@@ -3,6 +3,13 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.6",
+    title: "Accès à la Carte Hesta",
+    changes: [
+      "Lien vers la Carte Hesta ajouté dans le header, sur mobile comme sur ordinateur.",
+    ],
+  },
+  {
     version: "0.9.5",
     title: "Cohérence des textes et contrôles",
     changes: [
