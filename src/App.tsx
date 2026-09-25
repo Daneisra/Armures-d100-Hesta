@@ -44,7 +44,7 @@ return (
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h1 className="text-xl font-bold">
-                <Link to="/">Système PA</Link>
+                <Link to="/"><span className="hesta-wordmark">HESTA</span><span className="hesta-divider" aria-hidden="true">·</span>Système PA</Link>
               </h1>
               <p className="text-xs text-muted-foreground">
                 <Link className="underline underline-offset-2 hover:no-underline" to="/changelog" title="Voir le journal des versions">

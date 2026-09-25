@@ -73,6 +73,19 @@ body {
   padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
+.hesta-wordmark {
+  font-size: 0.65em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  opacity: 0.85;
+}
+
+.hesta-divider {
+  margin-inline: 0.3em;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
 /* Primitives */
 .input {
   @apply w-full rounded-md border bg-background px-3 py-2 text-sm shadow-sm outline-none
