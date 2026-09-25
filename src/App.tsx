@@ -16,7 +16,6 @@ import {
   Layers,
   Library,
   CircleHelp,
-  ExternalLink,
   SlidersHorizontal,
 } from "lucide-react";
 
@@ -66,13 +65,9 @@ return (
               <OfflineStatus />
               <a
                 href="https://cartehesta.dannytech.fr/"
-                target="_blank"
-                rel="noopener noreferrer"
                 className={`${cls.btnGhost} whitespace-nowrap`}
-                aria-label="Carte Hesta (ouvre un nouvel onglet)"
               >
                 Carte Hesta
-                <ExternalLink size={16} aria-hidden="true" />
               </a>
               <ThemeToggle />
             </div>
