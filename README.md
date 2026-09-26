@@ -8,7 +8,7 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.6-blue)
+![Version](https://img.shields.io/badge/version-0.9.7-blue)
 ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
@@ -45,7 +45,9 @@ Types clés (extraits de `src/types.ts`) :
 - `Params { sweetSpotRatio, renfortMax, enchantMax, baseWear, capWearPerHit, repair: { costPerPA, timePerPA }, pv }`
 - `BuildInput { chassis, material, quality, renfort, enchant, enchantId?, shield, shieldMaterial?, cat? }`
 
-## Fonctionnalités actuelles (0.9.6)
+Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
+
+## Fonctionnalités actuelles (0.9.7)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -104,6 +106,7 @@ Types clés (extraits de `src/types.ts`) :
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.7** : règles métier de référence et plafond propre à chaque enchantement.
 - **0.9.6** : accès à la Carte Hesta depuis le header.
 - **0.9.5** : harmonisation des textes, actions et labels de formulaire.
 - **0.9.4** : journal des versions visible dans l’application.
@@ -131,7 +134,7 @@ Le journal complet est consultable directement dans l’application sur `/change
 
 ### 1.0.0 — Première version stable
 
-- [ ] Geler les règles métier principales.
+- [x] Geler les règles métier principales dans `BUSINESS-RULES.md` et les tests de référence.
 - [ ] Vérifier toutes les données JSON par défaut.
 - [ ] Valider les tests unitaires métier.
 - [ ] Valider l’impression/PDF sur Chrome, Firefox et Edge.

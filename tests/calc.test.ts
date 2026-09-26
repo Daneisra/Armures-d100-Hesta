@@ -46,4 +46,26 @@ describe("computeBuild", () => {
     expect(result.paFinal).toBe(15);
     expect(result.malusFinal).toBe(9);
   });
+
+  it("utilise un ratio infini pour le sweet spot quand le malus final vaut zéro", () => {
+    const result = computeBuild(
+      buildInput,
+      { ...catalog, chassis: [{ ...catalog.chassis[0], baseMalus: -2 }] }
+    );
+
+    expect(result.malusFinal).toBe(0);
+    expect(result.effic).toBe(result.paFinal);
+    expect(result.sweet).toBe(true);
+  });
+
+  it("respecte le niveau maximum propre à l'enchantement", () => {
+    const limitedCatalog = {
+      ...catalog,
+      enchants: [{ id: "limited", name: "Protection majeure", kind: "pa_flat" as const, perLevel: 2, maxLevel: 2 }],
+    };
+    const result = computeBuild({ ...buildInput, enchantId: "limited", enchant: 3 }, limitedCatalog);
+
+    expect(result.paFinal).toBe(16);
+    expect(result.notes).toContain("Enchant: +4 PA");
+  });
 });

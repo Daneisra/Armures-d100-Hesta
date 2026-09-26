@@ -29,6 +29,18 @@ describe("computeRepair", () => {
     expect(result.cost).toBe(0);
     expect(result.hours).toBe(0);
   });
+
+  it("arrondit le coût à l'entier et le temps au dixième", () => {
+    const result = computeRepair(
+      1,
+      { ...material, compat: "Gambison", repair: { costMul: 1.5, timeMul: 1.3 } },
+      quality,
+      params
+    );
+
+    expect(result.cost).toBe(2);
+    expect(result.hours).toBe(0.7);
+  });
 });
 
 describe("formatHours", () => {

@@ -3,6 +3,9 @@ import type { Chassis, Material, Quality, Shield, BuildInput, BuildResult, Param
 const orFirst = <T,>(arr: T[], pred: (x:T)=>boolean) =>
   arr.find(pred) ?? arr[0];
 
+export const maxEnchantLevel = (params: Params, enchant?: Enchant) =>
+  Math.min(params.enchantMax, enchant?.maxLevel ?? params.enchantMax);
+
 export function computeBuild(
   inp: BuildInput,
   tables: {
@@ -25,7 +28,7 @@ export function computeBuild(
 
 
   const renfort  = clamp(inp.renfort, 0, tables.params.renfortMax);
-  const level    = clamp(inp.enchant ?? 0, 0, tables.params.enchantMax ?? 3);
+  const level    = clamp(inp.enchant ?? 0, 0, maxEnchantLevel(tables.params, ench));
 
 
   // Base PA/Malus

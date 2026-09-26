@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.6`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.7`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -70,6 +70,7 @@ src/data/*.json
   - `calc.ts` : PA, malus, efficacité, sweet spot, enchantements, boucliers et notes.
   - `wear.ts` : simulation d’un coup, pénétration, perte de PV et usure des PA.
   - `repair.ts` : coût et durée de réparation.
+  - `pv.ts` : calcul des PV en mode linéaire ou table, avec interpolation et arrondi.
   - `importValidation.ts` : validation stricte et rapports structurés pour les imports catalogue/builds.
   - `importFeedback.ts` : transforme les erreurs techniques d’import en résumé utilisateur sans perdre le rapport complet.
 
@@ -161,7 +162,7 @@ Malus = châssis.baseMalus
 ```
 
 - `renfort` est borné entre `0` et `params.renfortMax` et ajoute `+1 PA` et `+1 malus` par niveau.
-- Le niveau d’enchantement est borné par `params.enchantMax`.
+- Le niveau d’enchantement est borné par le plus petit de `params.enchantMax` et `enchant.maxLevel` lorsque ce dernier est défini.
 - Le malus final est borné à `0` minimum.
 - Si `material.halfMalus` est vrai, le malus est divisé par deux avec arrondi supérieur.
 - Efficacité : `PA / malus`. Quand le malus vaut `0`, l’efficacité affichée devient la valeur des PA et le ratio métier utilisé pour le sweet spot est infini.
@@ -306,7 +307,7 @@ Règles de compatibilité :
 
 ### 1.0.0 — Première version stable
 
-- Geler les règles métier principales.
+- Règles métier principales fixées dans `BUSINESS-RULES.md` en `0.9.7`, avec cas de référence dans les tests.
 - Vérifier toutes les données JSON par défaut.
 - Valider les tests unitaires métier.
 - Valider l’impression/PDF sur Chrome, Firefox et Edge.

@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.7",
+    title: "Règles métier de référence",
+    changes: [
+      "Formules et cas limites documentés pour la préparation de la version 1.0.",
+      "Plafond propre à chaque enchantement appliqué au calcul, à l’usure et à l’import des builds.",
+    ],
+  },
+  {
     version: "0.9.6",
     title: "Accès à la Carte Hesta",
     changes: [

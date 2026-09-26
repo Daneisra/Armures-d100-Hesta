@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { computeBuild } from "../lib/calc";
+import { computeBuild, maxEnchantLevel } from "../lib/calc";
 import type { BuildInput, Category } from "../types";
 import InputRow from "./InputRow";
 import RatioPill from "./RatioPill";
@@ -41,8 +41,9 @@ export default function Calculator(){
 
     if (!safe.enchantId) safe.enchantId = "protection";
     if (typeof safe.enchant !== "number") safe.enchant = 0;
+    safe.enchant = Math.max(0, Math.min(safe.enchant, maxEnchantLevel(params, enchants.find(e => e.id === safe.enchantId))));
     return safe;
-  }, [chassis, materials, qualities, shields, shieldMaterials]);
+  }, [chassis, materials, qualities, shields, shieldMaterials, params, enchants]);
 
   const defaults = useMemo<BuildInput>(() => ({
     chassis: chassis[0]?.name ?? "",
@@ -188,6 +189,7 @@ export default function Calculator(){
   const matCurrent = useMemo(() => materials.find(m => m.name === inp.material), [materials, inp.material]);
   const qCurrent   = useMemo(() => qualities.find(q => q.name === inp.quality), [qualities, inp.quality]);
   const enchCurrent= useMemo(() => enchants.find(e => e.id === (inp.enchantId ?? "protection")), [enchants, inp.enchantId]);
+  const enchantMax = maxEnchantLevel(params, enchCurrent);
   const compatOk = Boolean(chCurrent && matCurrent && matCurrent.compat === chCurrent.category);
 
   const onNum = (k: keyof Pick<BuildInput, "renfort" | "enchant">) =>
@@ -196,7 +198,8 @@ export default function Calculator(){
 
   const materialForWear = useMemo(() => {
     if (!matCurrent || !enchCurrent || (inp.enchant ?? 0) <= 0) return matCurrent;
-    const delta = (enchCurrent.perLevel ?? 0) * (inp.enchant ?? 0);
+    const level = Math.min(inp.enchant ?? 0, maxEnchantLevel(params, enchCurrent));
+    const delta = (enchCurrent.perLevel ?? 0) * level;
     if (enchCurrent.kind === "extraPen_delta") {
       return { ...matCurrent, extraPen: Math.max(0, (matCurrent.extraPen ?? 0) + delta) };
     }
@@ -204,7 +207,7 @@ export default function Calculator(){
       return { ...matCurrent, penIgnore: Math.max(0, (matCurrent.penIgnore ?? 0) + delta) };
     }
     return matCurrent;
-  }, [matCurrent, enchCurrent, inp.enchant]);
+  }, [matCurrent, enchCurrent, inp.enchant, params]);
 
   const ratioValue = res.malusFinal <= 0 ? Infinity : res.paFinal / res.malusFinal;
   const ratioSpoken = Number.isFinite(ratioValue) ? ratioValue.toFixed(2) : "infini";
@@ -315,7 +318,10 @@ export default function Calculator(){
                 id="calc-enchant"
                 className={cls.select}
                 value={inp.enchantId ?? "protection"}
-                onChange={e => setInp({ ...inp, enchantId: e.target.value })}
+                onChange={e => {
+                  const enchant = enchants.find(item => item.id === e.target.value);
+                  setInp({ ...inp, enchantId: e.target.value, enchant: Math.min(inp.enchant, maxEnchantLevel(params, enchant)) });
+                }}
               >
                 {enchants.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
               </select>
@@ -332,15 +338,15 @@ export default function Calculator(){
                 className={cls.input}
                 type="number"
                 min={0}
-                max={params.enchantMax}
+                max={enchantMax}
                 value={inp.enchant}
                 onChange={e => setInp(s => ({
                   ...s,
-                  enchant: Math.max(0, Math.min(params.enchantMax, parseInt(e.target.value||"0",10)||0)),
+                  enchant: Math.max(0, Math.min(enchantMax, parseInt(e.target.value||"0",10)||0)),
                 }))}
               />
               <p className="text-xs text-muted-foreground mt-1">
-                Limité à {params.enchantMax} niveaux selon tes règles.
+                Limité à {enchantMax} niveaux pour cet enchantement.
               </p>
             </div>
           </InputRow>

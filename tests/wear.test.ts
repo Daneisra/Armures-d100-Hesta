@@ -48,4 +48,13 @@ describe("simulateWear", () => {
     expect(result.effectivePenetration).toBe(0);
     expect(result.paEffective).toBe(12);
   });
+
+  it("ne classe pas comme pénétrant un coup égal aux PA effectives", () => {
+    const result = simulateWear(10, 2, 12, material, params);
+
+    expect(result.paEffective).toBe(10);
+    expect(result.pvLost).toBe(0);
+    expect(result.breakdown.penetrated).toBe(false);
+    expect(result.wearApplied).toBe(params.baseWear);
+  });
 });

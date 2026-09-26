@@ -76,4 +76,19 @@ describe("validateBuildImport", () => {
       message: "nom déjà présent dans le catalogue local",
     });
   });
+
+  it("refuse un niveau supérieur au maximum de l'enchantement choisi", () => {
+    const limitedCatalog = {
+      ...catalog,
+      enchants: [{ id: "limited", name: "Protection majeure", kind: "pa_flat" as const, perLevel: 2, maxLevel: 2 }],
+    };
+    const issues = validateBuildImport([
+      { ...savedBuild, build: { ...buildInput, enchantId: "limited", enchant: 3 } },
+    ], limitedCatalog);
+
+    expect(issues).toContainEqual({
+      path: "builds[0].build.enchant",
+      message: "niveau maximum pour Protection majeure : 2",
+    });
+  });
 });

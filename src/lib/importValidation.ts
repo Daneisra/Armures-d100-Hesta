@@ -1,5 +1,6 @@
 import type { Catalog, CatalogOverrides } from "../catalog";
 import type { BuildInput } from "../types";
+import { maxEnchantLevel } from "./calc";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -336,6 +337,10 @@ function checkBuildInput(value: unknown, path: string, issues: ImportIssue[], ca
   }
   if (typeof value.enchantId === "string" && !catalog.enchants.some(item => item.id === value.enchantId)) {
     addIssue(issues, `${path}.enchantId`, `référence inconnue : ${value.enchantId}`);
+  }
+  const enchant = catalog.enchants.find(item => item.id === (value.enchantId ?? "protection"));
+  if (typeof value.enchant === "number" && enchant && value.enchant > maxEnchantLevel(catalog.params, enchant)) {
+    addIssue(issues, `${path}.enchant`, `niveau maximum pour ${enchant.name} : ${maxEnchantLevel(catalog.params, enchant)}`);
   }
   if (typeof value.shieldMaterial === "string" && value.shieldMaterial && !catalog.shieldMaterials.some(item => item.name === value.shieldMaterial)) {
     addIssue(issues, `${path}.shieldMaterial`, `référence inconnue : ${value.shieldMaterial}`);
