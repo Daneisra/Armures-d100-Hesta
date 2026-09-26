@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.9",
+    title: "Audit des données officielles",
+    changes: [
+      "Vérification des dix JSON canoniques avant la première version stable.",
+      "Contrôles automatiques des références, valeurs, enchantements et multiplicateurs de réparation.",
+    ],
+  },
+  {
     version: "0.9.8",
     title: "Suivi des PV en combat",
     changes: [
