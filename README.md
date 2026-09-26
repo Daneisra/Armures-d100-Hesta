@@ -1,3 +1,11 @@
+<div align="center">
+  <strong>HESTA</strong><br>
+  <em>Un univers, plusieurs outils.</em><br>
+  <a href="https://hesta.dannytech.fr/">Portail Hesta</a> ·
+  <a href="https://cartehesta.dannytech.fr/">Carte Hesta</a> ·
+  <a href="https://pahesta.dannytech.fr/">Système PA</a>
+</div>
+
 # Système PA — App web (port Excel)
 
 ![Version](https://img.shields.io/badge/version-0.9.6-blue)
@@ -133,3 +141,11 @@ Le journal complet est consultable directement dans l’application sur `/change
 - PR petites et ciblées (une feature par PR).
 - Respecter les clés/compat dans les JSON (`src/types.ts` en référence).
 - Avant PR : `npm run lint`, `npm test` et `npm run build` doivent passer.
+
+## Écosystème Hesta
+
+| Application | Rôle | URL publique |
+| --- | --- | --- |
+| Hesta Hub | Portail central | [hesta.dannytech.fr](https://hesta.dannytech.fr/) |
+| Carte Hesta | Carte interactive, quêtes, chronologie, planning et communauté | [cartehesta.dannytech.fr](https://cartehesta.dannytech.fr/) |
+| Système PA — ce projet | Armures, matériaux, builds et outils de combat | [pahesta.dannytech.fr](https://pahesta.dannytech.fr/) |
