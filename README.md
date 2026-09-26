@@ -8,7 +8,7 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.7-blue)
+![Version](https://img.shields.io/badge/version-0.9.8-blue)
 ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
@@ -47,11 +47,11 @@ Types clés (extraits de `src/types.ts`) :
 
 Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
 
-## Fonctionnalités actuelles (0.9.7)
+## Fonctionnalités actuelles (0.9.8)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
-  - Widget **Usure en combat** (PA actuelle, dégâts d20+bonus, perce-armure optionnel dans les options avancées, `penIgnore`, cap par coup, historique).
+  - Widget **Usure en combat** (PA actuelle, PV max/actuels facultatifs, dégâts d20+bonus, perce-armure optionnel, `penIgnore`, cap par coup, historique des PA et PV, réinitialisation du combat).
   - Widget **Réparation** (coût/temps selon compat + multiplicateurs mat/qualité).
   - Enregistrement/chargement de builds (localStorage) + application directe sans reload.
   - Graphiques d’équilibrage explorables à la souris ou au clavier, exportables en SVG et CSV.
@@ -106,6 +106,7 @@ Les formules de référence et les cas limites à préserver avant la 1.0 sont d
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.8** : suivi facultatif des PV coup par coup dans le widget d’usure, avec historique et remise à zéro.
 - **0.9.7** : règles métier de référence et plafond propre à chaque enchantement.
 - **0.9.6** : accès à la Carte Hesta depuis le header.
 - **0.9.5** : harmonisation des textes, actions et labels de formulaire.

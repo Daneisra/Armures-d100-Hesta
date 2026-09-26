@@ -13,6 +13,13 @@ export type WearResult = {
   breakdown: { base: number; extra: number; capped: boolean; penetrated: boolean };
 };
 
+/** Applique les dégâts après armure aux PV suivis, sans descendre sous zéro. */
+export function applyDamageToPV(pvBefore: number, damageAfterArmor: number) {
+  const before = Math.max(0, pvBefore);
+  const after = Math.max(0, before - Math.max(0, damageAfterArmor));
+  return { before, after, lost: before - after };
+}
+
 /**
  * Simule l'usure sur un coup:
  * - la pénétration effective réduit temporairement les PA pour ce coup

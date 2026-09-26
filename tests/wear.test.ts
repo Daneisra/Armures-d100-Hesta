@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { simulateWear } from "../src/lib/wear";
+import { applyDamageToPV, simulateWear } from "../src/lib/wear";
 import { material, params } from "./fixtures";
 
 describe("simulateWear", () => {
@@ -56,5 +56,22 @@ describe("simulateWear", () => {
     expect(result.pvLost).toBe(0);
     expect(result.breakdown.penetrated).toBe(false);
     expect(result.wearApplied).toBe(params.baseWear);
+  });
+});
+
+describe("applyDamageToPV", () => {
+  it("retire les dégâts réellement subis coup par coup", () => {
+    const first = applyDamageToPV(20, 6);
+    const second = applyDamageToPV(first.after, 5);
+    expect(first).toEqual({ before: 20, after: 14, lost: 6 });
+    expect(second).toEqual({ before: 14, after: 9, lost: 5 });
+  });
+
+  it("borne les PV à zéro en cas de dégâts excessifs", () => {
+    expect(applyDamageToPV(3, 8)).toEqual({ before: 3, after: 0, lost: 3 });
+  });
+
+  it("ignore les dégâts négatifs", () => {
+    expect(applyDamageToPV(12, -2)).toEqual({ before: 12, after: 12, lost: 0 });
   });
 });

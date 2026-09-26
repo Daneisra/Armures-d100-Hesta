@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Material, Params } from "../types";
-import { simulateWear } from "../lib/wear";
+import { applyDamageToPV, simulateWear } from "../lib/wear";
 import { cls } from "../ui/styles";
 
 type WearWidgetProps = {
@@ -18,6 +18,9 @@ type WearLog = {
   paEffective: number;
   paAfter: number;
   pvLost: number;
+  pvBefore: number | null;
+  pvAfter: number | null;
+  pvActuallyLost: number | null;
   wearApplied: number;
   capped: boolean;
   penetrated: boolean;
@@ -30,6 +33,8 @@ export default function WearWidget({
   className,
 }: WearWidgetProps) {
   const [paCurrent, setPaCurrent] = useState<number>(paFinal);
+  const [pvMax, setPvMax] = useState<number | null>(null);
+  const [pvCurrent, setPvCurrent] = useState<number | null>(null);
   const [dmg, setDmg] = useState<number>(10); // autorise bonus/malus >20
   const [attackPenetration, setAttackPenetration] = useState<number>(0);
   const [log, setLog] = useState<WearLog[]>([]);
@@ -44,10 +49,33 @@ export default function WearWidget({
     return simulateWear(dmg, attackPenetration, paCurrent, material, params);
   }, [dmg, attackPenetration, paCurrent, material, params]);
 
+  const pvPreview = preview && pvCurrent !== null
+    ? applyDamageToPV(pvCurrent, preview.pvLost)
+    : null;
+
+  const setMaximumPV = (value: string) => {
+    if (value === "") {
+      setPvMax(null);
+      setPvCurrent(null);
+      return;
+    }
+    const next = Math.max(0, parseInt(value, 10) || 0);
+    setPvMax(next);
+    setPvCurrent(current => current === null ? next : Math.min(current, next));
+  };
+
+  const resetCombat = () => {
+    setPaCurrent(paFinal);
+    setPvCurrent(pvMax);
+    setLog([]);
+  };
+
   const applyHit = () => {
     if (!material) return;
     const res = simulateWear(dmg, attackPenetration, paCurrent, material, params);
+    const pv = pvCurrent === null ? null : applyDamageToPV(pvCurrent, res.pvLost);
     setPaCurrent(res.paAfter);
+    if (pv) setPvCurrent(pv.after);
     setLog(prev => [
       {
         dmg,
@@ -57,6 +85,9 @@ export default function WearWidget({
         paEffective: res.paEffective,
         paAfter: res.paAfter,
         pvLost: res.pvLost,
+        pvBefore: pv?.before ?? null,
+        pvAfter: pv?.after ?? null,
+        pvActuallyLost: pv?.lost ?? null,
         wearApplied: res.wearApplied,
         capped: res.breakdown.capped,
         penetrated: res.breakdown.penetrated,
@@ -74,7 +105,7 @@ export default function WearWidget({
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] items-end">
+      <div className="grid gap-3 sm:grid-cols-2 items-end">
         <label className="text-sm">
           <div className="text-xs font-medium text-muted-foreground mb-1">PA actuelle</div>
           <input
@@ -83,6 +114,29 @@ export default function WearWidget({
             className={cls.input}
             value={paCurrent}
             onChange={e => setPaCurrent(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
+          />
+        </label>
+        <label className="text-sm">
+          <span className="text-xs font-medium text-muted-foreground mb-1 block">PV max</span>
+          <input
+            type="number"
+            min={0}
+            className={cls.input}
+            value={pvMax ?? ""}
+            placeholder="Facultatif"
+            onChange={e => setMaximumPV(e.target.value)}
+          />
+        </label>
+        <label className="text-sm">
+          <span className="text-xs font-medium text-muted-foreground mb-1 block">PV actuels</span>
+          <input
+            type="number"
+            min={0}
+            max={pvMax ?? undefined}
+            className={cls.input}
+            value={pvCurrent ?? ""}
+            disabled={pvMax === null}
+            onChange={e => setPvCurrent(Math.max(0, Math.min(pvMax ?? 0, parseInt(e.target.value || "0", 10) || 0)))}
           />
         </label>
         <label className="text-sm">
@@ -95,8 +149,14 @@ export default function WearWidget({
             onChange={e => setDmg(Math.max(0, parseInt(e.target.value || "0", 10) || 0))}
           />
         </label>
-        <button className={cls.btnPrimary} onClick={applyHit} disabled={!material}>
+        <button className={`${cls.btnPrimary} sm:col-span-2`} type="button" onClick={applyHit} disabled={!material}>
           Appliquer le coup
+        </button>
+      </div>
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">Saisis les PV max pour suivre les PV après chaque coup.</p>
+        <button className={cls.btnGhost} type="button" onClick={resetCombat} disabled={log.length === 0 && paCurrent === paFinal && pvCurrent === pvMax}>
+          Réinitialiser le combat
         </button>
       </div>
 
@@ -126,6 +186,7 @@ export default function WearWidget({
 
       {preview && (
         <div className="text-sm grid grid-cols-2 gap-x-4 gap-y-1 mt-3">
+          <h4 className="col-span-2 mb-1 text-xs font-semibold text-muted-foreground">Aperçu du prochain coup</h4>
           <span className="text-muted-foreground">PA avant</span>      <b className="tabular">{preview.paBefore}</b>
           {attackPenetration > 0 && (
             <>
@@ -138,6 +199,12 @@ export default function WearWidget({
           )}
           <span className="text-muted-foreground">PA effective</span>  <b className="tabular">{preview.paEffective}</b>
           <span className="text-muted-foreground">PV subis</span>       <b className="tabular">{preview.pvLost}</b>
+          {pvPreview && (
+            <>
+              <span className="text-muted-foreground">PV après le coup</span>
+              <b className="tabular" aria-live="polite">{pvPreview.after} / {pvMax}</b>
+            </>
+          )}
           <span className="text-muted-foreground">Usure appliquée</span>
           <b className="tabular">
             {preview.wearApplied}
@@ -153,13 +220,17 @@ export default function WearWidget({
           <div className="text-xs font-semibold text-muted-foreground mb-2">Historique des coups</div>
           <div className="space-y-1 max-h-52 overflow-auto pr-1 text-sm">
             {log.map((l, idx) => (
-              <div key={idx} className="grid gap-2 items-center rounded border px-2 py-1 md:grid-cols-5">
+              <div key={idx} className="grid grid-cols-2 gap-2 items-center rounded border px-2 py-1">
                 <span className="tabular">dégâts {l.dmg}</span>
                 <span className="tabular">perce-armure {l.attackPenetration} → {l.effectivePenetration}</span>
                 <span className="tabular">PA eff. {l.paEffective}</span>
                 <span className="tabular">PA {l.paBefore} → {l.paAfter}</span>
                 <span className="tabular">usure {l.wearApplied}</span>
-                <span className="tabular text-muted-foreground md:col-span-5">{l.pvLost} PV subis</span>
+                <span className="tabular text-muted-foreground col-span-2">
+                  {l.pvBefore === null
+                    ? `${l.pvLost} PV subis (suivi désactivé)`
+                    : `PV ${l.pvBefore} → ${l.pvAfter} (${l.pvActuallyLost} perdus sur ${l.pvLost} subis)`}
+                </span>
               </div>
             ))}
           </div>

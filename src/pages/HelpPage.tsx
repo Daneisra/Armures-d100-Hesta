@@ -61,6 +61,7 @@ export default function HelpPage() {
             usure finale = min(usure, capWearPerHit)
           </div>
           <p>Les PA actuelles diminuent de cette usure, jamais directement du montant total des dégâts.</p>
+          <p>Dans le widget, saisis les PV max pour suivre les PV actuels. Chaque coup retire les dégâts subis après armure, sans descendre sous zéro. Tu peux ajuster les PV actuels après un soin ; « Réinitialiser le combat » restaure les PA et les PV max.</p>
         </HelpSection>
 
         <HelpSection id="perce-armure" title="Perce-armure et penIgnore">

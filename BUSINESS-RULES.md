@@ -41,6 +41,8 @@ paAprès = max(0, paAvant - usureAppliquée)
 
 Un coup dont les dégâts sont **égaux** aux PA effectives ne pénètre pas. `penIgnore` réduit la pénétration de l’attaque, jamais les dégâts bruts. Les PA effectives servent uniquement à résoudre le coup ; les PA actuelles baissent ensuite de l’usure appliquée. Le widget conserve l’historique des coups tant qu’il reste monté et repart des PA du build si celles-ci changent.
 
+Le suivi des PV dans le widget est facultatif et indépendant de la page Constitution. Quand des PV max sont saisis, les PV actuels sont initialisés à cette valeur ; après chaque coup, `PV après = max(0, PV avant - PV subis)`. Les PV réellement perdus ne peuvent pas dépasser les PV avant le coup. Modifier les PV actuels permet de refléter des soins ou corrections, sans dépasser le maximum. La réinitialisation du combat remet les PA au total du build, les PV au maximum saisi et efface l’historique.
+
 ## Réparation
 
 ```text

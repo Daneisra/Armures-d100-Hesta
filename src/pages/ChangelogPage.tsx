@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.8",
+    title: "Suivi des PV en combat",
+    changes: [
+      "PV maximum et actuels facultatifs dans le widget d’usure, avec décompte coup par coup.",
+      "Aperçu et historique des PV avant/après, correction manuelle et remise à zéro du combat.",
+    ],
+  },
+  {
     version: "0.9.7",
     title: "Règles métier de référence",
     changes: [

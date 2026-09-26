@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.7`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.8`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -189,6 +189,7 @@ PA_après = max(0, PA_avant - usure appliquée)
 - `PA_effective` est temporaire pour la résolution du coup. Les PA permanentes ne diminuent ensuite que de l’usure appliquée.
 - Les PA diminuent de l’usure, pas des dégâts bruts.
 - `WearWidget` autorise les dégâts supérieurs à 20, accepte un perce-armure distinct (option avancée repliée et valeur `0` par défaut), permet de modifier les PA actuelles et conserve un historique local des coups tant que le composant reste monté.
+- Le suivi des PV dans `WearWidget` est facultatif : renseigner les PV max initialise les PV actuels. Chaque coup soustrait `min(PV actuels, PV subis)` et borne le résultat à zéro. Les PV actuels restent modifiables manuellement (dans la limite du maximum) ; l’historique enregistre les PV avant/après. « Réinitialiser le combat » restaure PA finales et PV max, puis vide l’historique. Ce suivi ne modifie pas le calcul de `computePV` ni les builds sauvegardés.
 - Un changement de `paFinal` réinitialise les PA actuelles et l’historique.
 - L’enchantement `extraPen_delta` est appliqué au matériau transmis au widget d’usure.
 - L’enchantement `pen_ignore_add` augmente le `penIgnore` total transmis au widget d’usure.
