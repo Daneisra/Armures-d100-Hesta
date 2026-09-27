@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.10",
+    title: "Tests métier validés",
+    changes: [
+      "Scénarios complets sur les données officielles pour l’armure, les PV, l’usure et la réparation.",
+      "Planification de l’administration des données et de la synchronisation GitHub/local après la version stable.",
+    ],
+  },
+  {
     version: "0.9.9",
     title: "Audit des données officielles",
     changes: [

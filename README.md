@@ -8,7 +8,7 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.9-blue)
+![Version](https://img.shields.io/badge/version-0.9.10-blue)
 ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
@@ -48,7 +48,7 @@ Types clés (extraits de `src/types.ts`) :
 Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
 L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audit des données](DATA-AUDIT.md).
 
-## Fonctionnalités actuelles (0.9.9)
+## Fonctionnalités actuelles (0.9.10)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -107,6 +107,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.10** : validation des tests métier avec scénarios complets sur les données officielles ; roadmap d’administration GitHub/local.
 - **0.9.9** : audit des dix JSON par défaut et contrôles automatiques des références, bornes et tables de réparation.
 - **0.9.8** : suivi facultatif des PV coup par coup dans le widget d’usure, avec historique et remise à zéro.
 - **0.9.7** : règles métier de référence et plafond propre à chaque enchantement.
@@ -139,9 +140,17 @@ Le journal complet est consultable directement dans l’application sur `/change
 
 - [x] Geler les règles métier principales dans `BUSINESS-RULES.md` et les tests de référence.
 - [x] Vérifier toutes les données JSON par défaut (`DATA-AUDIT.md` et test automatisé).
-- [ ] Valider les tests unitaires métier.
+- [x] Valider les tests unitaires métier et trois scénarios complets sur les données officielles (`tests/businessScenarios.test.ts`).
 - [ ] Valider l’impression/PDF sur Chrome, Firefox et Edge.
 - [ ] Taguer une release GitHub `v1.0.0`.
+
+### 1.1.x — Administration des données et synchronisation GitHub
+
+- [ ] Étendre l’Éditeur local aux catégories, enchantements, résistances, matériaux de bouclier et tables de réparation, avec ajout, modification, suppression et validation des références croisées.
+- [ ] Prévisualiser les différences entre données officielles GitHub et modifications locales ; signaler les conflits avant toute synchronisation.
+- [ ] Permettre de récupérer une nouvelle version du catalogue officiel dans le navigateur sans écraser silencieusement les personnalisations locales.
+- [ ] Proposer les changements validés des JSON officiels sur GitHub via une authentification sécurisée et une pull request à relire avant fusion. Prévoir le service nécessaire à cette écriture ; ne stocker aucun jeton GitHub dans l’application statique ou `localStorage`.
+- [ ] Après fusion et déploiement, synchroniser les nouvelles données officielles avec les overrides locaux, avec rapport de migration ou de conflit et possibilité d’exporter une sauvegarde avant application.
 
 ## Contribution
 - PR petites et ciblées (une feature par PR).
