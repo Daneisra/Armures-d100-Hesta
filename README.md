@@ -8,8 +8,8 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.11-blue)
-![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Build](https://github.com/Daneisra/Armures-d100/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
@@ -48,7 +48,7 @@ Types clés (extraits de `src/types.ts`) :
 Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
 L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audit des données](DATA-AUDIT.md).
 
-## Fonctionnalités actuelles (0.9.11)
+## Fonctionnalités actuelles (1.0.0)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -108,6 +108,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **1.0.0** : première version stable préparée ; règles, données, tests métier et impression PDF validés. Publication GitHub à effectuer après commit.
 - **0.9.11** : validation des fiches PDF sur Chrome, Firefox et Edge ; valeurs de repli et niveaux imprimés harmonisés avec le calculateur.
 - **0.9.10** : validation des tests métier avec scénarios complets sur les données officielles ; roadmap d’administration GitHub/local.
 - **0.9.9** : audit des dix JSON par défaut et contrôles automatiques des références, bornes et tables de réparation.
@@ -123,9 +124,10 @@ Le journal complet est consultable directement dans l’application sur `/change
 
 ## Déploiement
 - Build statique dans `dist/` (`npm run build`).
-- Pour OVH/Apache : ajouter un `public/.htaccess` avec fallback SPA (rewrite vers `index.html`).
-- La PWA et le service worker nécessitent HTTPS en production (le sous-domaine OVH doit disposer d’un certificat valide).
-- Pour GitHub Pages : pousser `dist/` (ou workflow Actions) et définir `base` si nécessaire.
+- GitHub Actions lance `npm ci`, le lint, les tests et le build sur Node 20 après un push sur `main`, puis synchronise `dist/` par SSH/rsync vers `/var/www/pahesta/` sur le VPS.
+- Le workflow exclut `.htaccess` du transfert ; le fallback des routes SPA doit être configuré sur le serveur web du VPS.
+- La PWA et le service worker nécessitent HTTPS sur `pahesta.dannytech.fr`.
+- La préparation de la release `v1.0.0` est détaillée dans [RELEASE-1.0.0.md](RELEASE-1.0.0.md).
 
 ## Roadmap
 

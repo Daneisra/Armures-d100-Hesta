@@ -1,12 +1,12 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.11`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `1.0.0` préparée pour publication. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
 - Application web statique React/Vite/TypeScript pour gérer et calculer des armures dans un système JDR d100 inversé (Hesta).
 - Fonctions principales : calcul PA/malus, compatibilité châssis-matériau, enchantements, boucliers, usure en combat, réparation, PV/Constitution, catalogue de builds et éditeur local des données.
-- Déploiement statique sur OVH via un sous-domaine et GitHub Actions, avec transfert FTP du contenu de `dist/`.
+- Déploiement statique sur le VPS du sous-domaine `pahesta.dannytech.fr` via GitHub Actions et SSH/rsync du contenu de `dist/`.
 - Aucun backend applicatif, aucune API métier et aucune base de données serveur.
 - Les personnalisations utilisateur sont stockées dans `localStorage`.
 
@@ -286,14 +286,14 @@ Règles de compatibilité :
 - Sortie Vite : `dist/`.
 - Workflow : `.github/workflows/deploy.yml`.
 - Déclenchement : push sur `main` ou lancement manuel (`workflow_dispatch`).
-- Installation avec `npm ci`, lint, tests, build avec Node 20, puis déploiement FTP via `SamKirkland/FTP-Deploy-Action@4.0.0`.
-- Dossier distant actuel : `pahesta/`.
-- Secrets requis : `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
-- `public/.htaccess` est copié dans `dist/` et fournit le fallback SPA vers `/index.html`.
+- Installation avec `npm ci`, lint, tests et build avec Node 20, puis synchronisation SSH/rsync vers le VPS.
+- Dossier distant actuel : `/var/www/pahesta/`.
+- Secrets requis : `VPS_HOST`, `VPS_USER`, `VPS_PORT`, `VPS_SSH_PRIVATE_KEY`, `VPS_SSH_KNOWN_HOSTS`.
+- `public/.htaccess` est copié dans `dist/`, mais exclu du transfert par le workflow. Le serveur web du VPS doit fournir le fallback SPA vers `/index.html`.
 - `public/sw.js` et `public/manifest.webmanifest` sont copiés tels quels dans `dist/`. Le service worker est versionné via la version de l’application passée dans son URL d’enregistrement.
 - Le mode PWA requiert HTTPS en production. `localhost` reste autorisé par les navigateurs pour le développement, mais l’enregistrement est volontairement limité au build de production.
-- Le fallback actuel suppose que le sous-domaine sert l’application depuis sa racine. Si l’application passe dans un sous-dossier URL, adapter `RewriteBase`, la cible de rewrite et éventuellement `base` dans Vite.
-- `dangerous-clean-slate: true` supprime le contenu du dossier distant avant upload. Ne l’utiliser que si `server-dir` pointe vers un dossier exclusivement dédié à cette application.
+- Le sous-domaine sert l’application depuis sa racine. Si l’application passe dans un sous-dossier URL, adapter la configuration du serveur web et éventuellement `base` dans Vite.
+- Le workflow utilise `rsync --delete` : vérifier que la destination `/var/www/pahesta/` reste dédiée à cette application.
 
 ## 9. Roadmap actuelle
 
@@ -312,7 +312,7 @@ Règles de compatibilité :
 - Dix JSON canoniques audités en `0.9.9` : inventaire dans `DATA-AUDIT.md`, contrôles exécutables dans `tests/defaultData.test.ts`.
 - Tests métier validés en `0.9.10` : cas unitaires et scénarios complets dans `tests/businessScenarios.test.ts`, sur les valeurs officielles.
 - Impression/PDF validés en `0.9.11` sur Chrome, Firefox et Edge pour les modes Standard, Compact et Détaillé ; voir `PRINT-AUDIT.md`.
-- Taguer une release GitHub `v1.0.0`.
+- Version `1.0.0` préparée ; commit, tag et publication GitHub `v1.0.0` restent à effectuer selon `RELEASE-1.0.0.md`.
 
 ### Après 1.0 — Administration et synchronisation GitHub/local
 
@@ -338,7 +338,7 @@ Règles de compatibilité :
 - Tester import, export, reset et migration si le format des données change.
 - Vérifier qu’un changement de JSON ne casse ni le filtrage du calculateur, ni les sélections existantes, ni les formules.
 - Vérifier le responsive mobile et la navigation clavier pour toute modification UI.
-- Avant déploiement, vérifier que `public/.htaccess` est présent dans `dist/` et que `server-dir` cible bien le dossier dédié du sous-domaine.
+- Avant déploiement, vérifier que la destination rsync `/var/www/pahesta/` est dédiée à l’application et que le serveur web du VPS fournit le fallback SPA.
 
 ## Workflow attendu des agents IA
 

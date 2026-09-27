@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "1.0.0",
+    title: "Première version stable",
+    changes: [
+      "Règles métier principales et données officielles vérifiées avant la release.",
+      "Tests métier et fiches PDF contrôlés sur Chrome, Firefox et Edge.",
+    ],
+  },
+  {
     version: "0.9.11",
     title: "Impression PDF validée",
     changes: [
