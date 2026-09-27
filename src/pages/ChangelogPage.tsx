@@ -3,6 +3,14 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "0.9.11",
+    title: "Impression PDF validée",
+    changes: [
+      "Fiches Standard, Compact et Détaillé vérifiées en PDF sur Chrome, Firefox et Edge.",
+      "Valeurs de repli et niveaux affichés sur la fiche alignés avec le calculateur.",
+    ],
+  },
+  {
     version: "0.9.10",
     title: "Tests métier validés",
     changes: [

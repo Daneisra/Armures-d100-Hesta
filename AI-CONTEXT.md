@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.10`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `0.9.11`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -311,7 +311,7 @@ Règles de compatibilité :
 - Règles métier principales fixées dans `BUSINESS-RULES.md` en `0.9.7`, avec cas de référence dans les tests.
 - Dix JSON canoniques audités en `0.9.9` : inventaire dans `DATA-AUDIT.md`, contrôles exécutables dans `tests/defaultData.test.ts`.
 - Tests métier validés en `0.9.10` : cas unitaires et scénarios complets dans `tests/businessScenarios.test.ts`, sur les valeurs officielles.
-- Valider l’impression/PDF sur Chrome, Firefox et Edge.
+- Impression/PDF validés en `0.9.11` sur Chrome, Firefox et Edge pour les modes Standard, Compact et Détaillé ; voir `PRINT-AUDIT.md`.
 - Taguer une release GitHub `v1.0.0`.
 
 ### Après 1.0 — Administration et synchronisation GitHub/local

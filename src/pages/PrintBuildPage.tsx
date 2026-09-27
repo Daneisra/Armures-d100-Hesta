@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import type { BuildInput } from "../types";
 import { useCatalogData } from "../catalogContext";
-import { computeBuild } from "../lib/calc";
+import { computeBuild, maxEnchantLevel } from "../lib/calc";
 import { computeRepair, formatHours } from "../lib/repair";
 import MaterialBadges from "../components/MaterialBadges";
 import { cls } from "../ui/styles";
@@ -49,7 +49,7 @@ export default function PrintBuildPage() {
     const fallback: BuildInput = {
       chassis: catalog.chassis[0]?.name ?? "",
       material: catalog.materials[0]?.name ?? "",
-      quality: catalog.qualities[0]?.name ?? "",
+      quality: catalog.qualities.find(item => item.name === "Standard")?.name ?? catalog.qualities[0]?.name ?? "",
       renfort: 0,
       enchant: 0,
       enchantId: "protection",
@@ -85,13 +85,15 @@ export default function PrintBuildPage() {
   const shield = catalog.shields.find(item => item.name === build.shield) ?? catalog.shields[0];
   const shieldMaterial = catalog.shieldMaterials.find(item => item.name === build.shieldMaterial);
   const enchant = catalog.enchants.find(item => item.id === build.enchantId);
-  const category = catalog.categories.find(item => item.key === build.cat);
+  const category = catalog.categories.find(item => item.key === build.cat)
+    ?? catalog.categories.find(item => item.key === material?.category);
   const compatible = Boolean(chassis && material && chassis.category === material.compat);
   const ratio = result.malusFinal === 0 ? "∞" : (result.paFinal / result.malusFinal).toFixed(2);
   const repairPerPa = material && quality ? computeRepair(1, material, quality, catalog.params) : null;
   const shieldPa = (shield?.pa ?? 0) + (shieldMaterial?.paMod ?? 0);
   const shieldMalus = (shield?.malus ?? 0) + (shieldMaterial?.malusMod ?? 0);
-  const enchantLevel = build.enchant ?? 0;
+  const renfortLevel = Math.max(0, Math.min(build.renfort, catalog.params.renfortMax));
+  const enchantLevel = Math.max(0, Math.min(build.enchant ?? 0, maxEnchantLevel(catalog.params, enchant)));
   const enchantPa = !enchant || enchantLevel === 0
     ? 0
     : enchant.kind === "pa_flat" ? (enchant.perLevel ?? 0) * enchantLevel
@@ -160,8 +162,8 @@ export default function PrintBuildPage() {
             <CompactItem label="Châssis" value={build.chassis} />
             <CompactItem label="Matériau" value={build.material} />
             <CompactItem label="Qualité" value={build.quality} />
-            <CompactItem label="Renfort" value={`Niveau ${build.renfort}`} />
-            <CompactItem label="Enchantement" value={`${enchant?.name ?? build.enchantId ?? "Aucun"} (${build.enchant})`} />
+            <CompactItem label="Renfort" value={`Niveau ${renfortLevel}`} />
+            <CompactItem label="Enchantement" value={`${enchant?.name ?? build.enchantId ?? "Aucun"} (${enchantLevel})`} />
             <CompactItem label="Bouclier" value={shield?.name ?? build.shield} />
             <CompactItem label="Compatibilité" value={compatible ? "Compatible" : "Incompatible"} />
             <CompactItem label="Groupe" value={chassis?.group ?? "—"} />
@@ -180,11 +182,11 @@ export default function PrintBuildPage() {
           <h2 className="text-lg font-semibold">Composition</h2>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <Term label="Châssis" value={build.chassis} />
-            <Term label="Catégorie" value={category?.label ?? build.cat ?? "—"} />
+            <Term label="Catégorie" value={category?.label || build.cat || "—"} />
             <Term label="Matériau" value={build.material} />
             <Term label="Qualité" value={build.quality} />
-            <Term label="Renfort" value={`Niveau ${build.renfort}`} />
-            <Term label="Enchantement" value={`${enchant?.name ?? build.enchantId ?? "Aucun"} (${build.enchant})`} />
+            <Term label="Renfort" value={`Niveau ${renfortLevel}`} />
+            <Term label="Enchantement" value={`${enchant?.name ?? build.enchantId ?? "Aucun"} (${enchantLevel})`} />
             <Term label="Bouclier" value={shield?.name ?? build.shield} />
             {build.shield !== "Aucun" && <Term label="Matériau bouclier" value={build.shieldMaterial || "—"} />}
           </dl>
@@ -235,7 +237,7 @@ export default function PrintBuildPage() {
                   <BreakdownRow label={`Châssis — ${chassis?.name ?? "—"}`} pa={chassis?.basePA ?? 0} malus={chassis?.baseMalus ?? 0} />
                   <BreakdownRow label={`Matériau — ${material?.name ?? "—"}`} pa={material?.modPA ?? 0} malus={material?.malusMod ?? 0} />
                   <BreakdownRow label={`Qualité — ${quality?.name ?? "—"}`} pa={quality?.bonusPA ?? 0} malus={quality?.malusMod ?? 0} />
-                  <BreakdownRow label={`Renfort — niveau ${build.renfort}`} pa={build.renfort} malus={build.renfort} />
+                  <BreakdownRow label={`Renfort — niveau ${renfortLevel}`} pa={renfortLevel} malus={renfortLevel} />
                   <BreakdownRow label={`Bouclier — ${shield?.name ?? "—"}`} pa={shieldPa} malus={shieldMalus} />
                   <BreakdownRow label={`Enchantement — ${enchant?.name ?? "Aucun"} niveau ${enchantLevel}`} pa={enchantPa} malus={enchantMalus} />
                   <tr className="font-bold"><th className="px-2 py-2 text-left">Total final</th><td className="px-2 py-2 text-right tabular-nums">{result.paFinal}</td><td className="px-2 py-2 text-right tabular-nums">{result.malusFinal}</td></tr>

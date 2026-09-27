@@ -8,7 +8,7 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-0.9.10-blue)
+![Version](https://img.shields.io/badge/version-0.9.11-blue)
 ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
@@ -48,7 +48,7 @@ Types clés (extraits de `src/types.ts`) :
 Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
 L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audit des données](DATA-AUDIT.md).
 
-## Fonctionnalités actuelles (0.9.10)
+## Fonctionnalités actuelles (0.9.11)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -98,6 +98,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
   - Mode détaillé avec décomposition PA/malus et résistances chiffrées (`mode=detailed`).
   - Feuille d’impression A4 dédiée, indépendante du thème et sans navigation ni contrôles.
   - Bouton « Imprimer / PDF » ouvrant la boîte d’impression native du navigateur.
+  - Modes Standard, Compact et Détaillé vérifiés en PDF sur Chrome, Firefox et Edge ([rapport de validation](PRINT-AUDIT.md)).
 - **Aide rapide**
   - Page `/aide` accessible depuis les navigations desktop et mobile.
   - Explications sur les châssis, matériaux, compatibilité, usure, Perce-armure, builds, impression et données locales.
@@ -107,6 +108,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **0.9.11** : validation des fiches PDF sur Chrome, Firefox et Edge ; valeurs de repli et niveaux imprimés harmonisés avec le calculateur.
 - **0.9.10** : validation des tests métier avec scénarios complets sur les données officielles ; roadmap d’administration GitHub/local.
 - **0.9.9** : audit des dix JSON par défaut et contrôles automatiques des références, bornes et tables de réparation.
 - **0.9.8** : suivi facultatif des PV coup par coup dans le widget d’usure, avec historique et remise à zéro.
@@ -141,7 +143,7 @@ Le journal complet est consultable directement dans l’application sur `/change
 - [x] Geler les règles métier principales dans `BUSINESS-RULES.md` et les tests de référence.
 - [x] Vérifier toutes les données JSON par défaut (`DATA-AUDIT.md` et test automatisé).
 - [x] Valider les tests unitaires métier et trois scénarios complets sur les données officielles (`tests/businessScenarios.test.ts`).
-- [ ] Valider l’impression/PDF sur Chrome, Firefox et Edge.
+- [x] Valider l’impression/PDF sur Chrome, Firefox et Edge ([rapport de validation](PRINT-AUDIT.md)).
 - [ ] Taguer une release GitHub `v1.0.0`.
 
 ### 1.1.x — Administration des données et synchronisation GitHub
