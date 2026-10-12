@@ -3,7 +3,8 @@
   <em>Un univers, plusieurs outils.</em><br>
   <a href="https://hesta.dannytech.fr/">Portail Hesta</a> ·
   <a href="https://cartehesta.dannytech.fr/">Carte Hesta</a> ·
-  <a href="https://pahesta.dannytech.fr/">Système PA</a>
+  <a href="https://pahesta.dannytech.fr/">Système PA</a> ·
+  <a href="https://codexhesta.dannytech.fr/">Hesta Codex</a>
 </div>
 
 # Système PA — App web (port Excel)
@@ -87,7 +88,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 - **Navigation responsive**
   - Onglets complets dans le header sur desktop.
   - Barre de navigation inférieure sur mobile avec icônes, page active et prise en charge des zones sûres.
-  - Lien « Carte Hesta » dans le header, ouvrant la carte dans un nouvel onglet.
+  - Lien « Carte Hesta » dans le header, ouvrant la carte dans le même onglet.
   - Audit réalisé à 390 px, 768 px et 1440 px : formulaires empilés sur mobile, en-têtes d’actions adaptatifs et tables conservées dans leurs zones de défilement.
 - **Fiche d’armure**
   - Prévisualisation dédiée depuis le build actuellement configuré (`/print`).
@@ -166,5 +167,6 @@ Le journal complet est consultable directement dans l’application sur `/change
 | Application | Rôle | URL publique |
 | --- | --- | --- |
 | Hesta Hub | Portail central | [hesta.dannytech.fr](https://hesta.dannytech.fr/) |
-| Carte Hesta | Carte interactive, quêtes, chronologie, planning et communauté | [cartehesta.dannytech.fr](https://cartehesta.dannytech.fr/) |
-| Système PA — ce projet | Armures, matériaux, builds et outils de combat | [pahesta.dannytech.fr](https://pahesta.dannytech.fr/) |
+| Carte Hesta | Carte interactive, chronologie, planning et communauté | [cartehesta.dannytech.fr](https://cartehesta.dannytech.fr/) |
+| Système PA — ce projet | Armures, règles et calculs | [pahesta.dannytech.fr](https://pahesta.dannytech.fr/) |
+| Hesta Codex | Encyclopédie, lore, relations éditoriales et provenance | [codexhesta.dannytech.fr](https://codexhesta.dannytech.fr/) |
