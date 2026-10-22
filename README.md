@@ -9,12 +9,7 @@
 
 # Système PA — App web (port Excel)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
-![React](https://img.shields.io/badge/React-18-61dafb)
-![Vite](https://img.shields.io/badge/Vite-5-646cff)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
-![PWA](https://img.shields.io/badge/PWA-ready-green)
+[![Production](https://img.shields.io/badge/HESTA-en_ligne-c8aa67)](https://pahesta.dannytech.fr/) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg) ![React](https://img.shields.io/badge/React-18-61dafb) ![Vite](https://img.shields.io/badge/Vite-5-646cff) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6) ![PWA](https://img.shields.io/badge/PWA-ready-green)
 
 Calculateur d’armures pour un **système d100 inversé** : PA, malus, sweet‑spot, compat châssis/matériau, usure/réparation, PV/CON, catalogue de builds et éditeur local (JSON).
 
