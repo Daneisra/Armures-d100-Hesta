@@ -10,7 +10,7 @@
 # Système PA — App web (port Excel)
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![Build](https://github.com/Daneisra/Armures-d100/actions/workflows/deploy.yml/badge.svg)
+![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg)
 ![React](https://img.shields.io/badge/React-18-61dafb)
 ![Vite](https://img.shields.io/badge/Vite-5-646cff)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6)
@@ -109,7 +109,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
-- **1.0.0** : première version stable préparée ; règles, données, tests métier et impression PDF validés. Publication GitHub à effectuer après commit.
+- **1.0.0** : première version stable préparée ; règles, données, tests métier et impression PDF validés. [Release GitHub publiée](https://github.com/Daneisra/Armures-d100-Hesta/releases/tag/v1.0.0).
 - **0.9.11** : validation des fiches PDF sur Chrome, Firefox et Edge ; valeurs de repli et niveaux imprimés harmonisés avec le calculateur.
 - **0.9.10** : validation des tests métier avec scénarios complets sur les données officielles ; roadmap d’administration GitHub/local.
 - **0.9.9** : audit des dix JSON par défaut et contrôles automatiques des références, bornes et tables de réparation.
@@ -170,3 +170,11 @@ Le journal complet est consultable directement dans l’application sur `/change
 | Carte Hesta | Carte interactive, chronologie, planning et communauté | [cartehesta.dannytech.fr](https://cartehesta.dannytech.fr/) |
 | Système PA — ce projet | Armures, règles et calculs | [pahesta.dannytech.fr](https://pahesta.dannytech.fr/) |
 | Hesta Codex | Encyclopédie, lore, relations éditoriales et provenance | [codexhesta.dannytech.fr](https://codexhesta.dannytech.fr/) |
+
+## Place dans l'écosystème Hesta
+
+Le [Portail Hesta](https://hesta.dannytech.fr/) centralise les applications, la communauté, Discord et le support général. [Carte Hesta](https://cartehesta.dannytech.fr/) conserve ses fonctions JDR et ses [Issues officielles](https://github.com/Daneisra/Carte-Hesta/issues/new/choose). [Hesta Codex](https://codexhesta.dannytech.fr/) est consacré au lore et à son futur référentiel canonique ; son intégration avec la carte et la chronologie reste à développer.
+
+Système PA reste autonome : ses règles, calculs, données officielles et personnalisations locales ne sont pas migrés vers le Codex. La [roadmap globale](https://github.com/Daneisra/Hesta-Hub/blob/main/ROADMAP.md) ne remplace pas sa roadmap technique locale.
+
+Les corrections transverses passent par branche et PR. Un push sur main déclenche le déploiement existant ; ne pas fusionner une PR documentaire sans autorisation de livraison.
