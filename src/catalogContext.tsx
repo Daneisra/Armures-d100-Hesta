@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 import type { Catalog, CatalogOverrides } from "./catalog";
 import { mergeCatalog, loadOverrides, saveOverrides, exportCatalog, importCatalog, defaultCatalog } from "./catalog";
+import { assertValidCatalogOverrides } from "./lib/importValidation";
 
 type DomainKey = keyof Catalog;
 const EDITOR_AUTOSAVE_KEY = "pa_editor_autosave";
@@ -31,6 +32,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   const catalog = useMemo(() => mergeCatalog(overrides), [overrides]);
 
   const applyOverrides = (next: CatalogOverrides) => {
+    assertValidCatalogOverrides(next, defaultCatalog);
     setOverrides(next);
     if (autosave) {
       saveOverrides(next);
@@ -77,7 +79,7 @@ export function CatalogProvider({ children }: { children: ReactNode }) {
   const exportAll = () => exportCatalog(overrides);
 
   const importAll = (json: string, mode: "replace" | "merge" = "replace") => {
-    const imported = importCatalog(json);
+    const imported = importCatalog(json, mode === "merge" ? overrides : {});
     if (mode === "replace") {
       applyOverrides(imported);
     } else {

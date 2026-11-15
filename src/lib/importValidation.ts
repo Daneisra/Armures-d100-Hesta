@@ -50,7 +50,7 @@ function checkString(
   options: { required?: boolean; nonEmpty?: boolean; allowed?: Set<string> } = {}
 ) {
   const required = options.required ?? true;
-  if (!hasOwn(record, key)) {
+  if (!hasOwn(record, key) || (!required && record[key] === undefined)) {
     if (required) addIssue(issues, `${path}.${key}`, "champ obligatoire manquant");
     return;
   }
@@ -290,18 +290,88 @@ function checkArrayDomain(
   value.forEach((item, index) => validator(item, `${path}[${index}]`, issues));
 }
 
+function checkCategory(value: unknown, path: string, issues: ImportIssue[]) {
+  if (!isRecord(value)) { addIssue(issues, path, "doit être une catégorie"); return; }
+  checkKnownKeys(value, new Set(["key", "label", "sort", "compat", "description"]), path, issues);
+  checkString(value, "key", path, issues);
+  checkString(value, "label", path, issues);
+  checkString(value, "compat", path, issues, { allowed: COMPATS });
+  checkString(value, "description", path, issues, { required: false, nonEmpty: false });
+  checkNumber(value, "sort", path, issues, { min: 0, integer: true });
+}
+
+function checkEnchant(value: unknown, path: string, issues: ImportIssue[]) {
+  if (!isRecord(value)) { addIssue(issues, path, "doit être un enchantement"); return; }
+  checkKnownKeys(value, new Set(["id", "name", "kind", "target", "perLevel", "factor", "minLevel", "maxLevel"]), path, issues);
+  checkString(value, "id", path, issues);
+  checkString(value, "name", path, issues);
+  checkString(value, "kind", path, issues, { allowed: new Set(["pa_flat", "malus_flat", "res_add", "pen_ignore_add", "extraPen_delta", "pa_pct", "malus_mult"]) });
+  const multiplicative = value.kind === "pa_pct" || value.kind === "malus_mult";
+  checkNumber(value, "perLevel", path, issues, { required: !multiplicative });
+  checkNumber(value, "factor", path, issues, { required: multiplicative, min: 0 });
+  checkString(value, "target", path, issues, { required: value.kind === "res_add", allowed: new Set(["global", ...RESIST_KEYS]) });
+  checkNumber(value, "minLevel", path, issues, { required: false, min: 0, integer: true });
+  checkNumber(value, "maxLevel", path, issues, { required: false, min: 0, integer: true });
+  if (typeof value.minLevel === "number" && typeof value.maxLevel === "number" && value.minLevel > value.maxLevel) {
+    addIssue(issues, `${path}.maxLevel`, "doit être supérieur ou égal au niveau minimum");
+  }
+}
+
+function checkShieldMaterial(value: unknown, path: string, issues: ImportIssue[]) {
+  if (!isRecord(value)) { addIssue(issues, path, "doit être un matériau de bouclier"); return; }
+  checkKnownKeys(value, new Set(["name", "compat", "paMod", "malusMod", "effects"]), path, issues);
+  checkString(value, "name", path, issues);
+  checkString(value, "compat", path, issues, { allowed: new Set(["Bois", "Métal", "Cuir", "Mixte"]) });
+  checkNumber(value, "paMod", path, issues, { integer: true });
+  checkNumber(value, "malusMod", path, issues, { integer: true });
+  checkString(value, "effects", path, issues, { required: false, nonEmpty: false });
+}
+
+function checkUniqueKey(list: unknown, key: string, path: string, issues: ImportIssue[]) {
+  if (!Array.isArray(list)) return;
+  const seen = new Set<string>();
+  list.forEach((item, index) => {
+    if (!isRecord(item) || typeof item[key] !== "string") return;
+    const normalized = item[key].trim().toLocaleLowerCase("fr");
+    if (seen.has(normalized)) addIssue(issues, `${path}[${index}].${key}`, "identifiant en doublon");
+    seen.add(normalized);
+  });
+}
+
 export function validateCatalogOverrides(value: unknown, catalog: Catalog): ImportIssue[] {
   const issues: ImportIssue[] = [];
   if (!isRecord(value)) {
     addIssue(issues, "overrides", "doit être un objet");
     return issues;
   }
-  const supported = new Set(["chassis", "materials", "qualities", "shields", "params"]);
+  const supported = new Set(["chassis", "materials", "qualities", "shields", "params", "categories", "enchants", "shieldMaterials"]);
   checkKnownKeys(value, supported, "overrides", issues);
+  for (const key of ["chassis", "materials", "qualities", "shields"]) {
+    if (Array.isArray(value[key]) && value[key].length === 0) {
+      addIssue(issues, `overrides.${key}`, "conserver au moins un élément pour le calculateur");
+    }
+  }
+
+  if (hasOwn(value, "categories")) {
+    checkArrayDomain(value.categories, "overrides.categories", issues, checkCategory);
+    checkUniqueKey(value.categories, "key", "overrides.categories", issues);
+  }
+  if (hasOwn(value, "enchants")) {
+    checkArrayDomain(value.enchants, "overrides.enchants", issues, checkEnchant);
+    checkUniqueKey(value.enchants, "id", "overrides.enchants", issues);
+  }
+  if (hasOwn(value, "shieldMaterials")) checkArrayDomain(value.shieldMaterials, "overrides.shieldMaterials", issues, checkShieldMaterial);
+  const effectiveCategories = Array.isArray(value.categories)
+    ? value.categories.filter(isRecord).filter(item => typeof item.key === "string" && typeof item.compat === "string")
+    : catalog.categories;
+  // Validate materials against the resulting catalog, including unchanged materials.
+  const referenceCatalog = { ...catalog, categories: effectiveCategories } as Catalog;
 
   if (hasOwn(value, "chassis")) checkArrayDomain(value.chassis, "overrides.chassis", issues, checkChassis);
   if (hasOwn(value, "materials")) {
-    checkArrayDomain(value.materials, "overrides.materials", issues, (item, path, list) => checkMaterial(item, path, list, catalog));
+    checkArrayDomain(value.materials, "overrides.materials", issues, (item, path, list) => checkMaterial(item, path, list, referenceCatalog));
+  } else if (hasOwn(value, "categories")) {
+    catalog.materials.forEach((item, index) => checkMaterial(item, `materials[${index}]`, issues, referenceCatalog));
   }
   if (hasOwn(value, "qualities")) checkArrayDomain(value.qualities, "overrides.qualities", issues, checkQuality);
   if (hasOwn(value, "shields")) checkArrayDomain(value.shields, "overrides.shields", issues, checkShield);

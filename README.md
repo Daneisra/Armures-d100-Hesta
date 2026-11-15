@@ -9,7 +9,7 @@
 
 # Système PA — App web (port Excel)
 
-[![Production](https://img.shields.io/badge/HESTA-en_ligne-c8aa67)](https://pahesta.dannytech.fr/) ![Version](https://img.shields.io/badge/version-1.0.0-blue) ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg) ![React](https://img.shields.io/badge/React-18-61dafb) ![Vite](https://img.shields.io/badge/Vite-5-646cff) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6) ![PWA](https://img.shields.io/badge/PWA-ready-green)
+[![Production](https://img.shields.io/badge/HESTA-en_ligne-c8aa67)](https://pahesta.dannytech.fr/) ![Version](https://img.shields.io/badge/version-1.1.0-blue) ![Build](https://github.com/Daneisra/Armures-d100-Hesta/actions/workflows/deploy.yml/badge.svg) ![React](https://img.shields.io/badge/React-18-61dafb) ![Vite](https://img.shields.io/badge/Vite-5-646cff) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6) ![PWA](https://img.shields.io/badge/PWA-ready-green)
 
 Calculateur d’armures pour un **système d100 inversé** : PA, malus, sweet‑spot, compat châssis/matériau, usure/réparation, PV/CON, catalogue de builds et éditeur local (JSON).
 
@@ -44,7 +44,7 @@ Types clés (extraits de `src/types.ts`) :
 Les formules de référence et les cas limites à préserver avant la 1.0 sont décrits dans [Règles métier de référence](BUSINESS-RULES.md).
 L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audit des données](DATA-AUDIT.md).
 
-## Fonctionnalités actuelles (1.0.0)
+## Fonctionnalités actuelles (1.1.0)
 - **Calculateur**
   - Filtrage auto des matériaux par compat/châssis + catégorie d’affinage.
   - Résumé : PA/Malus/Efficacité + badge compatibilité + effets/badges ratio.
@@ -63,7 +63,9 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
   - Liste filtrable, supprimer/exporter/importer (JSON), appliquer au calculateur.
   - Import strict : types, bornes, doublons et références contrôlés avant écriture, avec résumé lisible et rapport technique copiable.
 - **Éditeur**
-  - CRUD local pour châssis/matériaux/qualités/boucliers/params.
+  - CRUD local pour châssis, matériaux, qualités, boucliers, catégories, enchantements et matériaux de bouclier, ainsi que les paramètres.
+  - Résistances et multiplicateurs de réparation modifiables dans les matériaux ; multiplicateurs des qualités et bases de réparation dans leurs onglets existants.
+  - Validation avant enregistrement, y compris lors d’une suppression, restauration, annulation ou réinitialisation ; les catégories encore référencées ne peuvent pas être supprimées.
   - Diff overrides vs canon, import/export JSON, reset par onglet ou global.
   - Import strict avec blocage des références invalides, erreurs présentées champ par champ et rapport technique copiable.
   - Annulation des 20 dernières actions et corbeille de session avec restauration.
@@ -104,6 +106,7 @@ L’inventaire et les contrôles des dix JSON canoniques figurent dans [l’audi
 
 Le journal complet est consultable directement dans l’application sur `/changelog`.
 
+- **1.1.0** : extension de l’éditeur local aux catégories, enchantements, matériaux de bouclier, résistances et multiplicateurs de réparation ; ajout de la Chitine pour les boucliers (`Mixte`, +1 PA / +1 malus). Import/export des nouveaux domaines avec validation des références croisées, sans changement du schéma v1.
 - **1.0.0** : première version stable préparée ; règles, données, tests métier et impression PDF validés. [Release GitHub publiée](https://github.com/Daneisra/Armures-d100-Hesta/releases/tag/v1.0.0).
 - **0.9.11** : validation des fiches PDF sur Chrome, Firefox et Edge ; valeurs de repli et niveaux imprimés harmonisés avec le calculateur.
 - **0.9.10** : validation des tests métier avec scénarios complets sur les données officielles ; roadmap d’administration GitHub/local.
@@ -142,11 +145,11 @@ Le journal complet est consultable directement dans l’application sur `/change
 - [x] Vérifier toutes les données JSON par défaut (`DATA-AUDIT.md` et test automatisé).
 - [x] Valider les tests unitaires métier et trois scénarios complets sur les données officielles (`tests/businessScenarios.test.ts`).
 - [x] Valider l’impression/PDF sur Chrome, Firefox et Edge ([rapport de validation](PRINT-AUDIT.md)).
-- [ ] Taguer une release GitHub `v1.0.0`.
+- [x] Taguer une release GitHub `v1.0.0` ([release publiée](https://github.com/Daneisra/Armures-d100-Hesta/releases/tag/v1.0.0)).
 
 ### 1.1.x — Administration des données et synchronisation GitHub
 
-- [ ] Étendre l’Éditeur local aux catégories, enchantements, résistances, matériaux de bouclier et tables de réparation, avec ajout, modification, suppression et validation des références croisées.
+- [x] Étendre l’Éditeur local aux catégories, enchantements, résistances, matériaux de bouclier et tables de réparation, avec ajout, modification, suppression et validation des références croisées. Les tables de réparation sont éditées via `repair` sur les matériaux/qualités et les bases des paramètres.
 - [ ] Prévisualiser les différences entre données officielles GitHub et modifications locales ; signaler les conflits avant toute synchronisation.
 - [ ] Permettre de récupérer une nouvelle version du catalogue officiel dans le navigateur sans écraser silencieusement les personnalisations locales.
 - [ ] Proposer les changements validés des JSON officiels sur GitHub via une authentification sécurisée et une pull request à relire avant fusion. Prévoir le service nécessaire à cette écriture ; ne stocker aucun jeton GitHub dans l’application statique ou `localStorage`.
