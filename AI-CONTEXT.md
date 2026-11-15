@@ -1,6 +1,6 @@
 # Contexte IA — Système PA / Armures d100
 
-> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `1.0.0` préparée pour publication. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
+> Référence rapide destinée aux agents IA intervenant sur ce dépôt. Lire ce fichier avant toute modification. Les observations ci-dessous correspondent à la version `1.1.0`. En cas de divergence, la version de `package.json`, le code et les JSON du dépôt priment sur ce document.
 
 ## 1. Résumé du projet
 
@@ -312,11 +312,13 @@ Règles de compatibilité :
 - Dix JSON canoniques audités en `0.9.9` : inventaire dans `DATA-AUDIT.md`, contrôles exécutables dans `tests/defaultData.test.ts`.
 - Tests métier validés en `0.9.10` : cas unitaires et scénarios complets dans `tests/businessScenarios.test.ts`, sur les valeurs officielles.
 - Impression/PDF validés en `0.9.11` sur Chrome, Firefox et Edge pour les modes Standard, Compact et Détaillé ; voir `PRINT-AUDIT.md`.
-- Version `1.0.0` préparée ; commit, tag et publication GitHub `v1.0.0` restent à effectuer selon `RELEASE-1.0.0.md`.
+- Release GitHub `v1.0.0` publiée sur le commit `25df663066f45f5bb9cc6e045519df042f615afc`.
 
 ### Après 1.0 — Administration et synchronisation GitHub/local
 
-- Étendre l’Éditeur à toutes les tables et aux résistances avec validation des dépendances.
+- Éditeur étendu en `1.1.0` : catégories, enchantements, matériaux de bouclier (`CatalogDomainEditor`), résistances et multiplicateurs matériau (`MaterialPropertiesEditor`), qualités et bases de réparation. Les sept clés de résistance métier restent fixes ; ajouter un nouveau type nécessite une évolution du moteur.
+- Les nouveaux domaines utilisent les instantanés d’overrides v1 existants, avec validation du catalogue résultant avant mutation et import.
+- Chitine ajoutée aux matériaux de bouclier (`Mixte`, `paMod: 1`, `malusMod: 1`).
 - Prévoir lecture, diff et résolution de conflits entre JSON officiels GitHub et overrides locaux.
 - Soumettre les changements officiels par pull request via une authentification et un service sécurisés ; ne jamais exposer de jeton d’écriture dans la SPA.
 - Après fusion, préserver ou migrer les personnalisations locales avant d’appliquer le nouveau canon.

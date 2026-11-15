@@ -54,9 +54,9 @@ export function mergeCatalog(overrides: CatalogOverrides | null): Catalog {
     qualities: mergeList(defaults.qualities, ov.qualities),
     shields: mergeList(defaults.shields, ov.shields),
     params: mergeParams(defaults.params, ov.params),
-    categories: defaults.categories,
-    enchants: defaults.enchants,
-    shieldMaterials: defaults.shieldMaterials,
+    categories: mergeList(defaults.categories, ov.categories),
+    enchants: mergeList(defaults.enchants, ov.enchants),
+    shieldMaterials: mergeList(defaults.shieldMaterials, ov.shieldMaterials),
   };
 }
 
@@ -93,7 +93,7 @@ export function exportCatalog(overrides: CatalogOverrides): string {
   return JSON.stringify(payload, null, 2);
 }
 
-export function importCatalog(text: string): CatalogOverrides {
+export function importCatalog(text: string, base: CatalogOverrides = {}): CatalogOverrides {
   let parsed: unknown;
   try {
     parsed = JSON.parse(text);
@@ -119,7 +119,11 @@ export function importCatalog(text: string): CatalogOverrides {
   }
   if (issues.length) throw new ImportValidationError("Import catalogue refusé", issues);
 
-  assertValidCatalogOverrides(root.overrides, defaults);
+  if (typeof root.overrides !== "object" || root.overrides === null || Array.isArray(root.overrides)) {
+    assertValidCatalogOverrides(root.overrides, defaults);
+  }
+  const combined = { ...base, ...root.overrides as CatalogOverrides };
+  assertValidCatalogOverrides(combined, defaults);
   return root.overrides;
 }
 

@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { useCatalog } from "../catalogContext";
-import type { Chassis, Material, Quality, Shield, Params } from "../types";
+import type { Chassis, Material, Quality, Shield, Params, Category, Enchant, ShieldMaterial } from "../types";
 import { cls } from "../ui/styles";
+import MaterialPropertiesEditor from "../components/MaterialPropertiesEditor";
+import CatalogDomainEditor from "../components/CatalogDomainEditor";
+import { validateCatalogOverrides, ImportValidationError } from "../lib/importValidation";
 import AccessibleDialog from "../components/AccessibleDialog";
 import ImportErrorPanel from "../components/ImportErrorPanel";
 import { describeImportFailure, type ImportFailure } from "../lib/importFeedback";
 
-type TabKey = "chassis" | "materials" | "qualities" | "shields" | "params";
+type TabKey = "chassis" | "materials" | "qualities" | "shields" | "params" | "categories" | "enchants" | "shieldMaterials";
 type ListTabKey = Exclude<TabKey, "params">;
-type NamedItem = Chassis | Material | Quality | Shield;
+type NamedItem = Chassis | Material | Quality | Shield | Category | Enchant | ShieldMaterial;
+const itemKey = (item: NamedItem) => "key" in item ? item.key : "id" in item ? item.id : item.name;
+const itemName = (item: NamedItem) => "label" in item ? item.label : item.name;
 
 type TrashEntry = {
   id: string;
@@ -30,6 +35,9 @@ const tabs: { key: TabKey; label: string }[] = [
   { key: "materials", label: "Matériaux" },
   { key: "qualities", label: "Qualités" },
   { key: "shields", label: "Boucliers" },
+  { key: "categories", label: "Catégories" },
+  { key: "enchants", label: "Enchantements" },
+  { key: "shieldMaterials", label: "Matériaux de bouclier" },
   { key: "params", label: "Paramètres" },
 ];
 const compactAction = "inline-flex min-h-7 items-center rounded-md border border-border bg-card px-2 py-1 text-xs font-medium shadow-sm outline-none transition hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary/50";
@@ -69,6 +77,7 @@ export default function EditorPage() {
   const [importFailure, setImportFailure] = useState<ImportFailure | null>(null);
   const [flash, setFlash] = useState<string | null>(null);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{ key: ListTabKey; item: NamedItem } | null>(null);
   const [history, setHistory] = useState<UndoEntry[]>([]);
   const [trash, setTrash] = useState<TrashEntry[]>([]);
 
@@ -85,13 +94,24 @@ export default function EditorPage() {
   };
 
   const applyDomainChange = (key: TabKey, value: unknown, label: string, extras: Partial<UndoEntry> = {}) => {
-    pushHistory(snapshot(key, label, extras));
+    const issues = validateCatalogOverrides({ ...overrides, [key]: value }, defaults);
+    if (issues.length) {
+      setImportFailure(describeImportFailure(new ImportValidationError("Modification refusée", issues), "Éditeur"));
+      return false;
+    }
     updateDomain(key, value);
+    pushHistory(snapshot(key, label, extras));
+    setImportFailure(null);
     setFlash(label);
+    return true;
   };
 
   const resetEditorDomain = (key: TabKey) => {
     if (!Object.prototype.hasOwnProperty.call(overrides, key)) return;
+    const next = { ...overrides };
+    delete next[key];
+    const issues = validateCatalogOverrides(next, defaults);
+    if (issues.length) { setImportFailure(describeImportFailure(new ImportValidationError("Réinitialisation refusée", issues), "Éditeur")); return; }
     pushHistory(snapshot(key, `Réinitialisation de l’onglet ${key}`));
     resetDomain(key);
     setFlash("Onglet réinitialisé aux données officielles.");
@@ -100,6 +120,10 @@ export default function EditorPage() {
   const undoLast = () => {
     const entry = history[history.length - 1];
     if (!entry) return;
+    const next = { ...overrides, [entry.key]: entry.previous };
+    if (!entry.hadOverride) delete next[entry.key];
+    const issues = validateCatalogOverrides(next, defaults);
+    if (issues.length) { setImportFailure(describeImportFailure(new ImportValidationError("Annulation refusée", issues), "Éditeur")); return; }
     if (entry.hadOverride) updateDomain(entry.key, entry.previous);
     else resetDomain(entry.key);
     if (entry.removeTrashId) setTrash(current => current.filter(item => item.id !== entry.removeTrashId));
@@ -109,20 +133,20 @@ export default function EditorPage() {
   };
 
   const deleteItem = (key: ListTabKey, item: NamedItem) => {
-    const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${item.name}`;
+    const id = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${itemName(item)}`;
     const entry: TrashEntry = { id, key, item: JSON.parse(JSON.stringify(item)) };
-    const next = (catalog[key] as NamedItem[]).filter(candidate => candidate.name !== item.name);
-    applyDomainChange(key, next, `Suppression de « ${item.name} »`, { removeTrashId: id });
+    const next = (catalog[key] as NamedItem[]).filter(candidate => itemKey(candidate) !== itemKey(item));
+    if (!applyDomainChange(key, next, `Suppression de « ${itemName(item)} »`, { removeTrashId: id })) return;
     setTrash(current => [entry, ...current]);
   };
 
   const restoreTrash = (entry: TrashEntry) => {
     const current = catalog[entry.key] as NamedItem[];
-    if (current.some(item => item.name === entry.item.name)) {
-      setFlash(`Impossible de restaurer « ${entry.item.name} » : ce nom existe déjà.`);
+    if (current.some(item => itemKey(item) === itemKey(entry.item))) {
+      setFlash(`Impossible de restaurer « ${itemName(entry.item)} » : ce nom existe déjà.`);
       return;
     }
-    applyDomainChange(entry.key, [...current, entry.item], `Restauration de « ${entry.item.name} »`, { restoreTrash: entry });
+    if (!applyDomainChange(entry.key, [...current, entry.item], `Restauration de « ${itemName(entry.item)} »`, { restoreTrash: entry })) return;
     setTrash(items => items.filter(item => item.id !== entry.id));
   };
 
@@ -264,21 +288,30 @@ export default function EditorPage() {
       <TrashCard entries={trash} onRestore={restoreTrash} onClear={() => setTrash([])} />
 
       {tab === "chassis" && (
-        <ChassisEditor items={catalog.chassis} onChange={list => applyDomainChange("chassis", list, "Châssis modifiés")} onDelete={item => deleteItem("chassis", item)} onReset={()=>resetEditorDomain("chassis")} />
+        <ChassisEditor items={catalog.chassis} onChange={list => applyDomainChange("chassis", list, "Châssis modifiés")} onDelete={item => setPendingDelete({ key: "chassis", item })} onReset={()=>resetEditorDomain("chassis")} />
       )}
       {tab === "materials" && (
-        <MaterialsEditor items={catalog.materials} onChange={list => applyDomainChange("materials", list, "Matériaux modifiés")} onDelete={item => deleteItem("materials", item)} onReset={()=>resetEditorDomain("materials")} />
+        <MaterialsEditor items={catalog.materials} onChange={list => applyDomainChange("materials", list, "Matériaux modifiés")} onDelete={item => setPendingDelete({ key: "materials", item })} onReset={()=>resetEditorDomain("materials")} />
       )}
       {tab === "qualities" && (
-        <QualitiesEditor items={catalog.qualities} onChange={list => applyDomainChange("qualities", list, "Qualités modifiées")} onDelete={item => deleteItem("qualities", item)} onReset={()=>resetEditorDomain("qualities")} />
+        <QualitiesEditor items={catalog.qualities} onChange={list => applyDomainChange("qualities", list, "Qualités modifiées")} onDelete={item => setPendingDelete({ key: "qualities", item })} onReset={()=>resetEditorDomain("qualities")} />
       )}
       {tab === "shields" && (
-        <ShieldsEditor items={catalog.shields as Shield[]} onChange={list => applyDomainChange("shields", list, "Boucliers modifiés")} onDelete={item => deleteItem("shields", item)} onReset={()=>resetEditorDomain("shields")} />
+        <ShieldsEditor items={catalog.shields as Shield[]} onChange={list => applyDomainChange("shields", list, "Boucliers modifiés")} onDelete={item => setPendingDelete({ key: "shields", item })} onReset={()=>resetEditorDomain("shields")} />
+      )}
+      {(tab === "categories" || tab === "enchants" || tab === "shieldMaterials") && (
+        <CatalogDomainEditor key={tab} domain={tab} title={tabs.find(item => item.key === tab)!.label}
+          items={catalog[tab]} onChange={list => applyDomainChange(tab, list, "Catalogue modifié")}
+          onDelete={item => setPendingDelete({ key: tab, item })} onReset={() => resetEditorDomain(tab)} />
       )}
       {tab === "params" && (
         <ParamsEditor value={catalog.params} onChange={p => applyDomainChange("params", p, "Paramètres modifiés")} onReset={()=>resetEditorDomain("params")} />
       )}
 
+      <AccessibleDialog open={pendingDelete !== null} title="Supprimer cet élément ?" description={pendingDelete ? itemName(pendingDelete.item) : ""} onClose={() => setPendingDelete(null)} footer={<>
+        <button className={cls.btnGhost} onClick={() => setPendingDelete(null)}>Annuler</button>
+        <button className={cls.btnPrimary} onClick={() => { if (pendingDelete) deleteItem(pendingDelete.key, pendingDelete.item); setPendingDelete(null); }}>Supprimer</button>
+      </>}><p className="text-sm">La suppression sera refusée si des matériaux référencent encore cette catégorie. Les éléments supprimés restent dans la corbeille de session.</p></AccessibleDialog>
       <AccessibleDialog
         open={resetDialogOpen}
         title="Réinitialiser tout le catalogue local ?"
@@ -375,7 +408,7 @@ function TrashCard({ entries, onRestore, onClear }: { entries: TrashEntry[]; onR
       <div className="flex flex-wrap gap-2">
         {entries.map(entry => (
           <div key={entry.id} className="flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm">
-            <span><span className="text-muted-foreground">{tabs.find(item => item.key === entry.key)?.label} :</span> {entry.item.name}</span>
+            <span><span className="text-muted-foreground">{tabs.find(item => item.key === entry.key)?.label} :</span> {itemName(entry.item)}</span>
             <button className={cls.btnGhost} type="button" onClick={() => onRestore(entry)}>Restaurer</button>
           </div>
         ))}
@@ -393,12 +426,12 @@ function DiffCard({ tab, overrides, defaults }: { tab: TabKey; overrides: any; d
   const baseList = isArrayTab ? (defaults as any)[tab] ?? [] : [];
 
   const rows = isArrayTab ? (ov as any[]).map(item => {
-    const base = baseList.find((b: any) => b.name === item.name);
+    const base = baseList.find((b: any) => (b.key ?? b.id ?? b.name) === (item.key ?? item.id ?? item.name));
     const status = base ? "Override" : "Ajout";
     const changedKeys = base
       ? Object.keys(item).filter(k => JSON.stringify((base as any)[k]) !== JSON.stringify((item as any)[k]))
       : [];
-    return { name: item.name ?? "(sans nom)", status, changedKeys, item };
+    return { name: item.label ?? item.name ?? item.key ?? "(sans nom)", status, changedKeys, item };
   }) : [];
 
   const paramChanges = tab === "params" ? Object.entries(ov as Record<string, any>).map(([k,v]) => {
@@ -451,7 +484,7 @@ function DiffCard({ tab, overrides, defaults }: { tab: TabKey; overrides: any; d
 }
 
 /* ---------------- Chassis ---------------- */
-function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[]; onChange: (v: Chassis[])=>void; onDelete: (item: Chassis)=>void; onReset: ()=>void; }) {
+function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[]; onChange: (v: Chassis[])=>boolean; onDelete: (item: Chassis)=>void; onReset: ()=>void; }) {
   const empty: Chassis = { name: "", basePA: 0, baseMalus: 0, group: "Légère" as any, category: "Gambison" as any };
   const [draft, setDraft] = useState<Chassis>(empty);
   const [editing, setEditing] = useState<string | null>(null);
@@ -460,11 +493,11 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
   const save = () => {
     if (!draft.name.trim()) return;
     const list = items.filter(c => c.name !== editing);
-    onChange([...list, draft]);
+    if (!onChange([...list, draft])) return;
     setDraft(empty);
     setEditing(null);
   };
-  const dup = (c: Chassis) => setDraft({ ...c, name: `${c.name} (copie)` });
+  const dup = (c: Chassis) => { setDraft({ ...c, name: `${c.name} (copie)` }); setEditing(null); };
   const edit = (c: Chassis) => { setDraft(c); setEditing(c.name); };
 
   return (
@@ -531,7 +564,8 @@ function ChassisEditor({ items, onChange, onDelete, onReset }: { items: Chassis[
 }
 
 /* ---------------- Materials ---------------- */
-function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Material[]; onChange:(v:Material[])=>void; onDelete:(item:Material)=>void; onReset:()=>void; }) {
+function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Material[]; onChange:(v:Material[])=>boolean; onDelete:(item:Material)=>void; onReset:()=>void; }) {
+  const { catalog } = useCatalog();
   const empty: Material = { name:"", category:"", compat:"Gambison" as any, modPA:0, malusMod:0, extraPen:0, penIgnore:0, effects:"", res:{} };
   const [draft, setDraft] = useState<Material>(empty);
   const [editing, setEditing] = useState<string | null>(null);
@@ -540,12 +574,12 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
   const save = () => {
     if (!draft.name.trim()) return;
     const list = items.filter(m => m.name !== editing);
-    onChange([...list, draft]);
+    if (!onChange([...list, draft])) return;
     setDraft(empty);
     setEditing(null);
   };
   const edit = (m: Material) => { setDraft({ ...m }); setEditing(m.name); };
-  const dup = (m: Material) => setDraft({ ...m, name: `${m.name} (copie)` });
+  const dup = (m: Material) => { setDraft({ ...m, name: `${m.name} (copie)` }); setEditing(null); };
 
   return (
     <section className={`${cls.card} space-y-3`}>
@@ -563,7 +597,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
         {filtered.visibleItems.map(m => (
           <div key={m.name} className="grid gap-1 rounded px-2 py-2 text-sm hover:bg-muted/40 md:grid-cols-[1.3fr_1fr_1fr_0.8fr_1fr_auto] md:items-center md:gap-2 md:py-1">
             <span className="font-medium">{m.name}</span>
-            <span>{categoryLabel(m.category)}</span>
+            <span>{catalog.categories.find(c => c.key === m.category)?.label ?? categoryLabel(m.category)}</span>
             <span>{m.compat}</span>
             <span className="tabular">{m.modPA} / {m.malusMod}</span>
             <span className="tabular">+{m.extraPen ?? 0}</span>
@@ -584,7 +618,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
           </label>
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Clé de catégorie</div>
-            <input className={cls.input} value={draft.category} onChange={e=>setDraft({...draft, category:e.target.value})}/>
+            <select className={cls.select} value={draft.category} onChange={e=>{ const category = catalog.categories.find(c => c.key === e.target.value); setDraft({...draft, category:e.target.value, compat: category?.compat ?? draft.compat}); }}><option value="">Choisir une catégorie</option>{catalog.categories.map(c => <option key={c.key} value={c.key}>{c.label}</option>)}</select>
           </label>
           <label className="text-sm">
             <div className="text-muted-foreground text-xs mb-1">Compatibilité</div>
@@ -617,6 +651,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
             </label>
           </div>
         </div>
+        <MaterialPropertiesEditor value={draft} onChange={setDraft} />
         <button className={cls.btnPrimary} onClick={save}>{editing ? "Mettre à jour" : "Ajouter"}</button>
       </div>
     </section>
@@ -624,7 +659,7 @@ function MaterialsEditor({ items, onChange, onDelete, onReset }: { items: Materi
 }
 
 /* ---------------- Qualities ---------------- */
-function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Quality[]; onChange:(v:Quality[])=>void; onDelete:(item:Quality)=>void; onReset:()=>void; }) {
+function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Quality[]; onChange:(v:Quality[])=>boolean; onDelete:(item:Quality)=>void; onReset:()=>void; }) {
   const empty: Quality = { name:"", bonusPA:0, malusMod:0, repair:{ costMul:1, timeMul:1 } };
   const [draft, setDraft] = useState<Quality>(empty);
   const [editing, setEditing] = useState<string | null>(null);
@@ -633,13 +668,13 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
   const save = () => {
     if (!draft.name.trim()) return;
     const list = items.filter(q=>q.name!==editing);
-    onChange([...list, draft]);
+    if (!onChange([...list, draft])) return;
     setDraft(empty);
     setEditing(null);
   };
 
   const edit = (q: Quality) => { setDraft({ ...q }); setEditing(q.name); };
-  const dup = (q: Quality) => setDraft({ ...q, name: `${q.name} (copie)` });
+  const dup = (q: Quality) => { setDraft({ ...q, name: `${q.name} (copie)` }); setEditing(null); };
 
   return (
     <section className={`${cls.card} space-y-3`}>
@@ -687,11 +722,11 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
           <div className="grid grid-cols-2 gap-2">
             <label className="text-sm">
               <div className="text-muted-foreground text-xs mb-1">Coût de réparation ×</div>
-              <input className={cls.input} type="number" value={draft.repair?.costMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, costMul:Number(e.target.value)||1}})}/>
+              <input className={cls.input} type="number" value={draft.repair?.costMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, costMul:e.target.valueAsNumber}})}/>
             </label>
             <label className="text-sm">
               <div className="text-muted-foreground text-xs mb-1">Temps de réparation ×</div>
-              <input className={cls.input} type="number" value={draft.repair?.timeMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, timeMul:Number(e.target.value)||1}})}/>
+              <input className={cls.input} type="number" value={draft.repair?.timeMul ?? 1} onChange={e=>setDraft({...draft, repair:{...draft.repair, timeMul:e.target.valueAsNumber}})}/>
             </label>
           </div>
         </div>
@@ -702,7 +737,7 @@ function QualitiesEditor({ items, onChange, onDelete, onReset }: { items: Qualit
 }
 
 /* ---------------- Shields ---------------- */
-function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]; onChange:(v:Shield[])=>void; onDelete:(item:Shield)=>void; onReset:()=>void; }) {
+function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]; onChange:(v:Shield[])=>boolean; onDelete:(item:Shield)=>void; onReset:()=>void; }) {
   const empty: Shield = { name:"", pa:0, malus:0 };
   const [draft, setDraft] = useState<Shield>(empty);
   const [editing, setEditing] = useState<string | null>(null);
@@ -711,13 +746,13 @@ function ShieldsEditor({ items, onChange, onDelete, onReset }: { items: Shield[]
   const save = () => {
     if (!draft.name.trim()) return;
     const list = items.filter(s=>s.name!==editing);
-    onChange([...list, draft]);
+    if (!onChange([...list, draft])) return;
     setDraft(empty);
     setEditing(null);
   };
 
   const edit = (s: Shield) => { setDraft({ ...s }); setEditing(s.name); };
-  const dup = (s: Shield) => setDraft({ ...s, name: `${s.name} (copie)` });
+  const dup = (s: Shield) => { setDraft({ ...s, name: `${s.name} (copie)` }); setEditing(null); };
 
   return (
     <section className={`${cls.card} space-y-3`}>

@@ -3,6 +3,15 @@ import { cls } from "../ui/styles";
 
 const releases = [
   {
+    version: "1.1.0",
+    title: "Éditeur local étendu",
+    changes: [
+      "Chitine disponible comme matériau de bouclier (+1 PA / +1 malus).",
+      "Édition des catégories, enchantements et matériaux de bouclier, avec résistances et réparation dans les matériaux.",
+      "Import/export et modifications validés avant application, avec protection des catégories référencées.",
+    ],
+  },
+  {
     version: "1.0.0",
     title: "Première version stable",
     changes: [

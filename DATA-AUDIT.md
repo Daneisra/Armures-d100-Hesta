@@ -9,7 +9,7 @@ Les dix fichiers JSON de `src/data/` ont été vérifiés avant le jalon 1.0. Au
 | `materials.json` | 29 | Schéma, bornes, noms uniques ; catégorie existante et compatibilité cohérente. |
 | `qualities.json` | 5 | Schéma, bornes et noms uniques. |
 | `shields.json` | 5 | Schéma, bornes et noms uniques. |
-| `shieldMaterials.json` | 8 | Types, compatibilités, modificateurs et noms uniques. |
+| `shieldMaterials.json` | 9 | Types, compatibilités, modificateurs et noms uniques ; Chitine ajoutée en 1.1.0 (+1 PA / +1 malus, Mixte). |
 | `enchantments.json` | 13 | Identifiants et noms uniques ; effets définis ; niveaux bornés par `enchantMax`. |
 | `repairMaterial.json` | 29 | Une ligne par matériau ; clés `costMul`/`timeMul` numériques ; injection vérifiée. |
 | `repairQuality.json` | 5 | Une ligne par qualité ; clés `costMul`/`timeMul` numériques ; injection vérifiée. |
